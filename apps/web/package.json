@@ -1,0 +1,32 @@
+{
+  "name": "@nextstep/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
+    "dev": "next dev",
+    "start": "next start",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --passWithNoTests",
+    "test:contract": "vitest run --passWithNoTests",
+    "test:authz": "vitest run --passWithNoTests",
+    "test:security": "vitest run --passWithNoTests",
+    "test:a11y": "vitest run src/navigation.test.ts",
+    "test:e2e:walking-skeleton": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

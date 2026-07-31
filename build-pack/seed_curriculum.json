@@ -1,0 +1,2170 @@
+{
+  "sport": {
+    "key": "basketball",
+    "name": "Basketball",
+    "metadata": {
+      "launchMarket": "AU",
+      "ageFocus": [
+        "U8",
+        "U10",
+        "U12"
+      ]
+    }
+  },
+  "curriculumVersion": {
+    "versionKey": "basketball-au-foundation-1.0",
+    "name": "Basketball Foundation Pathway AU",
+    "status": "DRAFT",
+    "changeSummary": "Initial agent-build seed covering a coherent Foundation campaign."
+  },
+  "domains": [
+    {
+      "key": "movement",
+      "name": "Movement & Athletic Foundations",
+      "sortOrder": 10
+    },
+    {
+      "key": "ball-mastery",
+      "name": "Ball Mastery & Dribbling",
+      "sortOrder": 20
+    },
+    {
+      "key": "passing",
+      "name": "Passing & Receiving",
+      "sortOrder": 30
+    },
+    {
+      "key": "shooting",
+      "name": "Shooting",
+      "sortOrder": 40
+    },
+    {
+      "key": "finishing-footwork",
+      "name": "Finishing & Footwork",
+      "sortOrder": 50
+    },
+    {
+      "key": "defence-rebounding",
+      "name": "Defence & Rebounding",
+      "sortOrder": 60
+    },
+    {
+      "key": "decisions",
+      "name": "Decision-Making & Game Understanding",
+      "sortOrder": 70
+    },
+    {
+      "key": "habits",
+      "name": "Practice Habits, Safety & Reflection",
+      "sortOrder": 80
+    }
+  ],
+  "stages": [
+    {
+      "key": "foundation",
+      "name": "Foundation",
+      "sortOrder": 10,
+      "ageGuidance": {
+        "typical": [
+          "U8",
+          "U10"
+        ],
+        "abilityBased": true
+      }
+    },
+    {
+      "key": "builder",
+      "name": "Builder",
+      "sortOrder": 20,
+      "ageGuidance": {
+        "typical": [
+          "U10",
+          "U12"
+        ],
+        "abilityBased": true
+      }
+    }
+  ],
+  "nodes": [
+    {
+      "key": "foundation.habits.safe-space-check",
+      "name": "Safe Practice Space Check",
+      "childName": "Make the Space Safe",
+      "type": "SKILL",
+      "domainKey": "habits",
+      "stageKey": "foundation",
+      "objective": "With a parent, identify and clear hazards before beginning a session.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Look",
+        "Clear",
+        "Tell an adult"
+      ],
+      "commonErrors": [],
+      "equipment": [],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "A parent must confirm the practice area is clear."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 1,
+        "minimumCalendarSpanDays": 0,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 7
+      },
+      "retentionRule": {
+        "revisitAfterDays": 7
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.movement.athletic-stance",
+      "name": "Athletic Ready Stance",
+      "childName": "Ready Position",
+      "type": "SKILL",
+      "domainKey": "movement",
+      "stageKey": "foundation",
+      "objective": "Hold a balanced ready stance and move from it without crossing the feet unintentionally.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.habits.safe-space-check"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Bend",
+        "Chest tall",
+        "Ready feet"
+      ],
+      "commonErrors": [],
+      "equipment": [],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.movement.stop-control",
+      "name": "Controlled Stop",
+      "childName": "Stop and Freeze",
+      "type": "SKILL",
+      "domainKey": "movement",
+      "stageKey": "foundation",
+      "objective": "Move forward and stop under control without extra steps or loss of balance.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.movement.athletic-stance"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Lower",
+        "Small steps",
+        "Freeze"
+      ],
+      "commonErrors": [],
+      "equipment": [],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.movement.jump-land",
+      "name": "Two-Foot Jump and Soft Landing",
+      "childName": "Jump and Land Quiet",
+      "type": "SKILL",
+      "domainKey": "movement",
+      "stageKey": "foundation",
+      "objective": "Jump from two feet and land quietly with knees tracking and balance maintained.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.movement.athletic-stance"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Two feet",
+        "Soft",
+        "Hold"
+      ],
+      "commonErrors": [],
+      "equipment": [],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.movement.lateral-shuffle",
+      "name": "Lateral Shuffle",
+      "childName": "Slide Sideways",
+      "type": "SKILL",
+      "domainKey": "movement",
+      "stageKey": "foundation",
+      "objective": "Shuffle laterally while keeping a stable base and avoiding repeated foot crossing.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.movement.athletic-stance"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Wide",
+        "Push",
+        "Do not click feet"
+      ],
+      "commonErrors": [],
+      "equipment": [],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.ball.hand-comfort",
+      "name": "Ball Familiarity and Hand Comfort",
+      "childName": "Know the Ball",
+      "type": "SKILL",
+      "domainKey": "ball-mastery",
+      "stageKey": "foundation",
+      "objective": "Control simple taps, wraps and transfers around the body without fear or repeated drops.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.habits.safe-space-check"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Fingertips",
+        "Soft hands",
+        "Both ways"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.ball.right-pound",
+      "name": "Stationary Right-Hand Pound Dribble",
+      "childName": "Strong Right Bounces",
+      "type": "SKILL",
+      "domainKey": "ball-mastery",
+      "stageKey": "foundation",
+      "objective": "Maintain a controlled right-hand dribble near hip height while balanced and looking forward.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.ball.hand-comfort",
+        "foundation.movement.athletic-stance"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Bend",
+        "Bounce hard",
+        "Eyes forward"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.ball.left-pound",
+      "name": "Stationary Left-Hand Pound Dribble",
+      "childName": "Strong Left Bounces",
+      "type": "SKILL",
+      "domainKey": "ball-mastery",
+      "stageKey": "foundation",
+      "objective": "Maintain a controlled left-hand dribble near hip height while balanced and looking forward.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.ball.hand-comfort",
+        "foundation.movement.athletic-stance"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Bend",
+        "Bounce hard",
+        "Eyes forward"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.ball.bilateral-control-check",
+      "name": "Bilateral Stationary Dribble Checkpoint",
+      "childName": "Both Hands Check",
+      "type": "CHECKPOINT",
+      "domainKey": "ball-mastery",
+      "stageKey": "foundation",
+      "objective": "Demonstrate controlled stationary dribbling with either hand using the defined evidence format.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.ball.right-pound",
+        "foundation.ball.left-pound"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Balance",
+        "Same rhythm",
+        "Eyes up"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 3,
+        "minimumCalendarSpanDays": 5,
+        "requiredSuccessfulAttempts": 2,
+        "requiresEvidence": true,
+        "assessmentType": "ASYNC_VIDEO",
+        "rubricMinimumOverall": 3,
+        "criticalCriteriaMustPass": true,
+        "revisitAfterDays": 28
+      },
+      "retentionRule": {
+        "revisitAfterDays": 28
+      },
+      "metadata": {
+        "rubricKey": "rubric.foundation.bilateral-dribble"
+      }
+    },
+    {
+      "key": "foundation.ball.moving-control",
+      "name": "Moving Dribble Control",
+      "childName": "Walk and Dribble",
+      "type": "SKILL",
+      "domainKey": "ball-mastery",
+      "stageKey": "foundation",
+      "objective": "Walk and then jog while controlling the ball with either hand and stopping safely.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.ball.bilateral-control-check",
+        "foundation.movement.stop-control"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Push forward",
+        "Small steps",
+        "Stop balanced"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.ball.crossover",
+      "name": "Stationary Crossover",
+      "childName": "Switch Hands",
+      "type": "SKILL",
+      "domainKey": "ball-mastery",
+      "stageKey": "foundation",
+      "objective": "Transfer the dribble from one hand to the other below the knees without losing stance.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.ball.right-pound",
+        "foundation.ball.left-pound"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Low",
+        "Push across",
+        "Catch with fingertips"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.passing.ready-hands",
+      "name": "Ready Hands and Target",
+      "childName": "Show a Target",
+      "type": "SKILL",
+      "domainKey": "passing",
+      "stageKey": "foundation",
+      "objective": "Show a clear target, receive with soft hands and secure the ball on balance.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.ball.hand-comfort"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Target",
+        "Soft hands",
+        "Tuck"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.passing.chest-pass",
+      "name": "Chest Pass Accuracy",
+      "childName": "Push to the Target",
+      "type": "SKILL",
+      "domainKey": "passing",
+      "stageKey": "foundation",
+      "objective": "Deliver a chest pass to a partner target with step, extension and control.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.passing.ready-hands",
+        "foundation.movement.athletic-stance"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Step",
+        "Push",
+        "Thumbs down"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.passing.bounce-pass",
+      "name": "Bounce Pass Accuracy",
+      "childName": "Bounce to the Target",
+      "type": "SKILL",
+      "domainKey": "passing",
+      "stageKey": "foundation",
+      "objective": "Deliver a bounce pass that reaches the receiver at a useful height and pace.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.passing.ready-hands",
+        "foundation.passing.chest-pass"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Step",
+        "Aim low",
+        "Reach"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.shooting.setup",
+      "name": "Shooting Stance and Hand Placement",
+      "childName": "Set the Shot",
+      "type": "SKILL",
+      "domainKey": "shooting",
+      "stageKey": "foundation",
+      "objective": "Set feet, shooting hand and guide hand in a repeatable close-range position.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.movement.athletic-stance",
+        "foundation.ball.hand-comfort"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Balance",
+        "Hand under",
+        "Guide soft"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.shooting.close-form",
+      "name": "Close-Range Form Shot",
+      "childName": "One-Hand Finish",
+      "type": "SKILL",
+      "domainKey": "shooting",
+      "stageKey": "foundation",
+      "objective": "Produce a controlled close-range shot using legs, shooting hand and held follow-through.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.shooting.setup"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Up",
+        "Reach",
+        "Hold"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.footwork.jump-stop",
+      "name": "Jump Stop",
+      "childName": "Two Feet Together",
+      "type": "SKILL",
+      "domainKey": "finishing-footwork",
+      "stageKey": "foundation",
+      "objective": "Land on two feet at nearly the same time and maintain balance with the ball secured.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.movement.stop-control",
+        "foundation.movement.jump-land"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Two feet",
+        "Wide",
+        "Freeze"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.footwork.stride-stop",
+      "name": "Stride Stop",
+      "childName": "One-Two Stop",
+      "type": "SKILL",
+      "domainKey": "finishing-footwork",
+      "stageKey": "foundation",
+      "objective": "Use a controlled one-two stop while maintaining balance and pivot options.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.movement.stop-control"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "One-two",
+        "Lower",
+        "Balance"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.finishing.right-layup",
+      "name": "Right-Side Layup Coordination",
+      "childName": "Right Layup Steps",
+      "type": "SKILL",
+      "domainKey": "finishing-footwork",
+      "stageKey": "foundation",
+      "objective": "Coordinate the right-side layup step and opposite knee/hand pattern at controlled pace.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.footwork.stride-stop",
+        "foundation.shooting.close-form"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Right-left-up",
+        "Right hand",
+        "Eyes on square"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.finishing.left-layup",
+      "name": "Left-Side Layup Coordination",
+      "childName": "Left Layup Steps",
+      "type": "SKILL",
+      "domainKey": "finishing-footwork",
+      "stageKey": "foundation",
+      "objective": "Coordinate the left-side layup step and opposite knee/hand pattern at controlled pace.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.footwork.stride-stop",
+        "foundation.shooting.close-form"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Left-right-up",
+        "Left hand",
+        "Eyes on square"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.defence.stance",
+      "name": "Defensive Stance",
+      "childName": "Guard Position",
+      "type": "SKILL",
+      "domainKey": "defence-rebounding",
+      "stageKey": "foundation",
+      "objective": "Hold a balanced defensive stance with active hands and move without reaching.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.movement.athletic-stance"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Low",
+        "Wide",
+        "Hands ready"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.defence.slide",
+      "name": "Defensive Slide",
+      "childName": "Slide and Stay Square",
+      "type": "SKILL",
+      "domainKey": "defence-rebounding",
+      "stageKey": "foundation",
+      "objective": "Slide laterally while keeping the chest square and avoiding feet crossing.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.defence.stance",
+        "foundation.movement.lateral-shuffle"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Push",
+        "Wide",
+        "Chest square"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.rebounding.box-out",
+      "name": "Basic Box-Out and Secure",
+      "childName": "Find, Turn, Get",
+      "type": "SKILL",
+      "domainKey": "defence-rebounding",
+      "stageKey": "foundation",
+      "objective": "Locate an opponent, establish safe position, pursue the ball and secure it strongly.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.defence.stance",
+        "foundation.movement.jump-land"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Find",
+        "Turn",
+        "Chin the ball"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.decisions.triple-threat",
+      "name": "Triple-Threat Awareness",
+      "childName": "See Three Choices",
+      "type": "SKILL",
+      "domainKey": "decisions",
+      "stageKey": "foundation",
+      "objective": "On receiving the ball, balance and identify pass, drive and shot options before acting.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.passing.ready-hands",
+        "foundation.shooting.setup"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Catch balanced",
+        "Look",
+        "Choose"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.decisions.spacing",
+      "name": "Basic Spacing",
+      "childName": "Find Open Space",
+      "type": "SKILL",
+      "domainKey": "decisions",
+      "stageKey": "foundation",
+      "objective": "Move to a simple open spot that preserves distance from a teammate and the ball.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.decisions.triple-threat"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "See teammate",
+        "Move away",
+        "Show hands"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.habits.both-sides",
+      "name": "Practise Both Sides",
+      "childName": "Use Both Hands",
+      "type": "SKILL",
+      "domainKey": "habits",
+      "stageKey": "foundation",
+      "objective": "Complete configured bilateral repetitions and identify which side needs more practice.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.ball.right-pound",
+        "foundation.ball.left-pound"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Right",
+        "Left",
+        "Be honest"
+      ],
+      "commonErrors": [],
+      "equipment": [],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.habits.reflection",
+      "name": "Useful Practice Reflection",
+      "childName": "Name One Win",
+      "type": "SKILL",
+      "domainKey": "habits",
+      "stageKey": "foundation",
+      "objective": "Name one improvement and one next cue after a session without negative self-labelling.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.habits.safe-space-check"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "One win",
+        "One next step",
+        "Keep it kind"
+      ],
+      "commonErrors": [],
+      "equipment": [],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 2,
+        "minimumCalendarSpanDays": 3,
+        "requiredSuccessfulAttempts": 1,
+        "requiresEvidence": false,
+        "assessmentType": null,
+        "rubricMinimumOverall": null,
+        "criticalCriteriaMustPass": false,
+        "revisitAfterDays": 21
+      },
+      "retentionRule": {
+        "revisitAfterDays": 21
+      },
+      "metadata": {}
+    },
+    {
+      "key": "foundation.milestone.core-1",
+      "name": "Foundation Core Milestone",
+      "childName": "Foundation Check",
+      "type": "MILESTONE",
+      "domainKey": "decisions",
+      "stageKey": "foundation",
+      "objective": "Combine selected movement, bilateral ball control, passing and decision foundations in a standard checkpoint.",
+      "whyItMatters": "This capability supports safe, controlled and transferable basketball movement.",
+      "hardPrerequisiteKeys": [
+        "foundation.ball.bilateral-control-check",
+        "foundation.passing.chest-pass",
+        "foundation.footwork.jump-stop",
+        "foundation.defence.stance",
+        "foundation.habits.reflection"
+      ],
+      "softPrerequisiteKeys": [],
+      "parentInstructions": "Use the demonstration, give only the listed cues and stop when control deteriorates.",
+      "childCues": [
+        "Control",
+        "Both sides",
+        "Make a choice"
+      ],
+      "commonErrors": [],
+      "equipment": [
+        "basketball"
+      ],
+      "spaceRequirements": {
+        "class": "SMALL",
+        "clearAreaMetres": "2 x 2"
+      },
+      "safety": [
+        "Use a dry non-slip surface.",
+        "Clear nearby obstacles.",
+        "Stop and tell an adult if pain occurs."
+      ],
+      "completionRule": {
+        "minimumCompletedSessions": 4,
+        "minimumCalendarSpanDays": 14,
+        "requiredSuccessfulAttempts": 3,
+        "requiresEvidence": true,
+        "assessmentType": "ASYNC_VIDEO",
+        "rubricMinimumOverall": 3,
+        "criticalCriteriaMustPass": true,
+        "revisitAfterDays": 42
+      },
+      "retentionRule": {
+        "revisitAfterDays": 42
+      },
+      "metadata": {
+        "rubricKey": "rubric.foundation.core-milestone"
+      }
+    }
+  ],
+  "drills": [
+    {
+      "key": "drill.safe-space-scan",
+      "name": "Safe Space Scan",
+      "childName": "Safe Space Scan",
+      "primaryNodeKey": "foundation.habits.safe-space-check",
+      "supportingNodeKeys": [],
+      "purpose": "Practise safe space scan in a controlled, repeatable format.",
+      "instructions": [
+        "Walk around the practice area with an adult.",
+        "Move hazards out of the area.",
+        "Confirm the surface is dry."
+      ],
+      "childCues": [
+        "Look",
+        "Clear",
+        "Tell"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "BOOLEAN",
+      "defaultDurationSec": 30,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.ready-stop-freeze",
+      "name": "Ready, Move, Stop and Freeze",
+      "childName": "Ready, Move, Stop and Freeze",
+      "primaryNodeKey": "foundation.movement.stop-control",
+      "supportingNodeKeys": [],
+      "purpose": "Practise ready, move, stop and freeze in a controlled, repeatable format.",
+      "instructions": [
+        "Start in ready stance.",
+        "Move to a marker.",
+        "Stop and hold balance for two seconds."
+      ],
+      "childCues": [
+        "Lower",
+        "Small steps",
+        "Freeze"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "2 markers"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 180,
+      "variants": [
+        {
+          "key": "walk",
+          "difficulty": "EASIER"
+        },
+        {
+          "key": "jog",
+          "difficulty": "STANDARD"
+        }
+      ],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.jump-land-quiet",
+      "name": "Quiet Landing Challenge",
+      "childName": "Quiet Landing Challenge",
+      "primaryNodeKey": "foundation.movement.jump-land",
+      "supportingNodeKeys": [],
+      "purpose": "Practise quiet landing challenge in a controlled, repeatable format.",
+      "instructions": [
+        "Jump over a line.",
+        "Land quietly on two feet.",
+        "Hold for two seconds."
+      ],
+      "childCues": [
+        "Two feet",
+        "Soft",
+        "Hold"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "floor line"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 150,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.ball-wraps",
+      "name": "Ball Taps and Body Wraps",
+      "childName": "Ball Taps and Body Wraps",
+      "primaryNodeKey": "foundation.ball.hand-comfort",
+      "supportingNodeKeys": [],
+      "purpose": "Practise ball taps and body wraps in a controlled, repeatable format.",
+      "instructions": [
+        "Complete finger taps.",
+        "Wrap the ball around waist and legs.",
+        "Reverse direction."
+      ],
+      "childCues": [
+        "Fingertips",
+        "Both ways",
+        "Stay tall"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "DURATION",
+      "defaultDurationSec": 180,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.pound-right-rounds",
+      "name": "Right-Hand Pound Rounds",
+      "childName": "Right-Hand Pound Rounds",
+      "primaryNodeKey": "foundation.ball.right-pound",
+      "supportingNodeKeys": [],
+      "purpose": "Practise right-hand pound rounds in a controlled, repeatable format.",
+      "instructions": [
+        "Dribble for 20 seconds.",
+        "Rest briefly.",
+        "Repeat three rounds."
+      ],
+      "childCues": [
+        "Bend",
+        "Bounce hard",
+        "Eyes forward"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 240,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.pound-left-rounds",
+      "name": "Left-Hand Pound Rounds",
+      "childName": "Left-Hand Pound Rounds",
+      "primaryNodeKey": "foundation.ball.left-pound",
+      "supportingNodeKeys": [],
+      "purpose": "Practise left-hand pound rounds in a controlled, repeatable format.",
+      "instructions": [
+        "Dribble for 20 seconds.",
+        "Rest briefly.",
+        "Repeat three rounds."
+      ],
+      "childCues": [
+        "Bend",
+        "Bounce hard",
+        "Eyes forward"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 240,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.bilateral-video-check",
+      "name": "Both Hands Video Check",
+      "childName": "Both Hands Video Check",
+      "primaryNodeKey": "foundation.ball.bilateral-control-check",
+      "supportingNodeKeys": [],
+      "purpose": "Practise both hands video check in a controlled, repeatable format.",
+      "instructions": [
+        "Record 20 seconds right hand.",
+        "Switch without leaving frame.",
+        "Record 20 seconds left hand."
+      ],
+      "childCues": [
+        "Balance",
+        "Same rhythm",
+        "Eyes up"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball",
+        "phone stand"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "OBSERVATION",
+      "defaultDurationSec": 90,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.target-chest-pass",
+      "name": "Chest Pass Target Gates",
+      "childName": "Chest Pass Target Gates",
+      "primaryNodeKey": "foundation.passing.chest-pass",
+      "supportingNodeKeys": [],
+      "purpose": "Practise chest pass target gates in a controlled, repeatable format.",
+      "instructions": [
+        "Set a chest-height target.",
+        "Make ten passes.",
+        "Count accurate catches or target hits."
+      ],
+      "childCues": [
+        "Step",
+        "Push",
+        "Thumbs down"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball",
+        "partner or wall target"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 300,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.close-form-holds",
+      "name": "Close Form Shot and Hold",
+      "childName": "Close Form Shot and Hold",
+      "primaryNodeKey": "foundation.shooting.close-form",
+      "supportingNodeKeys": [],
+      "purpose": "Practise close form shot and hold in a controlled, repeatable format.",
+      "instructions": [
+        "Stand close to the basket.",
+        "Shoot with controlled form.",
+        "Hold the finish until the ball lands."
+      ],
+      "childCues": [
+        "Up",
+        "Reach",
+        "Hold"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball",
+        "basket"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 300,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.jump-stop-catch",
+      "name": "Catch and Jump Stop",
+      "childName": "Catch and Jump Stop",
+      "primaryNodeKey": "foundation.footwork.jump-stop",
+      "supportingNodeKeys": [],
+      "purpose": "Practise catch and jump stop in a controlled, repeatable format.",
+      "instructions": [
+        "Receive a gentle pass or self-toss.",
+        "Land in a jump stop.",
+        "Hold balance and show the ball."
+      ],
+      "childCues": [
+        "Two feet",
+        "Wide",
+        "Freeze"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball",
+        "partner optional"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 240,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.layup-walkthrough-right",
+      "name": "Right Layup Walkthrough",
+      "childName": "Right Layup Walkthrough",
+      "primaryNodeKey": "foundation.finishing.right-layup",
+      "supportingNodeKeys": [],
+      "purpose": "Practise right layup walkthrough in a controlled, repeatable format.",
+      "instructions": [
+        "Start without a dribble.",
+        "Walk through the steps.",
+        "Add one controlled dribble when consistent."
+      ],
+      "childCues": [
+        "Right-left-up",
+        "Right hand",
+        "Square"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball",
+        "basket"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 360,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.layup-walkthrough-left",
+      "name": "Left Layup Walkthrough",
+      "childName": "Left Layup Walkthrough",
+      "primaryNodeKey": "foundation.finishing.left-layup",
+      "supportingNodeKeys": [],
+      "purpose": "Practise left layup walkthrough in a controlled, repeatable format.",
+      "instructions": [
+        "Start without a dribble.",
+        "Walk through the steps.",
+        "Add one controlled dribble when consistent."
+      ],
+      "childCues": [
+        "Left-right-up",
+        "Left hand",
+        "Square"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball",
+        "basket"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "SUCCESS_RATIO",
+      "defaultDurationSec": 360,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.defence-mirror",
+      "name": "Defensive Mirror Slides",
+      "childName": "Defensive Mirror Slides",
+      "primaryNodeKey": "foundation.defence.slide",
+      "supportingNodeKeys": [],
+      "purpose": "Practise defensive mirror slides in a controlled, repeatable format.",
+      "instructions": [
+        "Parent points left or right.",
+        "Athlete slides without crossing feet.",
+        "Use short rounds with rest."
+      ],
+      "childCues": [
+        "Low",
+        "Push",
+        "Chest square"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "2 markers"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "DURATION",
+      "defaultDurationSec": 240,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.triple-threat-call",
+      "name": "Catch, Look and Call the Choice",
+      "childName": "Catch, Look and Call the Choice",
+      "primaryNodeKey": "foundation.decisions.triple-threat",
+      "supportingNodeKeys": [],
+      "purpose": "Practise catch, look and call the choice in a controlled, repeatable format.",
+      "instructions": [
+        "Receive the ball.",
+        "Parent shows a simple defender position.",
+        "Call pass, drive or shot before acting."
+      ],
+      "childCues": [
+        "Catch balanced",
+        "Look",
+        "Choose"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [
+        "basketball",
+        "partner"
+      ],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "OBSERVATION",
+      "defaultDurationSec": 240,
+      "variants": [],
+      "status": "DRAFT"
+    },
+    {
+      "key": "drill.one-win-one-next",
+      "name": "One Win, One Next Step",
+      "childName": "One Win, One Next Step",
+      "primaryNodeKey": "foundation.habits.reflection",
+      "supportingNodeKeys": [],
+      "purpose": "Practise one win, one next step in a controlled, repeatable format.",
+      "instructions": [
+        "Name one thing that improved.",
+        "Name one cue for next time.",
+        "Avoid labels about talent."
+      ],
+      "childCues": [
+        "One win",
+        "One next",
+        "Kind words"
+      ],
+      "parentRole": "Set up the space, demonstrate once, then use only the listed cues.",
+      "setup": {
+        "spaceClass": "SMALL"
+      },
+      "equipment": [],
+      "safety": [
+        "Use a clear non-slip area.",
+        "Stop if pain or unsafe loss of control occurs."
+      ],
+      "intensityClass": "LOW_TO_MODERATE",
+      "resultType": "OBSERVATION",
+      "defaultDurationSec": 60,
+      "variants": [],
+      "status": "DRAFT"
+    }
+  ],
+  "rubrics": [
+    {
+      "key": "rubric.foundation.bilateral-dribble",
+      "name": "Foundation Bilateral Stationary Dribble",
+      "version": 1,
+      "assessmentType": "ASYNC_VIDEO",
+      "evidenceInstructions": {
+        "maxDurationSeconds": 60,
+        "framing": "Full body and ball visible from the front or slight angle.",
+        "requiredSequence": [
+          "20 seconds right",
+          "20 seconds left"
+        ]
+      },
+      "passRule": {
+        "minimumScore": 3,
+        "allCriticalCriteriaMustPass": true
+      },
+      "criteria": [
+        {
+          "key": "balance",
+          "name": "Balanced stance",
+          "isCritical": true,
+          "scaleAnchors": {
+            "1": "Repeated loss of balance",
+            "2": "Balance inconsistent",
+            "3": "Stable for most of each interval",
+            "4": "Stable with pace variation"
+          }
+        },
+        {
+          "key": "control",
+          "name": "Ball control",
+          "isCritical": true,
+          "scaleAnchors": {
+            "1": "Cannot sustain",
+            "2": "Frequent loss or chase",
+            "3": "Sustains with occasional correction",
+            "4": "Consistent height and location"
+          }
+        },
+        {
+          "key": "both-hands",
+          "name": "Both hands demonstrated",
+          "isCritical": true,
+          "scaleAnchors": {
+            "1": "One side absent",
+            "2": "One side substantially uncontrolled",
+            "3": "Both sides meet the drill standard",
+            "4": "Both sides controlled with eyes forward"
+          }
+        },
+        {
+          "key": "posture-vision",
+          "name": "Posture and vision",
+          "isCritical": false,
+          "scaleAnchors": {
+            "1": "Bent over and watches ball continuously",
+            "2": "Looks up briefly",
+            "3": "Neutral posture with regular forward vision",
+            "4": "Maintains vision while varying rhythm"
+          }
+        }
+      ]
+    },
+    {
+      "key": "rubric.foundation.core-milestone",
+      "name": "Foundation Core Milestone",
+      "version": 1,
+      "assessmentType": "IN_PERSON",
+      "evidenceInstructions": {
+        "format": "Coach-led station assessment with parent present."
+      },
+      "passRule": {
+        "minimumScore": 3,
+        "allCriticalCriteriaMustPass": true
+      },
+      "criteria": [
+        {
+          "key": "safe-control",
+          "name": "Safe body control",
+          "isCritical": true,
+          "scaleAnchors": {
+            "1": "Unsafe or uncontrolled",
+            "2": "Inconsistent",
+            "3": "Controlled in defined tasks",
+            "4": "Controlled with variation"
+          }
+        },
+        {
+          "key": "bilateral-ball",
+          "name": "Bilateral ball control",
+          "isCritical": true,
+          "scaleAnchors": {
+            "1": "One side absent",
+            "2": "Emerging",
+            "3": "Both sides meet standard",
+            "4": "Both sides at pace"
+          }
+        },
+        {
+          "key": "passing",
+          "name": "Passing and receiving",
+          "isCritical": true,
+          "scaleAnchors": {
+            "1": "Target/receive pattern absent",
+            "2": "Inconsistent",
+            "3": "Accurate and balanced",
+            "4": "Accurate while moving"
+          }
+        },
+        {
+          "key": "choice",
+          "name": "Simple decision",
+          "isCritical": false,
+          "scaleAnchors": {
+            "1": "Acts without looking",
+            "2": "Identifies choice with prompt",
+            "3": "Identifies and acts on simple choice",
+            "4": "Adjusts to changed cue"
+          }
+        }
+      ]
+    }
+  ],
+  "campaigns": [
+    {
+      "key": "campaign.foundation.core-1",
+      "name": "Foundation Campaign 1 \u2014 Control First",
+      "stageKey": "foundation",
+      "description": "A prescribed cross-domain introduction to safety, movement, bilateral ball control, passing, shooting and simple decisions.",
+      "settings": {
+        "defaultDurationMinutes": 20,
+        "controlledChoice": true
+      },
+      "steps": [
+        {
+          "sequence": 10,
+          "nodeKey": "foundation.habits.safe-space-check",
+          "required": true
+        },
+        {
+          "sequence": 20,
+          "nodeKey": "foundation.movement.athletic-stance",
+          "required": true
+        },
+        {
+          "sequence": 30,
+          "nodeKey": "foundation.ball.hand-comfort",
+          "required": true
+        },
+        {
+          "sequence": 40,
+          "nodeKey": "foundation.ball.right-pound",
+          "required": true
+        },
+        {
+          "sequence": 50,
+          "nodeKey": "foundation.ball.left-pound",
+          "required": true
+        },
+        {
+          "sequence": 60,
+          "nodeKey": "foundation.passing.ready-hands",
+          "required": true
+        },
+        {
+          "sequence": 70,
+          "nodeKey": "foundation.movement.stop-control",
+          "required": true
+        },
+        {
+          "sequence": 80,
+          "nodeKey": "foundation.footwork.jump-stop",
+          "required": true
+        },
+        {
+          "sequence": 90,
+          "nodeKey": "foundation.shooting.setup",
+          "required": true
+        },
+        {
+          "sequence": 100,
+          "nodeKey": "foundation.ball.bilateral-control-check",
+          "required": true
+        },
+        {
+          "sequence": 110,
+          "branchGroupKey": "foundation-focus-1",
+          "branchOptionKey": "passing",
+          "nodeKey": "foundation.passing.chest-pass",
+          "required": false
+        },
+        {
+          "sequence": 110,
+          "branchGroupKey": "foundation-focus-1",
+          "branchOptionKey": "finishing",
+          "nodeKey": "foundation.finishing.right-layup",
+          "required": false
+        },
+        {
+          "sequence": 110,
+          "branchGroupKey": "foundation-focus-1",
+          "branchOptionKey": "movement",
+          "nodeKey": "foundation.movement.lateral-shuffle",
+          "required": false
+        },
+        {
+          "sequence": 120,
+          "nodeKey": "foundation.shooting.close-form",
+          "required": true
+        },
+        {
+          "sequence": 130,
+          "nodeKey": "foundation.defence.stance",
+          "required": true
+        },
+        {
+          "sequence": 140,
+          "nodeKey": "foundation.decisions.triple-threat",
+          "required": true
+        },
+        {
+          "sequence": 150,
+          "nodeKey": "foundation.habits.reflection",
+          "required": true
+        },
+        {
+          "sequence": 160,
+          "nodeKey": "foundation.milestone.core-1",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@nextstep/curriculum-sdk",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "lint": "pnpm validate:seed",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "validate:seed": "node scripts/validate-seed.mjs",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --passWithNoTests",
+    "test:contract": "vitest run --passWithNoTests",
+    "test:authz": "vitest run --passWithNoTests",
+    "test:security": "vitest run --passWithNoTests",
+    "test:a11y": "vitest run --passWithNoTests",
+    "test:e2e:walking-skeleton": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

@@ -1,0 +1,1386 @@
+openapi: 3.1.0
+info:
+  title: Next Step Sports Platform API
+  version: 1.0.0-draft
+  description: |
+    Initial agent-build contract for the Next Step Sports Platform.
+    This contract is a starting skeleton and must remain aligned with the
+    business/product specification and accepted ADRs.
+servers:
+  - url: https://api.staging.nextstep.example/v1
+    description: Staging
+  - url: http://localhost:3001/v1
+    description: Local
+security:
+  - oidc: []
+tags:
+  - name: Identity
+  - name: Athletes
+  - name: Progress
+  - name: Practice
+  - name: Evidence
+  - name: Assessments
+  - name: Passport
+  - name: Bookings
+  - name: Billing
+  - name: Admin Curriculum
+paths:
+  /me:
+    get:
+      tags: [Identity]
+      operationId: getCurrentUser
+      summary: Return the authenticated user and authorised household context
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentUser"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /households/{householdId}/athletes:
+    parameters:
+      - $ref: "#/components/parameters/HouseholdId"
+    get:
+      tags: [Athletes]
+      operationId: listAthletes
+      summary: List active and optionally archived athletes in the household
+      parameters:
+        - name: includeArchived
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Athlete list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Athlete"
+        default:
+          $ref: "#/components/responses/Problem"
+    post:
+      tags: [Athletes]
+      operationId: createAthlete
+      summary: Create a parent-controlled private athlete profile
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAthleteRequest"
+      responses:
+        "201":
+          description: Athlete created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Athlete"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /athletes/{athleteId}:
+    parameters:
+      - $ref: "#/components/parameters/AthleteId"
+    get:
+      tags: [Athletes]
+      operationId: getAthlete
+      responses:
+        "200":
+          description: Athlete profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Athlete"
+        default:
+          $ref: "#/components/responses/Problem"
+    patch:
+      tags: [Athletes]
+      operationId: updateAthlete
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/UpdateAthleteRequest"
+      responses:
+        "200":
+          description: Athlete updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Athlete"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /athletes/{athleteId}/baseline:
+    parameters:
+      - $ref: "#/components/parameters/AthleteId"
+    post:
+      tags: [Athletes]
+      operationId: submitBaseline
+      summary: Submit baseline inputs and assign a recommended starting campaign
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BaselineRequest"
+      responses:
+        "200":
+          description: Baseline result and campaign recommendation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaselineResult"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /athletes/{athleteId}/dashboard:
+    parameters:
+      - $ref: "#/components/parameters/AthleteId"
+    get:
+      tags: [Progress]
+      operationId: getAthleteDashboard
+      summary: Return the athlete's single primary next action and concise progress context
+      responses:
+        "200":
+          description: Dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AthleteDashboard"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /athletes/{athleteId}/skill-tree:
+    parameters:
+      - $ref: "#/components/parameters/AthleteId"
+    get:
+      tags: [Progress]
+      operationId: getSkillTree
+      parameters:
+        - name: domainKey
+          in: query
+          schema:
+            type: string
+        - name: stageKey
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Athlete-specific curriculum tree and progress state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillTree"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /athletes/{athleteId}/branch-selections:
+    parameters:
+      - $ref: "#/components/parameters/AthleteId"
+    post:
+      tags: [Progress]
+      operationId: selectCampaignBranch
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [branchGroupKey, selectedNodeId]
+              properties:
+                branchGroupKey:
+                  type: string
+                selectedNodeId:
+                  type: string
+                  format: uuid
+      responses:
+        "200":
+          description: Updated branch and next action
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AthleteDashboard"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /athletes/{athleteId}/practice-plans:
+    parameters:
+      - $ref: "#/components/parameters/AthleteId"
+    post:
+      tags: [Practice]
+      operationId: generatePracticePlan
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GeneratePracticePlanRequest"
+      responses:
+        "201":
+          description: Persisted practice plan snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PracticePlan"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /practice-plans/{planId}:
+    parameters:
+      - $ref: "#/components/parameters/PlanId"
+    get:
+      tags: [Practice]
+      operationId: getPracticePlan
+      responses:
+        "200":
+          description: Practice plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PracticePlan"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /practice-plans/{planId}/sessions:
+    parameters:
+      - $ref: "#/components/parameters/PlanId"
+    post:
+      tags: [Practice]
+      operationId: startPracticeSession
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientSessionId:
+                  type: string
+                startedOffline:
+                  type: boolean
+                  default: false
+      responses:
+        "201":
+          description: Practice session started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PracticeSession"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /practice-sessions/{sessionId}/attempts:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    post:
+      tags: [Practice]
+      operationId: recordPracticeAttempt
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PracticeAttemptRequest"
+      responses:
+        "201":
+          description: Attempt recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PracticeAttempt"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /practice-sessions/{sessionId}/complete:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    post:
+      tags: [Practice]
+      operationId: completePracticeSession
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompletePracticeSessionRequest"
+      responses:
+        "200":
+          description: Completion result and progress changes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PracticeCompletionResult"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /evidence/upload-intents:
+    post:
+      tags: [Evidence]
+      operationId: createEvidenceUploadIntent
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUploadIntentRequest"
+      responses:
+        "201":
+          description: Short-lived private upload intent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadIntent"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /evidence-submissions:
+    post:
+      tags: [Evidence]
+      operationId: submitEvidence
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitEvidenceRequest"
+      responses:
+        "201":
+          description: Evidence submitted and assessment requested
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvidenceSubmission"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /evidence-submissions/{evidenceId}:
+    parameters:
+      - $ref: "#/components/parameters/EvidenceId"
+    get:
+      tags: [Evidence]
+      operationId: getEvidenceSubmission
+      responses:
+        "200":
+          description: Evidence state and authorised playback details when available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvidenceSubmission"
+        default:
+          $ref: "#/components/responses/Problem"
+    delete:
+      tags: [Evidence]
+      operationId: requestEvidenceDeletion
+      responses:
+        "202":
+          description: Deletion workflow accepted
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /coach/assessment-queue:
+    get:
+      tags: [Assessments]
+      operationId: getCoachAssessmentQueue
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+      responses:
+        "200":
+          description: Assigned assessments ordered by due time
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AssessmentSummary"
+                  nextCursor:
+                    type: [string, "null"]
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /coach/assessments/{assessmentId}:
+    parameters:
+      - $ref: "#/components/parameters/AssessmentId"
+    get:
+      tags: [Assessments]
+      operationId: getCoachAssessment
+      responses:
+        "200":
+          description: Assigned assessment, rubric and short-lived media access
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssessmentDetail"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /coach/assessments/{assessmentId}/decision:
+    parameters:
+      - $ref: "#/components/parameters/AssessmentId"
+    post:
+      tags: [Assessments]
+      operationId: submitAssessmentDecision
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssessmentDecisionRequest"
+      responses:
+        "200":
+          description: Assessment completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssessmentResult"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /assessments/{assessmentId}/appeals:
+    parameters:
+      - $ref: "#/components/parameters/AssessmentId"
+    post:
+      tags: [Assessments]
+      operationId: appealAssessment
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 10
+                  maxLength: 2000
+      responses:
+        "201":
+          description: Appeal opened
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /athletes/{athleteId}/passport:
+    parameters:
+      - $ref: "#/components/parameters/AthleteId"
+    get:
+      tags: [Passport]
+      operationId: getAthletePassport
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: eventType
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Private athlete passport and timeline
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AthletePassport"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /bookings:
+    post:
+      tags: [Bookings]
+      operationId: createBooking
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingRequest"
+      responses:
+        "201":
+          description: Booking created, possibly pending payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /orders:
+    post:
+      tags: [Billing]
+      operationId: createOrder
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderRequest"
+      responses:
+        "201":
+          description: Order and payment client secret/reference
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /webhooks/stripe:
+    post:
+      tags: [Billing]
+      operationId: receiveStripeWebhook
+      security: []
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Webhook accepted or already processed
+        "400":
+          description: Invalid signature or payload
+
+  /admin/curricula:
+    post:
+      tags: [Admin Curriculum]
+      operationId: createCurriculumDraft
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCurriculumRequest"
+      responses:
+        "201":
+          description: Curriculum draft created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurriculumVersion"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /admin/curricula/{curriculumId}/validate:
+    parameters:
+      - $ref: "#/components/parameters/CurriculumId"
+    post:
+      tags: [Admin Curriculum]
+      operationId: validateCurriculum
+      responses:
+        "200":
+          description: Graph/content validation report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurriculumValidationReport"
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /admin/curricula/{curriculumId}/publish:
+    parameters:
+      - $ref: "#/components/parameters/CurriculumId"
+    post:
+      tags: [Admin Curriculum]
+      operationId: publishCurriculum
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [approvalToken]
+              properties:
+                approvalToken:
+                  type: string
+                effectiveFrom:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Published immutable curriculum version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurriculumVersion"
+        default:
+          $ref: "#/components/responses/Problem"
+
+components:
+  securitySchemes:
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.example/.well-known/openid-configuration
+
+  parameters:
+    HouseholdId:
+      name: householdId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    AthleteId:
+      name: athleteId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    PlanId:
+      name: planId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    EvidenceId:
+      name: evidenceId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    AssessmentId:
+      name: assessmentId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    CurriculumId:
+      name: curriculumId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 200
+
+  responses:
+    Problem:
+      description: Problem details
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+
+  schemas:
+    CurrentUser:
+      type: object
+      required: [id, roles, households]
+      properties:
+        id: { type: string, format: uuid }
+        displayName: { type: [string, "null"] }
+        roles:
+          type: array
+          items: { type: string }
+        households:
+          type: array
+          items:
+            type: object
+            required: [id, role]
+            properties:
+              id: { type: string, format: uuid }
+              name: { type: [string, "null"] }
+              role: { type: string }
+
+    Athlete:
+      type: object
+      required: [id, householdId, displayName, ageBand, status, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        householdId: { type: string, format: uuid }
+        displayName: { type: string, minLength: 1, maxLength: 80 }
+        ageBand: { type: string, examples: ["U10"] }
+        birthMonth: { type: [integer, "null"], minimum: 1, maximum: 12 }
+        birthYear: { type: [integer, "null"], minimum: 2000, maximum: 2030 }
+        laterality: { type: [string, "null"] }
+        status: { type: string, enum: [ACTIVE, ARCHIVED, DELETION_PENDING] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    CreateAthleteRequest:
+      type: object
+      required: [displayName, ageBand, consents]
+      properties:
+        displayName: { type: string, minLength: 1, maxLength: 80 }
+        ageBand: { type: string }
+        birthMonth: { type: integer, minimum: 1, maximum: 12 }
+        birthYear: { type: integer, minimum: 2000, maximum: 2030 }
+        laterality: { type: string }
+        consents:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ConsentGrant"
+
+    UpdateAthleteRequest:
+      type: object
+      properties:
+        displayName: { type: string, minLength: 1, maxLength: 80 }
+        ageBand: { type: string }
+        laterality: { type: [string, "null"] }
+        status: { type: string, enum: [ACTIVE, ARCHIVED] }
+
+    ConsentGrant:
+      type: object
+      required: [purposeKey, policyVersion, granted]
+      properties:
+        purposeKey: { type: string }
+        policyVersion: { type: string }
+        granted: { type: boolean }
+
+    BaselineRequest:
+      type: object
+      required: [sportKey, experienceLevel, environment, observations]
+      properties:
+        sportKey: { type: string, const: basketball }
+        experienceLevel: { type: string }
+        environment:
+          $ref: "#/components/schemas/PracticeEnvironment"
+        observations:
+          type: array
+          items:
+            type: object
+            required: [key, value]
+            properties:
+              key: { type: string }
+              value: {}
+
+    BaselineResult:
+      type: object
+      required: [athleteId, curriculumVersion, recommendedStageKey, campaign, explanation]
+      properties:
+        athleteId: { type: string, format: uuid }
+        curriculumVersion: { type: string }
+        recommendedStageKey: { type: string }
+        campaign:
+          $ref: "#/components/schemas/CampaignSummary"
+        explanation:
+          type: array
+          items: { type: string }
+        mayChooseMoreFoundationalStart: { type: boolean, const: true }
+
+    AthleteDashboard:
+      type: object
+      required: [athlete, primaryAction, campaign, weeklySummary]
+      properties:
+        athlete:
+          $ref: "#/components/schemas/Athlete"
+        primaryAction:
+          $ref: "#/components/schemas/NextAction"
+        campaign:
+          $ref: "#/components/schemas/CampaignSummary"
+        weeklySummary:
+          type: object
+          required: [meaningfulPractices, progressing]
+          properties:
+            meaningfulPractices: { type: integer, minimum: 0 }
+            progressing: { type: boolean }
+            revisitDueCount: { type: integer, minimum: 0 }
+        pendingAssessment:
+          oneOf:
+            - $ref: "#/components/schemas/AssessmentSummary"
+            - type: "null"
+
+    NextAction:
+      type: object
+      required: [type, title, ctaLabel, destination]
+      properties:
+        type:
+          type: string
+          enum: [START_PRACTICE, CONTINUE_PRACTICE, CHOOSE_BRANCH, SUBMIT_EVIDENCE, REVIEW_FEEDBACK, BOOK_ASSESSMENT, REVISIT, REST]
+        title: { type: string }
+        description: { type: [string, "null"] }
+        ctaLabel: { type: string }
+        destination: { type: string }
+        reasonCodes:
+          type: array
+          items: { type: string }
+
+    CampaignSummary:
+      type: object
+      required: [id, key, name, stageKey, progress]
+      properties:
+        id: { type: string, format: uuid }
+        key: { type: string }
+        name: { type: string }
+        stageKey: { type: string }
+        progress: { type: number, minimum: 0, maximum: 1 }
+        nextMilestoneName: { type: [string, "null"] }
+
+    SkillTree:
+      type: object
+      required: [curriculumVersion, campaign, domains, nodes]
+      properties:
+        curriculumVersion: { type: string }
+        campaign:
+          $ref: "#/components/schemas/CampaignSummary"
+        domains:
+          type: array
+          items:
+            type: object
+            required: [key, name, sortOrder]
+            properties:
+              key: { type: string }
+              name: { type: string }
+              sortOrder: { type: integer }
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/AthleteSkillNode"
+        branchChoices:
+          type: array
+          items:
+            $ref: "#/components/schemas/BranchChoice"
+
+    AthleteSkillNode:
+      type: object
+      required: [id, key, name, domainKey, stageKey, state, demonstrated, verified]
+      properties:
+        id: { type: string, format: uuid }
+        key: { type: string }
+        name: { type: string }
+        childName: { type: [string, "null"] }
+        domainKey: { type: string }
+        stageKey: { type: string }
+        type: { type: string, enum: [SKILL, CHECKPOINT, MILESTONE] }
+        state:
+          $ref: "#/components/schemas/ProgressState"
+        demonstrated: { type: boolean }
+        verified: { type: boolean }
+        whyLocked:
+          type: [string, "null"]
+        prerequisiteNodeIds:
+          type: array
+          items: { type: string, format: uuid }
+        revisitDueAt: { type: [string, "null"], format: date-time }
+        remainingRequirements:
+          type: array
+          items: { type: string }
+
+    BranchChoice:
+      type: object
+      required: [branchGroupKey, title, options]
+      properties:
+        branchGroupKey: { type: string }
+        title: { type: string }
+        description: { type: [string, "null"] }
+        options:
+          type: array
+          minItems: 2
+          maxItems: 3
+          items:
+            type: object
+            required: [nodeId, title, tradeoff]
+            properties:
+              nodeId: { type: string, format: uuid }
+              title: { type: string }
+              tradeoff: { type: string }
+
+    ProgressState:
+      type: string
+      enum: [LOCKED, AVAILABLE, ACTIVE, PRACTICE_COMPLETE, EVIDENCE_PENDING, REVIEW_PENDING, NEEDS_WORK, MASTERED, REVISIT_DUE, ARCHIVED]
+
+    PracticeEnvironment:
+      type: object
+      required: [locationType, spaceClass, equipmentKeys]
+      properties:
+        locationType: { type: string, enum: [INDOOR, OUTDOOR] }
+        spaceClass: { type: string, enum: [SMALL, MEDIUM, COURT] }
+        noiseRestricted: { type: boolean, default: false }
+        surface: { type: [string, "null"] }
+        equipmentKeys:
+          type: array
+          items: { type: string }
+
+    GeneratePracticePlanRequest:
+      type: object
+      required: [durationPreset, environment, recentLoad]
+      properties:
+        durationPreset: { type: string, enum: [QUICK, STANDARD, EXTENDED] }
+        environment:
+          $ref: "#/components/schemas/PracticeEnvironment"
+        selectedBranchNodeId: { type: [string, "null"], format: uuid }
+        recentLoad:
+          type: object
+          required: [fatigue, pain]
+          properties:
+            fatigue: { type: string, enum: [LOW, NORMAL, HIGH] }
+            pain: { type: boolean }
+            note: { type: [string, "null"], maxLength: 1000 }
+
+    PracticePlan:
+      type: object
+      required: [id, athleteId, status, targetDurationMinutes, generationReasons, steps, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        athleteId: { type: string, format: uuid }
+        status: { type: string, enum: [GENERATED, STARTED, COMPLETED, EXPIRED, CANCELLED] }
+        targetDurationMinutes: { type: integer, minimum: 5, maximum: 60 }
+        generationReasons:
+          type: array
+          items: { type: string }
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/PracticePlanStep"
+        createdAt: { type: string, format: date-time }
+        expiresAt: { type: [string, "null"], format: date-time }
+
+    PracticePlanStep:
+      type: object
+      required: [id, sequence, type, title, prescriptionReason, content]
+      properties:
+        id: { type: string, format: uuid }
+        sequence: { type: integer, minimum: 1 }
+        type: { type: string, enum: [SAFETY_CHECK, WARMUP, DRILL, RETRIEVAL, CHALLENGE, COOLDOWN, REFLECTION] }
+        nodeId: { type: [string, "null"], format: uuid }
+        drillId: { type: [string, "null"], format: uuid }
+        title: { type: string }
+        targetDurationSeconds: { type: [integer, "null"] }
+        targetRepetitions: { type: [integer, "null"] }
+        resultType: { type: string, enum: [BOOLEAN, COUNT, DURATION, SUCCESS_RATIO, OBSERVATION, NONE] }
+        prescriptionReason: { type: string }
+        content:
+          type: object
+          additionalProperties: true
+
+    PracticeSession:
+      type: object
+      required: [id, practicePlanId, athleteId, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        practicePlanId: { type: string, format: uuid }
+        athleteId: { type: string, format: uuid }
+        status: { type: string, enum: [NOT_STARTED, IN_PROGRESS, COMPLETED, ABANDONED, SAFETY_STOPPED] }
+        startedAt: { type: [string, "null"], format: date-time }
+        completedAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+
+    PracticeAttemptRequest:
+      type: object
+      required: [planStepId, attemptNumber, resultType, skipped]
+      properties:
+        planStepId: { type: string, format: uuid }
+        attemptNumber: { type: integer, minimum: 1 }
+        resultType: { type: string, enum: [BOOLEAN, COUNT, DURATION, SUCCESS_RATIO, OBSERVATION, NONE] }
+        result: {}
+        difficultyRating: { type: [integer, "null"], minimum: 1, maximum: 5 }
+        cueUnderstood: { type: [boolean, "null"] }
+        skipped: { type: boolean }
+        skipReason: { type: [string, "null"], maxLength: 500 }
+        completedAt: { type: string, format: date-time }
+
+    PracticeAttempt:
+      allOf:
+        - $ref: "#/components/schemas/PracticeAttemptRequest"
+        - type: object
+          required: [id, sessionId]
+          properties:
+            id: { type: string, format: uuid }
+            sessionId: { type: string, format: uuid }
+
+    CompletePracticeSessionRequest:
+      type: object
+      required: [enjoymentRating, difficultyRating, safetyFlag]
+      properties:
+        enjoymentRating: { type: integer, minimum: 1, maximum: 5 }
+        difficultyRating: { type: integer, minimum: 1, maximum: 5 }
+        parentObservation: { type: [string, "null"], maxLength: 1000 }
+        safetyFlag: { type: boolean }
+        safetyNote: { type: [string, "null"], maxLength: 1000 }
+        completedAt: { type: string, format: date-time }
+
+    PracticeCompletionResult:
+      type: object
+      required: [session, progressChanges, nextAction]
+      properties:
+        session:
+          $ref: "#/components/schemas/PracticeSession"
+        progressChanges:
+          type: array
+          items:
+            type: object
+            required: [nodeId, priorState, newState, reason]
+            properties:
+              nodeId: { type: string, format: uuid }
+              priorState: { $ref: "#/components/schemas/ProgressState" }
+              newState: { $ref: "#/components/schemas/ProgressState" }
+              reason: { type: string }
+        nextAction:
+          $ref: "#/components/schemas/NextAction"
+
+    CreateUploadIntentRequest:
+      type: object
+      required: [athleteId, nodeId, consentRecordId, filename, mimeType, sizeBytes]
+      properties:
+        athleteId: { type: string, format: uuid }
+        nodeId: { type: string, format: uuid }
+        consentRecordId: { type: string, format: uuid }
+        filename: { type: string, maxLength: 255 }
+        mimeType: { type: string }
+        sizeBytes: { type: integer, minimum: 1 }
+        durationMs: { type: [integer, "null"], minimum: 1, maximum: 90000 }
+        checksumSha256: { type: [string, "null"] }
+
+    UploadIntent:
+      type: object
+      required: [mediaAssetId, uploadUrl, expiresAt, requiredHeaders]
+      properties:
+        mediaAssetId: { type: string, format: uuid }
+        uploadUrl: { type: string, format: uri }
+        expiresAt: { type: string, format: date-time }
+        requiredHeaders:
+          type: object
+          additionalProperties: { type: string }
+        multipart:
+          type: boolean
+          default: false
+
+    SubmitEvidenceRequest:
+      type: object
+      required: [athleteId, nodeId, mediaAssetId, consentRecordId]
+      properties:
+        athleteId: { type: string, format: uuid }
+        nodeId: { type: string, format: uuid }
+        mediaAssetId: { type: string, format: uuid }
+        consentRecordId: { type: string, format: uuid }
+
+    EvidenceSubmission:
+      type: object
+      required: [id, athleteId, nodeId, mediaAssetId, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        athleteId: { type: string, format: uuid }
+        nodeId: { type: string, format: uuid }
+        mediaAssetId: { type: string, format: uuid }
+        status: { type: string, enum: [DRAFT, UPLOADING, SUBMITTED, ASSIGNED, REVIEWED, RETRY_REQUIRED, WITHDRAWN, DELETED] }
+        playbackUrl: { type: [string, "null"], format: uri }
+        playbackExpiresAt: { type: [string, "null"], format: date-time }
+        assessmentId: { type: [string, "null"], format: uuid }
+        createdAt: { type: string, format: date-time }
+
+    AssessmentSummary:
+      type: object
+      required: [id, athleteDisplayName, nodeName, type, status, requestedAt]
+      properties:
+        id: { type: string, format: uuid }
+        athleteDisplayName: { type: string }
+        nodeName: { type: string }
+        type: { type: string, enum: [PARENT_OBSERVATION, ASYNC_VIDEO, LIVE_REMOTE, IN_PERSON, ORGANISATION] }
+        status: { type: string, enum: [REQUESTED, UNASSIGNED, ASSIGNED, IN_REVIEW, COMPLETED, APPEALED, SUPERSEDED, CANCELLED] }
+        requestedAt: { type: string, format: date-time }
+        dueAt: { type: [string, "null"], format: date-time }
+        outcome: { type: [string, "null"], enum: [PASS, RETRY, UNABLE_TO_ASSESS, CANCELLED, null] }
+
+    AssessmentDetail:
+      allOf:
+        - $ref: "#/components/schemas/AssessmentSummary"
+        - type: object
+          required: [rubric, athleteContext]
+          properties:
+            athleteContext:
+              type: object
+              required: [ageBand, relevantHistory]
+              properties:
+                ageBand: { type: string }
+                relevantHistory:
+                  type: array
+                  items: { type: string }
+            rubric:
+              $ref: "#/components/schemas/RubricSnapshot"
+            playbackUrl: { type: [string, "null"], format: uri }
+            playbackExpiresAt: { type: [string, "null"], format: date-time }
+
+    RubricSnapshot:
+      type: object
+      required: [key, version, passRule, criteria]
+      properties:
+        key: { type: string }
+        version: { type: integer }
+        passRule:
+          type: object
+          additionalProperties: true
+        criteria:
+          type: array
+          items:
+            type: object
+            required: [id, key, name, description, isCritical, scaleAnchors]
+            properties:
+              id: { type: string, format: uuid }
+              key: { type: string }
+              name: { type: string }
+              description: { type: string }
+              isCritical: { type: boolean }
+              scaleAnchors:
+                type: object
+                additionalProperties: { type: string }
+
+    AssessmentDecisionRequest:
+      type: object
+      required: [outcome, criterionScores, positives, primaryCue, nextAction]
+      properties:
+        outcome: { type: string, enum: [PASS, RETRY, UNABLE_TO_ASSESS] }
+        criterionScores:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [criterionId, score]
+            properties:
+              criterionId: { type: string, format: uuid }
+              score: { type: integer, minimum: 1, maximum: 4 }
+              note: { type: [string, "null"], maxLength: 1000 }
+              evidenceTimestampMs: { type: [integer, "null"], minimum: 0 }
+        positives:
+          type: array
+          minItems: 1
+          maxItems: 3
+          items: { type: string, maxLength: 500 }
+        primaryCue: { type: string, minLength: 1, maxLength: 500 }
+        nextAction:
+          type: object
+          required: [type]
+          properties:
+            type: { type: string, enum: [UNLOCK, PRESCRIBE_REMEDIATION, RESUBMIT_EVIDENCE, BOOK_LIVE_REVIEW] }
+            nodeIds:
+              type: array
+              items: { type: string, format: uuid }
+        reviewerNote: { type: [string, "null"], maxLength: 2000 }
+
+    AssessmentResult:
+      type: object
+      required: [assessmentId, outcome, completedAt, progressChanges]
+      properties:
+        assessmentId: { type: string, format: uuid }
+        outcome: { type: string, enum: [PASS, RETRY, UNABLE_TO_ASSESS] }
+        completedAt: { type: string, format: date-time }
+        progressChanges:
+          type: array
+          items:
+            type: object
+            required: [nodeId, priorState, newState]
+            properties:
+              nodeId: { type: string, format: uuid }
+              priorState: { $ref: "#/components/schemas/ProgressState" }
+              newState: { $ref: "#/components/schemas/ProgressState" }
+
+    AthletePassport:
+      type: object
+      required: [athlete, domainSummaries, timeline]
+      properties:
+        athlete:
+          $ref: "#/components/schemas/Athlete"
+        currentStageKey: { type: [string, "null"] }
+        domainSummaries:
+          type: array
+          items:
+            type: object
+            required: [domainKey, name, demonstratedCount, verifiedCount]
+            properties:
+              domainKey: { type: string }
+              name: { type: string }
+              demonstratedCount: { type: integer, minimum: 0 }
+              verifiedCount: { type: integer, minimum: 0 }
+        timeline:
+          type: array
+          items:
+            type: object
+            required: [id, eventType, occurredAt, title]
+            properties:
+              id: { type: string, format: uuid }
+              eventType: { type: string }
+              occurredAt: { type: string, format: date-time }
+              title: { type: string }
+              summary: { type: [string, "null"] }
+              verified: { type: boolean, default: false }
+        nextCursor: { type: [string, "null"] }
+
+    CreateBookingRequest:
+      type: object
+      required: [householdId, athleteId, coachId, serviceKey, startsAt, endsAt, timezone, venue]
+      properties:
+        householdId: { type: string, format: uuid }
+        athleteId: { type: string, format: uuid }
+        coachId: { type: string, format: uuid }
+        availabilitySlotId: { type: [string, "null"], format: uuid }
+        serviceKey: { type: string }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        timezone: { type: string }
+        venue:
+          type: object
+          additionalProperties: true
+        parentPresenceAcknowledged: { type: boolean, const: true }
+
+    Booking:
+      type: object
+      required: [id, householdId, athleteId, coachId, serviceKey, startsAt, endsAt, status]
+      properties:
+        id: { type: string, format: uuid }
+        householdId: { type: string, format: uuid }
+        athleteId: { type: string, format: uuid }
+        coachId: { type: string, format: uuid }
+        serviceKey: { type: string }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: string, format: date-time }
+        status: { type: string, enum: [DRAFT, PAYMENT_PENDING, CONFIRMED, COMPLETED, CANCELLED, NO_SHOW, DISPUTED, REFUNDED] }
+        orderId: { type: [string, "null"], format: uuid }
+
+    CreateOrderRequest:
+      type: object
+      required: [householdId, currency, lines]
+      properties:
+        householdId: { type: string, format: uuid }
+        currency: { type: string, pattern: "^[A-Z]{3}$", examples: [AUD] }
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [itemType, description, quantity, unitPriceMinor]
+            properties:
+              itemType: { type: string }
+              itemRef: { type: [string, "null"] }
+              description: { type: string }
+              quantity: { type: integer, minimum: 1 }
+              unitPriceMinor: { type: integer, minimum: 0 }
+
+    Order:
+      type: object
+      required: [id, status, currency, subtotalMinor, taxMinor, totalMinor]
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string, enum: [DRAFT, PAYMENT_PENDING, PAID, FAILED, CANCELLED, REFUNDED, PARTIALLY_REFUNDED, DISPUTED] }
+        currency: { type: string }
+        subtotalMinor: { type: integer }
+        taxMinor: { type: integer }
+        totalMinor: { type: integer }
+        providerClientSecret: { type: [string, "null"] }
+
+    CreateCurriculumRequest:
+      type: object
+      required: [sportKey, versionKey, name]
+      properties:
+        sportKey: { type: string }
+        versionKey: { type: string }
+        name: { type: string }
+        cloneFromVersionId: { type: [string, "null"], format: uuid }
+
+    CurriculumVersion:
+      type: object
+      required: [id, sportKey, versionKey, name, status]
+      properties:
+        id: { type: string, format: uuid }
+        sportKey: { type: string }
+        versionKey: { type: string }
+        name: { type: string }
+        status: { type: string, enum: [DRAFT, VALIDATING, APPROVED, PUBLISHED, RETIRED] }
+        effectiveFrom: { type: [string, "null"], format: date-time }
+        publishedAt: { type: [string, "null"], format: date-time }
+
+    CurriculumValidationReport:
+      type: object
+      required: [valid, errors, warnings, stats]
+      properties:
+        valid: { type: boolean }
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationMessage"
+        warnings:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationMessage"
+        stats:
+          type: object
+          additionalProperties: true
+
+    ValidationMessage:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        resourceType: { type: [string, "null"] }
+        resourceKey: { type: [string, "null"] }
+
+    Problem:
+      type: object
+      required: [type, title, status, code, correlationId]
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer, minimum: 400, maximum: 599 }
+        code: { type: string }
+        detail: { type: [string, "null"] }
+        correlationId: { type: string }
+        meta:
+          type: object
+          additionalProperties: true

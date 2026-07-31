@@ -1,0 +1,34 @@
+{
+  "name": "@nextstep/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "lint": "node scripts/lint-openapi.mjs",
+    "lint:openapi": "node scripts/lint-openapi.mjs",
+    "generate": "node scripts/generate-summary.mjs",
+    "check:generated": "node scripts/check-generated.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:integration": "vitest run --passWithNoTests",
+    "test:contract": "vitest run",
+    "test:authz": "vitest run --passWithNoTests",
+    "test:security": "vitest run --passWithNoTests",
+    "test:a11y": "vitest run --passWithNoTests",
+    "test:e2e:walking-skeleton": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "yaml": "2.8.1"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

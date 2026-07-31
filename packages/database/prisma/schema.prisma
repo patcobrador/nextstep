@@ -1,0 +1,789 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETION_PENDING
+}
+
+enum HouseholdRole {
+  OWNER
+  CAREGIVER
+}
+
+enum AthleteStatus {
+  ACTIVE
+  ARCHIVED
+  DELETION_PENDING
+}
+
+enum CurriculumStatus {
+  DRAFT
+  VALIDATING
+  APPROVED
+  PUBLISHED
+  RETIRED
+}
+
+enum NodeType {
+  SKILL
+  CHECKPOINT
+  MILESTONE
+}
+
+enum PrerequisiteType {
+  HARD
+  SOFT
+}
+
+enum ProgressState {
+  LOCKED
+  AVAILABLE
+  ACTIVE
+  PRACTICE_COMPLETE
+  EVIDENCE_PENDING
+  REVIEW_PENDING
+  NEEDS_WORK
+  MASTERED
+  REVISIT_DUE
+  ARCHIVED
+}
+
+enum PracticePlanStatus {
+  GENERATED
+  STARTED
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+enum PracticeSessionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+  SAFETY_STOPPED
+}
+
+enum PracticeResultType {
+  BOOLEAN
+  COUNT
+  DURATION
+  SUCCESS_RATIO
+  OBSERVATION
+  NONE
+}
+
+enum MediaStatus {
+  UPLOADING
+  UPLOADED
+  PROCESSING
+  READY
+  REJECTED
+  QUARANTINED
+  DELETION_PENDING
+  DELETED
+}
+
+enum EvidenceStatus {
+  DRAFT
+  UPLOADING
+  SUBMITTED
+  ASSIGNED
+  REVIEWED
+  RETRY_REQUIRED
+  WITHDRAWN
+  DELETED
+}
+
+enum AssessmentType {
+  PARENT_OBSERVATION
+  ASYNC_VIDEO
+  LIVE_REMOTE
+  IN_PERSON
+  ORGANISATION
+}
+
+enum AssessmentStatus {
+  REQUESTED
+  UNASSIGNED
+  ASSIGNED
+  IN_REVIEW
+  COMPLETED
+  APPEALED
+  SUPERSEDED
+  CANCELLED
+}
+
+enum AssessmentOutcome {
+  PASS
+  RETRY
+  UNABLE_TO_ASSESS
+  CANCELLED
+}
+
+enum CoachStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+enum CredentialStatus {
+  PENDING
+  VERIFIED
+  EXPIRED
+  REVOKED
+}
+
+enum OutboxStatus {
+  PENDING
+  PUBLISHED
+  FAILED
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model User {
+  id                  String                @id @default(uuid()) @db.Uuid
+  identityProviderKey String                @unique
+  displayName         String?
+  emailHash           String?
+  status              UserStatus            @default(ACTIVE)
+  mfaSatisfied        Boolean               @default(false)
+  memberships         HouseholdMembership[]
+  consents            ConsentRecord[]       @relation("ConsentingAdult")
+  coachProfile        CoachProfile?
+  createdAt           DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime              @updatedAt @db.Timestamptz(3)
+}
+
+model Household {
+  id          String                @id @default(uuid()) @db.Uuid
+  name        String?
+  timezone    String                @default("Australia/Sydney")
+  memberships HouseholdMembership[]
+  athletes    Athlete[]
+  consents    ConsentRecord[]
+  createdAt   DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime              @updatedAt @db.Timestamptz(3)
+}
+
+model HouseholdMembership {
+  id          String        @id @default(uuid()) @db.Uuid
+  householdId String        @db.Uuid
+  userId      String        @db.Uuid
+  role        HouseholdRole
+  household   Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  revokedAt   DateTime?     @db.Timestamptz(3)
+
+  @@unique([householdId, userId])
+  @@index([userId, revokedAt])
+}
+
+model ConsentRecord {
+  id               String               @id @default(uuid()) @db.Uuid
+  householdId      String               @db.Uuid
+  athleteId        String?              @db.Uuid
+  consentingUserId String               @db.Uuid
+  purposeKey       String
+  policyVersion    String
+  granted          Boolean
+  recordedAt       DateTime             @default(now()) @db.Timestamptz(3)
+  withdrawnAt      DateTime?            @db.Timestamptz(3)
+  household        Household            @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  athlete          Athlete?             @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  consentingUser   User                 @relation("ConsentingAdult", fields: [consentingUserId], references: [id])
+  evidence         EvidenceSubmission[]
+
+  @@index([householdId, purposeKey, recordedAt])
+  @@index([athleteId, purposeKey])
+}
+
+model Athlete {
+  id                String                 @id @default(uuid()) @db.Uuid
+  householdId       String                 @db.Uuid
+  displayName       String
+  ageBand           String
+  birthMonth        Int?
+  birthYear         Int?
+  laterality        String?
+  status            AthleteStatus          @default(ACTIVE)
+  safetyConstraints Json?
+  version           Int                    @default(1)
+  household         Household              @relation(fields: [householdId], references: [id], onDelete: Restrict)
+  consents          ConsentRecord[]
+  sportProfiles     AthleteSportProfile[]
+  campaigns         AthleteCampaign[]
+  skillProgress     AthleteSkillProgress[]
+  practicePlans     PracticePlan[]
+  practiceSessions  PracticeSession[]
+  mediaAssets       MediaAsset[]
+  evidence          EvidenceSubmission[]
+  assessments       Assessment[]
+  passportEvents    PassportEvent[]
+  createdAt         DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime               @updatedAt @db.Timestamptz(3)
+
+  @@index([householdId, status])
+}
+
+model AthleteSportProfile {
+  id              String   @id @default(uuid()) @db.Uuid
+  athleteId       String   @db.Uuid
+  sportId         String   @db.Uuid
+  experienceLevel String
+  environment     Json
+  baseline        Json?
+  athlete         Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  sport           Sport    @relation(fields: [sportId], references: [id], onDelete: Restrict)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+
+  @@unique([athleteId, sportId])
+}
+
+model Sport {
+  id              String                @id @default(uuid()) @db.Uuid
+  key             String                @unique
+  name            String
+  metadata        Json?
+  profiles        AthleteSportProfile[]
+  curricula       CurriculumVersion[]
+  coachPrivileges CoachPrivilege[]
+  createdAt       DateTime              @default(now()) @db.Timestamptz(3)
+}
+
+model CurriculumVersion {
+  id               String             @id @default(uuid()) @db.Uuid
+  sportId          String             @db.Uuid
+  versionKey       String
+  name             String
+  status           CurriculumStatus   @default(DRAFT)
+  changeSummary    String?
+  effectiveFrom    DateTime?          @db.Timestamptz(3)
+  publishedAt      DateTime?          @db.Timestamptz(3)
+  sport            Sport              @relation(fields: [sportId], references: [id], onDelete: Restrict)
+  domains          SkillDomain[]
+  stages           Stage[]
+  campaigns        Campaign[]
+  nodes            SkillNode[]
+  drills           Drill[]
+  rubrics          AssessmentRubric[]
+  athleteCampaigns AthleteCampaign[]
+  createdAt        DateTime           @default(now()) @db.Timestamptz(3)
+
+  @@unique([sportId, versionKey])
+  @@index([sportId, status])
+}
+
+model SkillDomain {
+  id                  String            @id @default(uuid()) @db.Uuid
+  curriculumVersionId String            @db.Uuid
+  key                 String
+  name                String
+  sortOrder           Int
+  curriculumVersion   CurriculumVersion @relation(fields: [curriculumVersionId], references: [id], onDelete: Cascade)
+  nodes               SkillNode[]
+
+  @@unique([curriculumVersionId, key])
+}
+
+model Stage {
+  id                  String            @id @default(uuid()) @db.Uuid
+  curriculumVersionId String            @db.Uuid
+  key                 String
+  name                String
+  sortOrder           Int
+  ageGuidance         Json
+  curriculumVersion   CurriculumVersion @relation(fields: [curriculumVersionId], references: [id], onDelete: Cascade)
+  campaigns           Campaign[]
+  nodes               SkillNode[]
+
+  @@unique([curriculumVersionId, key])
+}
+
+model Campaign {
+  id                  String            @id @default(uuid()) @db.Uuid
+  curriculumVersionId String            @db.Uuid
+  stageId             String            @db.Uuid
+  key                 String
+  name                String
+  description         String?
+  settings            Json
+  curriculumVersion   CurriculumVersion @relation(fields: [curriculumVersionId], references: [id], onDelete: Cascade)
+  stage               Stage             @relation(fields: [stageId], references: [id], onDelete: Restrict)
+  steps               CampaignStep[]
+  athleteCampaigns    AthleteCampaign[]
+
+  @@unique([curriculumVersionId, key])
+}
+
+model CampaignStep {
+  id              String    @id @default(uuid()) @db.Uuid
+  campaignId      String    @db.Uuid
+  nodeId          String    @db.Uuid
+  sequence        Int
+  required        Boolean   @default(true)
+  branchGroupKey  String?
+  branchOptionKey String?
+  campaign        Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  node            SkillNode @relation(fields: [nodeId], references: [id], onDelete: Restrict)
+
+  @@unique([campaignId, sequence, nodeId])
+  @@index([campaignId, branchGroupKey])
+}
+
+model SkillNode {
+  id                  String                 @id @default(uuid()) @db.Uuid
+  curriculumVersionId String                 @db.Uuid
+  domainId            String                 @db.Uuid
+  stageId             String                 @db.Uuid
+  key                 String
+  name                String
+  childName           String?
+  type                NodeType
+  objective           String
+  content             Json
+  completionRule      Json
+  retentionRule       Json
+  curriculumVersion   CurriculumVersion      @relation(fields: [curriculumVersionId], references: [id], onDelete: Cascade)
+  domain              SkillDomain            @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  stage               Stage                  @relation(fields: [stageId], references: [id], onDelete: Restrict)
+  campaignSteps       CampaignStep[]
+  prerequisites       SkillPrerequisite[]    @relation("DependentNode")
+  dependents          SkillPrerequisite[]    @relation("PrerequisiteNode")
+  skillDrills         SkillDrill[]
+  progress            AthleteSkillProgress[]
+  planSteps           PracticePlanStep[]
+  evidence            EvidenceSubmission[]
+  rubrics             AssessmentRubric[]
+
+  @@unique([curriculumVersionId, key])
+  @@index([domainId, stageId])
+}
+
+model SkillPrerequisite {
+  id                 String           @id @default(uuid()) @db.Uuid
+  nodeId             String           @db.Uuid
+  prerequisiteNodeId String           @db.Uuid
+  type               PrerequisiteType
+  node               SkillNode        @relation("DependentNode", fields: [nodeId], references: [id], onDelete: Cascade)
+  prerequisiteNode   SkillNode        @relation("PrerequisiteNode", fields: [prerequisiteNodeId], references: [id], onDelete: Restrict)
+
+  @@unique([nodeId, prerequisiteNodeId])
+  @@index([prerequisiteNodeId])
+}
+
+model Drill {
+  id                  String             @id @default(uuid()) @db.Uuid
+  curriculumVersionId String             @db.Uuid
+  key                 String
+  name                String
+  content             Json
+  status              CurriculumStatus   @default(DRAFT)
+  curriculumVersion   CurriculumVersion  @relation(fields: [curriculumVersionId], references: [id], onDelete: Cascade)
+  skillDrills         SkillDrill[]
+  planSteps           PracticePlanStep[]
+
+  @@unique([curriculumVersionId, key])
+}
+
+model SkillDrill {
+  id      String    @id @default(uuid()) @db.Uuid
+  nodeId  String    @db.Uuid
+  drillId String    @db.Uuid
+  primary Boolean   @default(false)
+  node    SkillNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  drill   Drill     @relation(fields: [drillId], references: [id], onDelete: Cascade)
+
+  @@unique([nodeId, drillId])
+}
+
+model AssessmentRubric {
+  id                   String            @id @default(uuid()) @db.Uuid
+  curriculumVersionId  String            @db.Uuid
+  nodeId               String            @db.Uuid
+  key                  String
+  name                 String
+  version              Int
+  assessmentType       AssessmentType
+  evidenceInstructions Json
+  passRule             Json
+  curriculumVersion    CurriculumVersion @relation(fields: [curriculumVersionId], references: [id], onDelete: Cascade)
+  node                 SkillNode         @relation(fields: [nodeId], references: [id], onDelete: Restrict)
+  criteria             RubricCriterion[]
+  assessments          Assessment[]
+
+  @@unique([curriculumVersionId, key, version])
+}
+
+model RubricCriterion {
+  id           String                     @id @default(uuid()) @db.Uuid
+  rubricId     String                     @db.Uuid
+  key          String
+  name         String
+  description  String?
+  isCritical   Boolean
+  sortOrder    Int
+  scaleAnchors Json
+  rubric       AssessmentRubric           @relation(fields: [rubricId], references: [id], onDelete: Cascade)
+  scores       AssessmentCriterionScore[]
+
+  @@unique([rubricId, key])
+}
+
+model AthleteCampaign {
+  id                  String            @id @default(uuid()) @db.Uuid
+  athleteId           String            @db.Uuid
+  campaignId          String            @db.Uuid
+  curriculumVersionId String            @db.Uuid
+  status              String
+  assignedAt          DateTime          @default(now()) @db.Timestamptz(3)
+  completedAt         DateTime?         @db.Timestamptz(3)
+  branchSelections    Json?
+  athlete             Athlete           @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  campaign            Campaign          @relation(fields: [campaignId], references: [id], onDelete: Restrict)
+  practicePlans       PracticePlan[]
+  curriculumVersion   CurriculumVersion @relation(fields: [curriculumVersionId], references: [id], onDelete: Restrict)
+
+  @@unique([athleteId, campaignId])
+}
+
+model AthleteSkillProgress {
+  id                    String        @id @default(uuid()) @db.Uuid
+  athleteId             String        @db.Uuid
+  nodeId                String        @db.Uuid
+  state                 ProgressState
+  stateVersion          Int           @default(1)
+  demonstratedAt        DateTime?     @db.Timestamptz(3)
+  verifiedAt            DateTime?     @db.Timestamptz(3)
+  verifyingAssessmentId String?       @db.Uuid
+  revisitDueAt          DateTime?     @db.Timestamptz(3)
+  transitionEventId     String?       @db.Uuid
+  athlete               Athlete       @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  node                  SkillNode     @relation(fields: [nodeId], references: [id], onDelete: Restrict)
+  verifyingAssessment   Assessment?   @relation("VerifiedProgress", fields: [verifyingAssessmentId], references: [id], onDelete: SetNull)
+  updatedAt             DateTime      @updatedAt @db.Timestamptz(3)
+
+  @@unique([athleteId, nodeId])
+  @@index([athleteId, state])
+  @@index([revisitDueAt])
+}
+
+model PracticePlan {
+  id                    String             @id @default(uuid()) @db.Uuid
+  athleteId             String             @db.Uuid
+  athleteCampaignId     String             @db.Uuid
+  status                PracticePlanStatus @default(GENERATED)
+  targetDurationMinutes Int
+  environmentSnapshot   Json
+  generationReasons     Json
+  ruleSnapshot          Json
+  version               Int                @default(1)
+  athlete               Athlete            @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  athleteCampaign       AthleteCampaign     @relation(fields: [athleteCampaignId], references: [id], onDelete: Restrict)
+  steps                 PracticePlanStep[]
+  sessions              PracticeSession[]
+  createdAt             DateTime           @default(now()) @db.Timestamptz(3)
+  expiresAt             DateTime?          @db.Timestamptz(3)
+
+  @@index([athleteId, status])
+}
+
+model PracticePlanStep {
+  id                 String             @id @default(uuid()) @db.Uuid
+  practicePlanId     String             @db.Uuid
+  nodeId             String?            @db.Uuid
+  drillId            String?            @db.Uuid
+  sequence           Int
+  type               String
+  resultType         PracticeResultType
+  prescriptionReason String
+  contentSnapshot    Json
+  practicePlan       PracticePlan       @relation(fields: [practicePlanId], references: [id], onDelete: Cascade)
+  node               SkillNode?         @relation(fields: [nodeId], references: [id], onDelete: Restrict)
+  drill              Drill?             @relation(fields: [drillId], references: [id], onDelete: Restrict)
+  attempts           PracticeAttempt[]
+
+  @@unique([practicePlanId, sequence])
+}
+
+model PracticeSession {
+  id              String                @id @default(uuid()) @db.Uuid
+  practicePlanId  String                @db.Uuid
+  athleteId       String                @db.Uuid
+  clientSessionId String?
+  status          PracticeSessionStatus @default(NOT_STARTED)
+  startedOffline  Boolean               @default(false)
+  reflection      Json?
+  safetyFlag      Boolean               @default(false)
+  startedAt       DateTime?             @db.Timestamptz(3)
+  completedAt     DateTime?             @db.Timestamptz(3)
+  practicePlan    PracticePlan          @relation(fields: [practicePlanId], references: [id], onDelete: Restrict)
+  athlete         Athlete               @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  attempts        PracticeAttempt[]
+  createdAt       DateTime              @default(now()) @db.Timestamptz(3)
+
+  @@unique([practicePlanId, clientSessionId])
+  @@index([athleteId, status])
+}
+
+model PracticeAttempt {
+  id                String             @id @default(uuid()) @db.Uuid
+  practiceSessionId String             @db.Uuid
+  planStepId        String             @db.Uuid
+  attemptNumber     Int
+  resultType        PracticeResultType
+  result            Json?
+  difficultyRating  Int?
+  cueUnderstood     Boolean?
+  skipped           Boolean            @default(false)
+  skipReason        String?
+  successful        Boolean            @default(false)
+  completedAt       DateTime           @db.Timestamptz(3)
+  practiceSession   PracticeSession    @relation(fields: [practiceSessionId], references: [id], onDelete: Cascade)
+  planStep          PracticePlanStep   @relation(fields: [planStepId], references: [id], onDelete: Restrict)
+
+  @@unique([practiceSessionId, planStepId, attemptNumber])
+}
+
+model MediaAsset {
+  id                 String               @id @default(uuid()) @db.Uuid
+  athleteId          String               @db.Uuid
+  uploaderUserId     String               @db.Uuid
+  status             MediaStatus          @default(UPLOADING)
+  objectKey          String               @unique
+  originalName       String
+  declaredMimeType   String
+  detectedMimeType   String?
+  sizeBytes          BigInt
+  durationMs         Int?
+  checksumSha256     String?
+  rejectionCode      String?
+  retentionPolicyKey String
+  athlete            Athlete              @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  evidence           EvidenceSubmission[]
+  createdAt          DateTime             @default(now()) @db.Timestamptz(3)
+  readyAt            DateTime?            @db.Timestamptz(3)
+  deletedAt          DateTime?            @db.Timestamptz(3)
+
+  @@index([athleteId, status])
+}
+
+model EvidenceSubmission {
+  id                 String         @id @default(uuid()) @db.Uuid
+  athleteId          String         @db.Uuid
+  nodeId             String         @db.Uuid
+  mediaAssetId       String         @db.Uuid
+  consentRecordId    String         @db.Uuid
+  status             EvidenceStatus @default(DRAFT)
+  captureTime        DateTime?      @db.Timestamptz(3)
+  retentionPolicyKey String
+  athlete            Athlete        @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  node               SkillNode      @relation(fields: [nodeId], references: [id], onDelete: Restrict)
+  mediaAsset         MediaAsset     @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
+  consentRecord      ConsentRecord  @relation(fields: [consentRecordId], references: [id], onDelete: Restrict)
+  assessment         Assessment?
+  createdAt          DateTime       @default(now()) @db.Timestamptz(3)
+  submittedAt        DateTime?      @db.Timestamptz(3)
+
+  @@unique([mediaAssetId])
+  @@index([athleteId, nodeId, status])
+}
+
+model CoachProfile {
+  id                  String            @id @default(uuid()) @db.Uuid
+  userId              String            @unique @db.Uuid
+  status              CoachStatus       @default(PENDING)
+  identityVerifiedAt  DateTime?         @db.Timestamptz(3)
+  calibrationPassedAt DateTime?         @db.Timestamptz(3)
+  user                User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  credentials         CoachCredential[]
+  privileges          CoachPrivilege[]
+  assessments         Assessment[]      @relation("AssignedCoach")
+  createdAt           DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime          @updatedAt @db.Timestamptz(3)
+}
+
+model CoachCredential {
+  id             String           @id @default(uuid()) @db.Uuid
+  coachProfileId String           @db.Uuid
+  credentialType String
+  status         CredentialStatus @default(PENDING)
+  referenceHash  String?
+  verifiedAt     DateTime?        @db.Timestamptz(3)
+  expiresAt      DateTime?        @db.Timestamptz(3)
+  coachProfile   CoachProfile     @relation(fields: [coachProfileId], references: [id], onDelete: Cascade)
+
+  @@index([coachProfileId, credentialType, status])
+  @@index([expiresAt])
+}
+
+model CoachPrivilege {
+  id             String         @id @default(uuid()) @db.Uuid
+  coachProfileId String         @db.Uuid
+  sportId        String         @db.Uuid
+  stageKey       String
+  assessmentType AssessmentType
+  active         Boolean        @default(true)
+  coachProfile   CoachProfile   @relation(fields: [coachProfileId], references: [id], onDelete: Cascade)
+  sport          Sport          @relation(fields: [sportId], references: [id], onDelete: Restrict)
+
+  @@unique([coachProfileId, sportId, stageKey, assessmentType])
+}
+
+model Assessment {
+  id                   String                     @id @default(uuid()) @db.Uuid
+  athleteId            String                     @db.Uuid
+  evidenceSubmissionId String                     @unique @db.Uuid
+  rubricId             String                     @db.Uuid
+  assignedCoachId      String?                    @db.Uuid
+  type                 AssessmentType
+  status               AssessmentStatus           @default(REQUESTED)
+  outcome              AssessmentOutcome?
+  rubricSnapshot       Json
+  dueAt                DateTime?                  @db.Timestamptz(3)
+  requestedAt          DateTime                   @default(now()) @db.Timestamptz(3)
+  assignedAt           DateTime?                  @db.Timestamptz(3)
+  completedAt          DateTime?                  @db.Timestamptz(3)
+  athlete              Athlete                    @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  evidenceSubmission   EvidenceSubmission         @relation(fields: [evidenceSubmissionId], references: [id], onDelete: Restrict)
+  rubric               AssessmentRubric           @relation(fields: [rubricId], references: [id], onDelete: Restrict)
+  assignedCoach        CoachProfile?              @relation("AssignedCoach", fields: [assignedCoachId], references: [id], onDelete: SetNull)
+  scores               AssessmentCriterionScore[]
+  feedback             AssessmentFeedback?
+  verifiedProgress     AthleteSkillProgress[]     @relation("VerifiedProgress")
+
+  @@index([assignedCoachId, status, dueAt])
+  @@index([athleteId, status])
+}
+
+model AssessmentCriterionScore {
+  id                  String          @id @default(uuid()) @db.Uuid
+  assessmentId        String          @db.Uuid
+  rubricCriterionId   String          @db.Uuid
+  score               Int
+  note                String?
+  evidenceTimestampMs Int?
+  assessment          Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  rubricCriterion     RubricCriterion @relation(fields: [rubricCriterionId], references: [id], onDelete: Restrict)
+
+  @@unique([assessmentId, rubricCriterionId])
+}
+
+model AssessmentFeedback {
+  id               String     @id @default(uuid()) @db.Uuid
+  assessmentId     String     @unique @db.Uuid
+  positives        Json
+  primaryCue       String
+  nextAction       Json
+  reviewerNote     String?
+  correctionOfId   String?    @db.Uuid
+  correctionReason String?
+  assessment       Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  createdAt        DateTime   @default(now()) @db.Timestamptz(3)
+}
+
+model PassportEvent {
+  id                   String   @id @default(uuid()) @db.Uuid
+  athleteId            String   @db.Uuid
+  sourceEventId        String   @unique @db.Uuid
+  eventType            String
+  occurredAt           DateTime @db.Timestamptz(3)
+  title                String
+  summary              String?
+  verified             Boolean  @default(false)
+  curriculumProvenance Json?
+  athlete              Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  @@index([athleteId, occurredAt])
+}
+
+model OutboxEvent {
+  id            String       @id @default(uuid()) @db.Uuid
+  eventType     String
+  eventVersion  Int          @default(1)
+  aggregateType String
+  aggregateId   String       @db.Uuid
+  actorId       String       @db.Uuid
+  correlationId String       @db.Uuid
+  causationId   String?      @db.Uuid
+  payload       Json
+  status        OutboxStatus @default(PENDING)
+  attempts      Int          @default(0)
+  occurredAt    DateTime     @db.Timestamptz(3)
+  publishedAt   DateTime?    @db.Timestamptz(3)
+  lastErrorCode String?
+
+  @@index([status, occurredAt])
+  @@index([aggregateId, occurredAt])
+}
+
+model ProcessedEvent {
+  consumerKey String
+  eventId     String   @db.Uuid
+  processedAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@id([consumerKey, eventId])
+}
+
+model IdempotencyRecord {
+  id           String   @id @default(uuid()) @db.Uuid
+  actorId      String   @db.Uuid
+  operation    String
+  key          String
+  requestHash  String
+  responseCode Int
+  responseBody Json?
+  resourceId   String?  @db.Uuid
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt    DateTime @db.Timestamptz(3)
+
+  @@unique([actorId, operation, key])
+  @@index([expiresAt])
+}
+
+model AuditEvent {
+  id            String   @id @default(uuid()) @db.Uuid
+  actorId       String   @db.Uuid
+  action        String
+  resourceType  String
+  resourceId    String?  @db.Uuid
+  reasonCode    String?
+  correlationId String   @db.Uuid
+  safeMetadata  Json?
+  occurredAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([resourceType, resourceId, occurredAt])
+  @@index([actorId, occurredAt])
+}
+
+model SafetyIncident {
+  id          String           @id @default(uuid()) @db.Uuid
+  severity    IncidentSeverity
+  sourceFlow  String
+  athleteId   String?          @db.Uuid
+  ownerUserId String?          @db.Uuid
+  status      String
+  summary     String
+  timeline    Json
+  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
+  resolvedAt  DateTime?        @db.Timestamptz(3)
+
+  @@index([severity, status, createdAt])
+}

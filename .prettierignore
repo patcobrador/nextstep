@@ -1,0 +1,9 @@
+build-pack/
+node_modules/
+.next/
+dist/
+coverage/
+packages/database/src/generated/
+content/basketball/seed/seed_curriculum.json
+contracts/openapi.yaml
+pnpm-lock.yaml
