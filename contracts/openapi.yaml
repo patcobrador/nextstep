@@ -14,6 +14,7 @@ servers:
 security:
   - oidc: []
 tags:
+  - name: Observability
   - name: Identity
   - name: Athletes
   - name: Progress
@@ -25,6 +26,52 @@ tags:
   - name: Billing
   - name: Admin Curriculum
 paths:
+  /health/live:
+    get:
+      tags: [Observability]
+      operationId: getLiveness
+      summary: Confirm that the API process is alive
+      security: []
+      responses:
+        "200":
+          description: Process is alive
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    const: ok
+        default:
+          $ref: "#/components/responses/Problem"
+
+  /health/ready:
+    get:
+      tags: [Observability]
+      operationId: getReadiness
+      summary: Confirm that required API dependencies are available
+      security: []
+      responses:
+        "200":
+          description: API is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, dependencies]
+                properties:
+                  status:
+                    type: string
+                    const: ready
+                  dependencies:
+                    type: object
+                    additionalProperties:
+                      type: string
+        default:
+          $ref: "#/components/responses/Problem"
+
   /me:
     get:
       tags: [Identity]

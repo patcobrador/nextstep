@@ -1,0 +1,8 @@
+.git
+.next
+.turbo
+**/dist
+**/node_modules
+coverage
+node_modules
+test-results

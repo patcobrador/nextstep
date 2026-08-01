@@ -35,6 +35,15 @@ export interface WalkingSkeletonState {
   passport: PassportEntry[];
 }
 
+export interface WalkingSkeletonPersistenceState {
+  state: WalkingSkeletonState;
+  practices: Array<
+    Omit<QualifyingPractice, "completedAt"> & { completedAt: string }
+  >;
+  processedIdempotencyKeys: string[];
+  assessmentId?: string;
+}
+
 interface CommandContext {
   actorId: string;
   correlationId: string;
@@ -50,6 +59,28 @@ export class WalkingSkeleton {
   readonly #processed = new Set<string>();
   #athlete?: AthleteRecord;
   #assessmentId?: string;
+
+  static restore(
+    persistence: WalkingSkeletonPersistenceState,
+  ): WalkingSkeleton {
+    const flow = new WalkingSkeleton();
+    flow.#athlete = structuredClone(persistence.state.athlete);
+    flow.#events.push(...structuredClone(persistence.state.events));
+    flow.#passport.push(...structuredClone(persistence.state.passport));
+    flow.#practices.push(
+      ...persistence.practices.map((practice) => ({
+        ...practice,
+        completedAt: new Date(practice.completedAt),
+      })),
+    );
+    for (const key of persistence.processedIdempotencyKeys) {
+      flow.#processed.add(key);
+    }
+    if (persistence.assessmentId !== undefined) {
+      flow.#assessmentId = persistence.assessmentId;
+    }
+    return flow;
+  }
 
   createAthlete(
     input: { athleteId: string; householdId: string; displayName: string },
@@ -212,6 +243,20 @@ export class WalkingSkeleton {
       athlete: structuredClone(this.#requireAthlete()),
       events: structuredClone(this.#events),
       passport: structuredClone(this.#passport),
+    };
+  }
+
+  persistenceState(): WalkingSkeletonPersistenceState {
+    return {
+      state: this.snapshot(),
+      practices: this.#practices.map((practice) => ({
+        ...practice,
+        completedAt: practice.completedAt.toISOString(),
+      })),
+      processedIdempotencyKeys: [...this.#processed],
+      ...(this.#assessmentId === undefined
+        ? {}
+        : { assessmentId: this.#assessmentId }),
     };
   }
 

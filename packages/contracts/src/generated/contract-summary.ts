@@ -1,6 +1,8 @@
 // Generated from contracts/openapi.yaml. Do not edit.
 export const apiContractVersion = "1.0.0-draft" as const;
 export const operationIds = [
+  "getLiveness",
+  "getReadiness",
   "getCurrentUser",
   "listAthletes",
   "createAthlete",

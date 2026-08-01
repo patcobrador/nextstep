@@ -1,26 +1,80 @@
 import "reflect-metadata";
 
+import { randomUUID } from "node:crypto";
+
 import type { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { AppModule } from "./app.module.js";
+import { DevelopmentFlowRepository } from "./development-flow.repository.js";
+import { PrismaService } from "./prisma.service.js";
 
 describe("HTTP walking skeleton and object authorisation", () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  const startApplication = async (): Promise<INestApplication> => {
     const module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-    app = module.createNestApplication();
-    app.setGlobalPrefix("v1");
-    await app.init();
+    const application = module.createNestApplication();
+    application.setGlobalPrefix("v1");
+    await application.init();
+    return application;
+  };
+
+  beforeEach(async () => {
+    app = await startApplication();
+    await app.get(DevelopmentFlowRepository).clearTestData();
   });
 
   afterEach(async () => {
     await app.close();
+  });
+
+  it("exposes public health checks and RFC 7807 authentication errors", async () => {
+    const server = app.getHttpServer();
+    await request(server).get("/v1/health/live").expect(200, { status: "ok" });
+    const ready = await request(server).get("/v1/health/ready").expect(200);
+    expect(ready.body.dependencies.database).toBe("up");
+
+    const unauthorized = await request(server)
+      .get(`/v1/athletes/${randomUUID()}/dashboard`)
+      .expect("content-type", /application\/problem\+json/)
+      .expect(401);
+    expect(unauthorized.body.title).toBe("Unauthorized");
+    expect(unauthorized.body.correlationId).toBeTruthy();
+    expect(unauthorized.headers["x-correlation-id"]).toBe(
+      unauthorized.body.correlationId,
+    );
+  });
+
+  it("restores an idempotent athlete response after an API restart", async () => {
+    const requestDetails = {
+      householdId: "durable-household",
+      headers: {
+        "x-actor-id": "durable-parent",
+        "x-household-id": "durable-household",
+      },
+    };
+    const created = await request(app.getHttpServer())
+      .post(`/v1/households/${requestDetails.householdId}/athletes`)
+      .set(requestDetails.headers)
+      .set("Idempotency-Key", "durable-create")
+      .send({ displayName: "Ari" })
+      .expect(201);
+
+    await app.close();
+    app = await startApplication();
+
+    const replayed = await request(app.getHttpServer())
+      .post(`/v1/households/${requestDetails.householdId}/athletes`)
+      .set(requestDetails.headers)
+      .set("Idempotency-Key", "durable-create")
+      .send({ displayName: "Ari" })
+      .expect(201);
+    expect(replayed.body.id).toBe(created.body.id);
   });
 
   it("completes the parent-to-passport HTTP walking skeleton exactly once", async () => {
@@ -46,6 +100,15 @@ describe("HTTP walking skeleton and object authorisation", () => {
       .send({ displayName: "Mason" })
       .expect(201);
     expect(replayedCreate.body.id).toBe(athleteId);
+
+    const conflictingReplay = await request(server)
+      .post(`/v1/households/${householdId}/athletes`)
+      .set(parentHeaders)
+      .set("Idempotency-Key", "athlete-create-1")
+      .send({ displayName: "Different athlete" })
+      .expect("content-type", /application\/problem\+json/)
+      .expect(409);
+    expect(conflictingReplay.body.title).toBe("Conflict");
 
     await request(server)
       .post(`/v1/athletes/${athleteId}/baseline`)
@@ -180,6 +243,17 @@ describe("HTTP walking skeleton and object authorisation", () => {
       .expect(200);
     expect(passport.body.timeline).toHaveLength(1);
     expect(passport.body.timeline[0].verified).toBe(true);
+
+    const database = app.get(PrismaService).client;
+    expect(
+      await database.developmentFlowSnapshot.count({ where: { athleteId } }),
+    ).toBe(1);
+    expect(await database.outboxEvent.count()).toBeGreaterThan(0);
+    expect(
+      await database.idempotencyRecord.count({
+        where: { operation: "assess-evidence" },
+      }),
+    ).toBe(1);
 
     await request(server)
       .get(`/v1/athletes/${athleteId}/passport`)

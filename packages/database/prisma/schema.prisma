@@ -496,7 +496,7 @@ model PracticePlan {
   ruleSnapshot          Json
   version               Int                @default(1)
   athlete               Athlete            @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-  athleteCampaign       AthleteCampaign     @relation(fields: [athleteCampaignId], references: [id], onDelete: Restrict)
+  athleteCampaign       AthleteCampaign    @relation(fields: [athleteCampaignId], references: [id], onDelete: Restrict)
   steps                 PracticePlanStep[]
   sessions              PracticeSession[]
   createdAt             DateTime           @default(now()) @db.Timestamptz(3)
@@ -756,6 +756,31 @@ model IdempotencyRecord {
 
   @@unique([actorId, operation, key])
   @@index([expiresAt])
+}
+
+/// Durable aggregate snapshot for the first end-to-end vertical slice.
+/// Relational read models remain authoritative for product queries as they are introduced.
+model DevelopmentFlowSnapshot {
+  athleteId        String                    @id @db.Uuid
+  householdKey     String
+  aggregateVersion Int                       @default(1)
+  state            Json
+  adapterState     Json
+  resources        DevelopmentFlowResource[]
+  createdAt        DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime                  @updatedAt @db.Timestamptz(3)
+
+  @@index([householdKey])
+}
+
+model DevelopmentFlowResource {
+  id        String                  @id @db.Uuid
+  athleteId String                  @db.Uuid
+  type      String
+  flow      DevelopmentFlowSnapshot @relation(fields: [athleteId], references: [athleteId], onDelete: Cascade)
+  createdAt DateTime                @default(now()) @db.Timestamptz(3)
+
+  @@index([athleteId, type])
 }
 
 model AuditEvent {

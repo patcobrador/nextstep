@@ -23,12 +23,15 @@
     "@nestjs/common": "11.1.28",
     "@nestjs/core": "11.1.28",
     "@nestjs/platform-express": "11.1.28",
+    "@nextstep/database": "workspace:*",
     "@nextstep/domain": "workspace:*",
+    "express": "5.2.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },
   "devDependencies": {
     "@nestjs/testing": "11.1.28",
+    "@types/express": "5.0.6",
     "@types/supertest": "6.0.3",
     "supertest": "7.1.4",
     "tsx": "4.20.6",

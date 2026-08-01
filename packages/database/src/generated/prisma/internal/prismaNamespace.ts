@@ -433,6 +433,8 @@ export const ModelName = {
   OutboxEvent: 'OutboxEvent',
   ProcessedEvent: 'ProcessedEvent',
   IdempotencyRecord: 'IdempotencyRecord',
+  DevelopmentFlowSnapshot: 'DevelopmentFlowSnapshot',
+  DevelopmentFlowResource: 'DevelopmentFlowResource',
   AuditEvent: 'AuditEvent',
   SafetyIncident: 'SafetyIncident'
 } as const
@@ -450,7 +452,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "household" | "householdMembership" | "consentRecord" | "athlete" | "athleteSportProfile" | "sport" | "curriculumVersion" | "skillDomain" | "stage" | "campaign" | "campaignStep" | "skillNode" | "skillPrerequisite" | "drill" | "skillDrill" | "assessmentRubric" | "rubricCriterion" | "athleteCampaign" | "athleteSkillProgress" | "practicePlan" | "practicePlanStep" | "practiceSession" | "practiceAttempt" | "mediaAsset" | "evidenceSubmission" | "coachProfile" | "coachCredential" | "coachPrivilege" | "assessment" | "assessmentCriterionScore" | "assessmentFeedback" | "passportEvent" | "outboxEvent" | "processedEvent" | "idempotencyRecord" | "auditEvent" | "safetyIncident"
+    modelProps: "user" | "household" | "householdMembership" | "consentRecord" | "athlete" | "athleteSportProfile" | "sport" | "curriculumVersion" | "skillDomain" | "stage" | "campaign" | "campaignStep" | "skillNode" | "skillPrerequisite" | "drill" | "skillDrill" | "assessmentRubric" | "rubricCriterion" | "athleteCampaign" | "athleteSkillProgress" | "practicePlan" | "practicePlanStep" | "practiceSession" | "practiceAttempt" | "mediaAsset" | "evidenceSubmission" | "coachProfile" | "coachCredential" | "coachPrivilege" | "assessment" | "assessmentCriterionScore" | "assessmentFeedback" | "passportEvent" | "outboxEvent" | "processedEvent" | "idempotencyRecord" | "developmentFlowSnapshot" | "developmentFlowResource" | "auditEvent" | "safetyIncident"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3118,6 +3120,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DevelopmentFlowSnapshot: {
+      payload: Prisma.$DevelopmentFlowSnapshotPayload<ExtArgs>
+      fields: Prisma.DevelopmentFlowSnapshotFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DevelopmentFlowSnapshotFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DevelopmentFlowSnapshotFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>
+        }
+        findFirst: {
+          args: Prisma.DevelopmentFlowSnapshotFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DevelopmentFlowSnapshotFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>
+        }
+        findMany: {
+          args: Prisma.DevelopmentFlowSnapshotFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>[]
+        }
+        create: {
+          args: Prisma.DevelopmentFlowSnapshotCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>
+        }
+        createMany: {
+          args: Prisma.DevelopmentFlowSnapshotCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DevelopmentFlowSnapshotCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>[]
+        }
+        delete: {
+          args: Prisma.DevelopmentFlowSnapshotDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>
+        }
+        update: {
+          args: Prisma.DevelopmentFlowSnapshotUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>
+        }
+        deleteMany: {
+          args: Prisma.DevelopmentFlowSnapshotDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DevelopmentFlowSnapshotUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DevelopmentFlowSnapshotUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>[]
+        }
+        upsert: {
+          args: Prisma.DevelopmentFlowSnapshotUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowSnapshotPayload>
+        }
+        aggregate: {
+          args: Prisma.DevelopmentFlowSnapshotAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDevelopmentFlowSnapshot>
+        }
+        groupBy: {
+          args: Prisma.DevelopmentFlowSnapshotGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DevelopmentFlowSnapshotGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DevelopmentFlowSnapshotCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DevelopmentFlowSnapshotCountAggregateOutputType> | number
+        }
+      }
+    }
+    DevelopmentFlowResource: {
+      payload: Prisma.$DevelopmentFlowResourcePayload<ExtArgs>
+      fields: Prisma.DevelopmentFlowResourceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DevelopmentFlowResourceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DevelopmentFlowResourceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>
+        }
+        findFirst: {
+          args: Prisma.DevelopmentFlowResourceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DevelopmentFlowResourceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>
+        }
+        findMany: {
+          args: Prisma.DevelopmentFlowResourceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>[]
+        }
+        create: {
+          args: Prisma.DevelopmentFlowResourceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>
+        }
+        createMany: {
+          args: Prisma.DevelopmentFlowResourceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DevelopmentFlowResourceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>[]
+        }
+        delete: {
+          args: Prisma.DevelopmentFlowResourceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>
+        }
+        update: {
+          args: Prisma.DevelopmentFlowResourceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>
+        }
+        deleteMany: {
+          args: Prisma.DevelopmentFlowResourceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DevelopmentFlowResourceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DevelopmentFlowResourceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>[]
+        }
+        upsert: {
+          args: Prisma.DevelopmentFlowResourceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DevelopmentFlowResourcePayload>
+        }
+        aggregate: {
+          args: Prisma.DevelopmentFlowResourceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDevelopmentFlowResource>
+        }
+        groupBy: {
+          args: Prisma.DevelopmentFlowResourceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DevelopmentFlowResourceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DevelopmentFlowResourceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DevelopmentFlowResourceCountAggregateOutputType> | number
+        }
+      }
+    }
     AuditEvent: {
       payload: Prisma.$AuditEventPayload<ExtArgs>
       fields: Prisma.AuditEventFieldRefs
@@ -3823,6 +3973,29 @@ export const IdempotencyRecordScalarFieldEnum = {
 export type IdempotencyRecordScalarFieldEnum = (typeof IdempotencyRecordScalarFieldEnum)[keyof typeof IdempotencyRecordScalarFieldEnum]
 
 
+export const DevelopmentFlowSnapshotScalarFieldEnum = {
+  athleteId: 'athleteId',
+  householdKey: 'householdKey',
+  aggregateVersion: 'aggregateVersion',
+  state: 'state',
+  adapterState: 'adapterState',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DevelopmentFlowSnapshotScalarFieldEnum = (typeof DevelopmentFlowSnapshotScalarFieldEnum)[keyof typeof DevelopmentFlowSnapshotScalarFieldEnum]
+
+
+export const DevelopmentFlowResourceScalarFieldEnum = {
+  id: 'id',
+  athleteId: 'athleteId',
+  type: 'type',
+  createdAt: 'createdAt'
+} as const
+
+export type DevelopmentFlowResourceScalarFieldEnum = (typeof DevelopmentFlowResourceScalarFieldEnum)[keyof typeof DevelopmentFlowResourceScalarFieldEnum]
+
+
 export const AuditEventScalarFieldEnum = {
   id: 'id',
   actorId: 'actorId',
@@ -4451,6 +4624,8 @@ export type GlobalOmitConfig = {
   outboxEvent?: Prisma.OutboxEventOmit
   processedEvent?: Prisma.ProcessedEventOmit
   idempotencyRecord?: Prisma.IdempotencyRecordOmit
+  developmentFlowSnapshot?: Prisma.DevelopmentFlowSnapshotOmit
+  developmentFlowResource?: Prisma.DevelopmentFlowResourceOmit
   auditEvent?: Prisma.AuditEventOmit
   safetyIncident?: Prisma.SafetyIncidentOmit
 }

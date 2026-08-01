@@ -222,6 +222,17 @@ export type ProcessedEvent = Prisma.ProcessedEventModel
  */
 export type IdempotencyRecord = Prisma.IdempotencyRecordModel
 /**
+ * Model DevelopmentFlowSnapshot
+ * Durable aggregate snapshot for the first end-to-end vertical slice.
+ * Relational read models remain authoritative for product queries as they are introduced.
+ */
+export type DevelopmentFlowSnapshot = Prisma.DevelopmentFlowSnapshotModel
+/**
+ * Model DevelopmentFlowResource
+ * 
+ */
+export type DevelopmentFlowResource = Prisma.DevelopmentFlowResourceModel
+/**
  * Model AuditEvent
  * 
  */

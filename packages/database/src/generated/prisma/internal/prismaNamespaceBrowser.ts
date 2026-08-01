@@ -87,6 +87,8 @@ export const ModelName = {
   OutboxEvent: 'OutboxEvent',
   ProcessedEvent: 'ProcessedEvent',
   IdempotencyRecord: 'IdempotencyRecord',
+  DevelopmentFlowSnapshot: 'DevelopmentFlowSnapshot',
+  DevelopmentFlowResource: 'DevelopmentFlowResource',
   AuditEvent: 'AuditEvent',
   SafetyIncident: 'SafetyIncident'
 } as const
@@ -623,6 +625,29 @@ export const IdempotencyRecordScalarFieldEnum = {
 } as const
 
 export type IdempotencyRecordScalarFieldEnum = (typeof IdempotencyRecordScalarFieldEnum)[keyof typeof IdempotencyRecordScalarFieldEnum]
+
+
+export const DevelopmentFlowSnapshotScalarFieldEnum = {
+  athleteId: 'athleteId',
+  householdKey: 'householdKey',
+  aggregateVersion: 'aggregateVersion',
+  state: 'state',
+  adapterState: 'adapterState',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DevelopmentFlowSnapshotScalarFieldEnum = (typeof DevelopmentFlowSnapshotScalarFieldEnum)[keyof typeof DevelopmentFlowSnapshotScalarFieldEnum]
+
+
+export const DevelopmentFlowResourceScalarFieldEnum = {
+  id: 'id',
+  athleteId: 'athleteId',
+  type: 'type',
+  createdAt: 'createdAt'
+} as const
+
+export type DevelopmentFlowResourceScalarFieldEnum = (typeof DevelopmentFlowResourceScalarFieldEnum)[keyof typeof DevelopmentFlowResourceScalarFieldEnum]
 
 
 export const AuditEventScalarFieldEnum = {

@@ -21,47 +21,51 @@ export class WalkingSkeletonController {
   constructor(private readonly service: WalkingSkeletonService) {}
 
   @Post("households/:householdId/athletes")
-  createAthlete(
+  async createAthlete(
     @Param("householdId") householdId: string,
     @Body() body: { displayName: string },
     @Headers("x-actor-id") actorId?: string,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    return this.service.createAthlete({
-      householdId,
-      displayName: body.displayName,
-      actorId: requiredHeader(actorId, "x-actor-id"),
-      idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
-    }).athlete;
+    return (
+      await this.service.createAthlete({
+        householdId,
+        displayName: body.displayName,
+        actorId: requiredHeader(actorId, "x-actor-id"),
+        idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
+      })
+    ).athlete;
   }
 
   @Post("athletes/:athleteId/baseline")
   @HttpCode(200)
-  baseline(
+  async baseline(
     @Param("athleteId") athleteId: string,
     @Headers("x-household-id") householdId?: string,
     @Headers("x-actor-id") actorId?: string,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    this.service.assertHousehold(
+    await this.service.assertHousehold(
       athleteId,
       requiredHeader(householdId, "x-household-id"),
     );
-    return this.service.baseline(
-      athleteId,
-      requiredHeader(actorId, "x-actor-id"),
-      requiredHeader(idempotencyKey, "Idempotency-Key"),
+    return (
+      await this.service.baseline(
+        athleteId,
+        requiredHeader(actorId, "x-actor-id"),
+        requiredHeader(idempotencyKey, "Idempotency-Key"),
+      )
     ).athlete;
   }
 
   @Post("athletes/:athleteId/practice-plans")
-  generatePlan(
+  async generatePlan(
     @Param("athleteId") athleteId: string,
     @Headers("x-household-id") householdId?: string,
     @Headers("x-actor-id") actorId?: string,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    this.service.assertHousehold(
+    await this.service.assertHousehold(
       athleteId,
       requiredHeader(householdId, "x-household-id"),
     );
@@ -73,13 +77,13 @@ export class WalkingSkeletonController {
   }
 
   @Post("practice-plans/:planId/sessions")
-  startSession(
+  async startSession(
     @Param("planId") planId: string,
     @Headers("x-household-id") householdId?: string,
     @Headers("x-actor-id") actorId?: string,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    this.service.assertPlanHousehold(
+    await this.service.assertPlanHousehold(
       planId,
       requiredHeader(householdId, "x-household-id"),
     );
@@ -92,7 +96,7 @@ export class WalkingSkeletonController {
 
   @Post("practice-sessions/:sessionId/complete")
   @HttpCode(200)
-  completePractice(
+  async completePractice(
     @Param("sessionId") sessionId: string,
     @Body()
     body: {
@@ -104,7 +108,7 @@ export class WalkingSkeletonController {
     @Headers("x-household-id") householdId?: string,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    this.service.assertSessionHousehold(
+    await this.service.assertSessionHousehold(
       sessionId,
       requiredHeader(householdId, "x-household-id"),
     );
@@ -119,13 +123,13 @@ export class WalkingSkeletonController {
   }
 
   @Post("evidence/upload-intents")
-  createUploadIntent(
+  async createUploadIntent(
     @Body() body: { athleteId: string },
     @Headers("x-household-id") householdId?: string,
     @Headers("x-actor-id") actorId?: string,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    this.service.assertHousehold(
+    await this.service.assertHousehold(
       body.athleteId,
       requiredHeader(householdId, "x-household-id"),
     );
@@ -138,21 +142,25 @@ export class WalkingSkeletonController {
 
   @Post("evidence/upload-intents/:mediaAssetId/complete")
   @HttpCode(202)
-  completeUpload(
+  async completeUpload(
     @Param("mediaAssetId") mediaAssetId: string,
     @Headers("x-household-id") householdId?: string,
+    @Headers("x-actor-id") actorId?: string,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    this.service.assertMediaHousehold(
+    await this.service.assertMediaHousehold(
       mediaAssetId,
       requiredHeader(householdId, "x-household-id"),
     );
-    requiredHeader(idempotencyKey, "Idempotency-Key");
-    return this.service.completeUpload(mediaAssetId);
+    return this.service.completeUpload({
+      mediaAssetId,
+      actorId: requiredHeader(actorId, "x-actor-id"),
+      idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
+    });
   }
 
   @Post("evidence-submissions")
-  submitEvidence(
+  async submitEvidence(
     @Body()
     body: {
       athleteId: string;
@@ -164,7 +172,7 @@ export class WalkingSkeletonController {
     @Headers("x-actor-id") actorId?: string,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    this.service.assertHousehold(
+    await this.service.assertHousehold(
       body.athleteId,
       requiredHeader(householdId, "x-household-id"),
     );
@@ -176,9 +184,11 @@ export class WalkingSkeletonController {
   }
 
   @Get("coach/assessment-queue")
-  coachQueue(@Headers("x-actor-id") coachId?: string) {
+  async coachQueue(@Headers("x-actor-id") coachId?: string) {
     return {
-      items: this.service.coachQueue(requiredHeader(coachId, "x-actor-id")),
+      items: await this.service.coachQueue(
+        requiredHeader(coachId, "x-actor-id"),
+      ),
     };
   }
 
@@ -199,26 +209,26 @@ export class WalkingSkeletonController {
   }
 
   @Get("athletes/:athleteId/passport")
-  passport(
+  async passport(
     @Param("athleteId") athleteId: string,
     @Headers("x-household-id") householdId?: string,
   ) {
-    this.service.assertHousehold(
+    await this.service.assertHousehold(
       athleteId,
       requiredHeader(householdId, "x-household-id"),
     );
-    return { timeline: this.service.passport(athleteId) };
+    return { timeline: await this.service.passport(athleteId) };
   }
 
   @Get("athletes/:athleteId/dashboard")
-  dashboard(
+  async dashboard(
     @Param("athleteId") athleteId: string,
     @Headers("x-household-id") householdId?: string,
   ) {
-    this.service.assertHousehold(
+    await this.service.assertHousehold(
       athleteId,
       requiredHeader(householdId, "x-household-id"),
     );
-    return this.service.snapshot(athleteId).athlete;
+    return (await this.service.snapshot(athleteId)).athlete;
   }
 }

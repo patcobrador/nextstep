@@ -1,37 +1,34 @@
+import { randomUUID } from "node:crypto";
+
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { WalkingSkeleton, type WalkingSkeletonState } from "@nextstep/domain";
 
-interface FlowRecord {
-  flow: WalkingSkeleton;
-  householdId: string;
-  athleteId: string;
-  assessmentId?: string;
-  mediaReady: boolean;
-}
+import {
+  DevelopmentFlowRepository,
+  type DurableFlowRecord,
+  type IdempotentCommand,
+} from "./development-flow.repository.js";
 
 @Injectable()
 export class WalkingSkeletonService {
-  readonly #flows = new Map<string, FlowRecord>();
-  readonly #plans = new Map<string, string>();
-  readonly #sessions = new Map<string, string>();
-  readonly #media = new Map<string, string>();
-  readonly #createdAthletes = new Map<string, string>();
-  readonly #plansByRequest = new Map<string, string>();
-  readonly #sessionsByRequest = new Map<string, string>();
-  readonly #mediaByRequest = new Map<string, string>();
-  #sequence = 0;
+  constructor(private readonly repository: DevelopmentFlowRepository) {}
 
-  createAthlete(input: {
+  async createAthlete(input: {
     householdId: string;
     displayName: string;
     actorId: string;
     idempotencyKey: string;
-  }): WalkingSkeletonState {
-    const requestKey = `${input.actorId}:create-athlete:${input.idempotencyKey}`;
-    const existingAthleteId = this.#createdAthletes.get(requestKey);
-    if (existingAthleteId) return this.snapshot(existingAthleteId);
+  }): Promise<WalkingSkeletonState> {
+    const command = this.#command(
+      input.actorId,
+      "create-athlete",
+      input.idempotencyKey,
+      input,
+    );
+    const replay = await this.repository.replay<WalkingSkeletonState>(command);
+    if (replay) return replay;
 
-    const athleteId = this.#nextId("athlete");
+    const athleteId = randomUUID();
     const flow = new WalkingSkeleton();
     const state = flow.createAthlete(
       {
@@ -41,108 +38,155 @@ export class WalkingSkeletonService {
       },
       this.#context(input.actorId, input.idempotencyKey, new Date()),
     );
-    this.#flows.set(athleteId, {
-      flow,
-      householdId: input.householdId,
+    const record: DurableFlowRecord = {
       athleteId,
-      mediaReady: false,
-    });
-    this.#createdAthletes.set(requestKey, athleteId);
+      householdId: input.householdId,
+      flow,
+      adapter: { mediaReady: false },
+      version: 1,
+    };
+    await this.repository.create(
+      record,
+      { command, response: state, events: state.events },
+      input.displayName,
+    );
     return state;
   }
 
-  assertHousehold(athleteId: string, householdId: string): void {
-    const record = this.#record(athleteId);
+  async assertHousehold(athleteId: string, householdId: string): Promise<void> {
+    const record = await this.#record(athleteId);
     if (record.householdId !== householdId) {
       throw new NotFoundException("Athlete was not found.");
     }
   }
 
-  assertPlanHousehold(planId: string, householdId: string): void {
-    const athleteId = this.#plans.get(planId);
-    if (!athleteId) throw new NotFoundException("Practice plan was not found.");
-    this.assertHousehold(athleteId, householdId);
+  async assertPlanHousehold(
+    planId: string,
+    householdId: string,
+  ): Promise<void> {
+    await this.#assertResourceHousehold(planId, "PLAN", householdId);
   }
 
-  assertSessionHousehold(sessionId: string, householdId: string): void {
-    const athleteId = this.#sessions.get(sessionId);
-    if (!athleteId)
-      throw new NotFoundException("Practice session was not found.");
-    this.assertHousehold(athleteId, householdId);
+  async assertSessionHousehold(
+    sessionId: string,
+    householdId: string,
+  ): Promise<void> {
+    await this.#assertResourceHousehold(sessionId, "SESSION", householdId);
   }
 
-  assertMediaHousehold(mediaAssetId: string, householdId: string): void {
-    const athleteId = this.#media.get(mediaAssetId);
-    if (!athleteId) throw new NotFoundException("Media asset was not found.");
-    this.assertHousehold(athleteId, householdId);
+  async assertMediaHousehold(
+    mediaAssetId: string,
+    householdId: string,
+  ): Promise<void> {
+    await this.#assertResourceHousehold(mediaAssetId, "MEDIA", householdId);
   }
 
-  baseline(
+  async baseline(
     athleteId: string,
     actorId: string,
     idempotencyKey: string,
-  ): WalkingSkeletonState {
-    return this.#record(athleteId).flow.assignFoundationCampaign(
+  ): Promise<WalkingSkeletonState> {
+    const command = this.#command(actorId, "baseline", idempotencyKey, {
+      athleteId,
+    });
+    const replay = await this.repository.replay<WalkingSkeletonState>(command);
+    if (replay) return replay;
+    const record = await this.#record(athleteId);
+    const priorEventCount = record.flow.snapshot().events.length;
+    const state = record.flow.assignFoundationCampaign(
       this.#context(actorId, idempotencyKey, new Date()),
     );
+    await this.repository.save(record, {
+      command,
+      response: state,
+      events: state.events.slice(priorEventCount),
+    });
+    return state;
   }
 
-  generatePlan(input: {
+  async generatePlan(input: {
     athleteId: string;
     actorId: string;
     idempotencyKey: string;
-  }): {
-    id: string;
-    athleteId: string;
-    status: string;
-  } {
-    this.#record(input.athleteId);
-    const requestKey = `${input.actorId}:generate-plan:${input.idempotencyKey}`;
-    const existingId = this.#plansByRequest.get(requestKey);
-    if (existingId)
-      return {
-        id: existingId,
-        athleteId: input.athleteId,
-        status: "GENERATED",
-      };
-    const id = this.#nextId("plan");
-    this.#plans.set(id, input.athleteId);
-    this.#plansByRequest.set(requestKey, id);
-    return { id, athleteId: input.athleteId, status: "GENERATED" };
+  }): Promise<{ id: string; athleteId: string; status: string }> {
+    const command = this.#command(
+      input.actorId,
+      "generate-plan",
+      input.idempotencyKey,
+      input,
+    );
+    const replay = await this.repository.replay<{
+      id: string;
+      athleteId: string;
+      status: string;
+    }>(command);
+    if (replay) return replay;
+    const record = await this.#record(input.athleteId);
+    const response = {
+      id: randomUUID(),
+      athleteId: input.athleteId,
+      status: "GENERATED",
+    };
+    await this.repository.save(record, {
+      command,
+      response,
+      events: [],
+      resources: [{ id: response.id, type: "PLAN" }],
+    });
+    return response;
   }
 
-  startSession(input: {
+  async startSession(input: {
     planId: string;
     actorId: string;
     idempotencyKey: string;
-  }): {
-    id: string;
-    athleteId: string;
-    status: string;
-  } {
-    const athleteId = this.#plans.get(input.planId);
-    if (!athleteId) throw new NotFoundException("Practice plan was not found.");
-    const requestKey = `${input.actorId}:start-session:${input.idempotencyKey}`;
-    const existingId = this.#sessionsByRequest.get(requestKey);
-    if (existingId) return { id: existingId, athleteId, status: "IN_PROGRESS" };
-    const id = this.#nextId("session");
-    this.#sessions.set(id, athleteId);
-    this.#sessionsByRequest.set(requestKey, id);
-    return { id, athleteId, status: "IN_PROGRESS" };
+  }): Promise<{ id: string; athleteId: string; status: string }> {
+    const command = this.#command(
+      input.actorId,
+      "start-session",
+      input.idempotencyKey,
+      input,
+    );
+    const replay = await this.repository.replay<{
+      id: string;
+      athleteId: string;
+      status: string;
+    }>(command);
+    if (replay) return replay;
+    const record = await this.#resource(input.planId, "PLAN");
+    const response = {
+      id: randomUUID(),
+      athleteId: record.athleteId,
+      status: "IN_PROGRESS",
+    };
+    await this.repository.save(record, {
+      command,
+      response,
+      events: [],
+      resources: [{ id: response.id, type: "SESSION" }],
+    });
+    return response;
   }
 
-  completePractice(input: {
+  async completePractice(input: {
     actorId: string;
     idempotencyKey: string;
     sessionId: string;
     completedAt: Date;
     successfulAttempts: number;
     safetyFlag: boolean;
-  }): WalkingSkeletonState {
-    const athleteId = this.#sessions.get(input.sessionId);
-    if (!athleteId)
-      throw new NotFoundException("Practice session was not found.");
-    return this.#record(athleteId).flow.completePractice(
+  }): Promise<WalkingSkeletonState> {
+    const command = this.#command(
+      input.actorId,
+      "complete-practice",
+      input.idempotencyKey,
+      { ...input, completedAt: input.completedAt.toISOString() },
+    );
+    const replay = await this.repository.replay<WalkingSkeletonState>(command);
+    if (replay) return replay;
+    const record = await this.#resource(input.sessionId, "SESSION");
+    const priorEventCount = record.flow.snapshot().events.length;
+    const state = record.flow.completePractice(
       {
         sessionId: input.sessionId,
         successfulAttempts: input.successfulAttempts,
@@ -150,56 +194,108 @@ export class WalkingSkeletonService {
       },
       this.#context(input.actorId, input.idempotencyKey, input.completedAt),
     );
+    await this.repository.save(record, {
+      command,
+      response: state,
+      events: state.events.slice(priorEventCount),
+    });
+    return state;
   }
 
-  createUploadIntent(input: {
+  async createUploadIntent(input: {
     athleteId: string;
     actorId: string;
     idempotencyKey: string;
-  }): {
+  }): Promise<{
     mediaAssetId: string;
     uploadUrl: string;
     expiresAt: string;
     requiredHeaders: Record<string, string>;
-  } {
-    this.#record(input.athleteId);
-    const requestKey = `${input.actorId}:upload-intent:${input.idempotencyKey}`;
-    const existingId = this.#mediaByRequest.get(requestKey);
-    const mediaAssetId = existingId ?? this.#nextId("media");
-    if (!existingId) {
-      this.#media.set(mediaAssetId, input.athleteId);
-      this.#mediaByRequest.set(requestKey, mediaAssetId);
-    }
-    return {
+  }> {
+    const command = this.#command(
+      input.actorId,
+      "upload-intent",
+      input.idempotencyKey,
+      input,
+    );
+    type Response = {
+      mediaAssetId: string;
+      uploadUrl: string;
+      expiresAt: string;
+      requiredHeaders: Record<string, string>;
+    };
+    const replay = await this.repository.replay<Response>(command);
+    if (replay) return replay;
+    const record = await this.#record(input.athleteId);
+    const mediaAssetId = randomUUID();
+    const response: Response = {
       mediaAssetId,
       uploadUrl: `http://127.0.0.1:9000/private-evidence/${mediaAssetId}`,
       expiresAt: new Date(Date.now() + 5 * 60_000).toISOString(),
       requiredHeaders: { "content-type": "video/mp4" },
     };
+    await this.repository.save(record, {
+      command,
+      response,
+      events: [],
+      resources: [{ id: mediaAssetId, type: "MEDIA" }],
+    });
+    return response;
   }
 
-  completeUpload(mediaAssetId: string): {
-    id: string;
-    athleteId: string;
-    status: string;
-  } {
-    const athleteId = this.#media.get(mediaAssetId);
-    if (!athleteId) throw new NotFoundException("Media asset was not found.");
-    this.#record(athleteId).mediaReady = true;
-    return { id: mediaAssetId, athleteId, status: "READY" };
+  async completeUpload(input: {
+    mediaAssetId: string;
+    actorId: string;
+    idempotencyKey: string;
+  }): Promise<{ id: string; athleteId: string; status: string }> {
+    const command = this.#command(
+      input.actorId,
+      "complete-upload",
+      input.idempotencyKey,
+      input,
+    );
+    const replay = await this.repository.replay<{
+      id: string;
+      athleteId: string;
+      status: string;
+    }>(command);
+    if (replay) return replay;
+    const record = await this.#resource(input.mediaAssetId, "MEDIA");
+    record.adapter.mediaReady = true;
+    const response = {
+      id: input.mediaAssetId,
+      athleteId: record.athleteId,
+      status: "READY",
+    };
+    await this.repository.save(record, {
+      command,
+      response,
+      events: [],
+    });
+    return response;
   }
 
-  submitEvidence(input: {
+  async submitEvidence(input: {
     athleteId: string;
     actorId: string;
     idempotencyKey: string;
     evidenceId: string;
     consentRecordId: string;
     assignedCoachId: string;
-  }): WalkingSkeletonState {
-    const record = this.#record(input.athleteId);
-    if (!record.mediaReady)
+  }): Promise<WalkingSkeletonState> {
+    const command = this.#command(
+      input.actorId,
+      "submit-evidence",
+      input.idempotencyKey,
+      input,
+    );
+    const replay = await this.repository.replay<WalkingSkeletonState>(command);
+    if (replay) return replay;
+    const record = await this.#record(input.athleteId);
+    if (!record.adapter.mediaReady) {
       throw new Error("Media must be READY before evidence submission.");
+    }
+    const priorEventCount = record.flow.snapshot().events.length;
     const state = record.flow.submitEvidence(
       {
         evidenceId: input.evidenceId,
@@ -208,19 +304,27 @@ export class WalkingSkeletonService {
       },
       this.#context(input.actorId, input.idempotencyKey, new Date()),
     );
-    const assigned = state.events.find(
+    const assigned = state.events.findLast(
       ({ eventType }) => eventType === "AssessmentAssigned",
     );
-    record.assessmentId = String(
+    const assessmentId = String(
       (assigned?.payload as { assessmentId?: string }).assessmentId,
     );
+    record.adapter.assessmentId = assessmentId;
+    await this.repository.save(record, {
+      command,
+      response: state,
+      events: state.events.slice(priorEventCount),
+      resources: [{ id: assessmentId, type: "ASSESSMENT" }],
+    });
     return state;
   }
 
-  coachQueue(
+  async coachQueue(
     coachId: string,
-  ): Array<{ assessmentId: string; athleteId: string }> {
-    return [...this.#flows.values()].flatMap((record) => {
+  ): Promise<Array<{ assessmentId: string; athleteId: string }>> {
+    const records = await this.repository.list();
+    return records.flatMap((record) => {
       const assigned = record.flow
         .snapshot()
         .events.find(
@@ -228,22 +332,32 @@ export class WalkingSkeletonService {
             eventType === "AssessmentAssigned" &&
             (payload as { coachId?: string }).coachId === coachId,
         );
-      return assigned && record.assessmentId
-        ? [{ assessmentId: record.assessmentId, athleteId: record.athleteId }]
+      return assigned && record.adapter.assessmentId
+        ? [
+            {
+              assessmentId: record.adapter.assessmentId,
+              athleteId: record.athleteId,
+            },
+          ]
         : [];
     });
   }
 
-  assess(input: {
+  async assess(input: {
     assessmentId: string;
     actorId: string;
     idempotencyKey: string;
     outcome: "PASS" | "RETRY" | "UNABLE_TO_ASSESS";
-  }): WalkingSkeletonState {
-    const record = [...this.#flows.values()].find(
-      ({ assessmentId }) => assessmentId === input.assessmentId,
+  }): Promise<WalkingSkeletonState> {
+    const command = this.#command(
+      input.actorId,
+      "assess-evidence",
+      input.idempotencyKey,
+      input,
     );
-    if (!record) throw new NotFoundException("Assessment was not found.");
+    const replay = await this.repository.replay<WalkingSkeletonState>(command);
+    if (replay) return replay;
+    const record = await this.#resource(input.assessmentId, "ASSESSMENT");
     const assignment = record.flow
       .snapshot()
       .events.find(({ eventType }) => eventType === "AssessmentAssigned");
@@ -252,37 +366,66 @@ export class WalkingSkeletonService {
     ) {
       throw new NotFoundException("Assessment was not found.");
     }
-    return record.flow.completeAssessment(
+    const priorEventCount = record.flow.snapshot().events.length;
+    const state = record.flow.completeAssessment(
       { assessmentId: input.assessmentId, outcome: input.outcome },
       this.#context(input.actorId, input.idempotencyKey, new Date()),
     );
+    await this.repository.save(record, {
+      command,
+      response: state,
+      events: state.events.slice(priorEventCount),
+    });
+    return state;
   }
 
-  passport(athleteId: string): WalkingSkeletonState["passport"] {
-    return this.#record(athleteId).flow.snapshot().passport;
+  async passport(athleteId: string): Promise<WalkingSkeletonState["passport"]> {
+    return (await this.#record(athleteId)).flow.snapshot().passport;
   }
 
-  snapshot(athleteId: string): WalkingSkeletonState {
-    return this.#record(athleteId).flow.snapshot();
+  async snapshot(athleteId: string): Promise<WalkingSkeletonState> {
+    return (await this.#record(athleteId)).flow.snapshot();
   }
 
-  #record(athleteId: string): FlowRecord {
-    const record = this.#flows.get(athleteId);
+  async #record(athleteId: string): Promise<DurableFlowRecord> {
+    const record = await this.repository.load(athleteId);
     if (!record) throw new NotFoundException("Athlete was not found.");
     return record;
+  }
+
+  async #resource(id: string, type: string): Promise<DurableFlowRecord> {
+    const record = await this.repository.loadByResource(id, type);
+    if (!record) throw new NotFoundException(`${type} was not found.`);
+    return record;
+  }
+
+  async #assertResourceHousehold(
+    id: string,
+    type: string,
+    householdId: string,
+  ): Promise<void> {
+    const record = await this.#resource(id, type);
+    if (record.householdId !== householdId) {
+      throw new NotFoundException(`${type} was not found.`);
+    }
+  }
+
+  #command(
+    actorId: string,
+    operation: string,
+    key: string,
+    request: unknown,
+  ): IdempotentCommand {
+    return { actorId, operation, key, request };
   }
 
   #context(actorId: string, idempotencyKey: string, now: Date) {
     return {
       actorId,
-      correlationId: this.#nextId("correlation"),
+      correlationId: randomUUID(),
       idempotencyKey,
       now,
-      nextId: (kind: string) => this.#nextId(kind),
+      nextId: () => randomUUID(),
     };
-  }
-
-  #nextId(kind: string): string {
-    return `${kind}-${++this.#sequence}`;
   }
 }

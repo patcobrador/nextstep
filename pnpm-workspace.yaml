@@ -8,3 +8,6 @@ allowBuilds:
   esbuild: true
   prisma: true
   sharp: true
+
+minimumReleaseAgeExclude:
+  - "@types/pg@8.20.3"
