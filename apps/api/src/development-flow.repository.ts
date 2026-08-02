@@ -1,6 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
 
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import type { Prisma } from "@nextstep/database";
 import {
   WalkingSkeleton,
@@ -30,11 +34,12 @@ export interface IdempotentCommand {
   request: unknown;
 }
 
-interface PersistOptions {
+export interface PersistOptions {
   command: IdempotentCommand;
   response: unknown;
   events: DomainEvent[];
   resources?: Array<{ id: string; type: string }>;
+  relationalWrites?: (transaction: Prisma.TransactionClient) => Promise<void>;
 }
 
 const asInputJson = (value: unknown): Prisma.InputJsonValue =>
@@ -81,6 +86,18 @@ export class DevelopmentFlowRepository {
   ): Promise<void> {
     const userId = stableUuid(`user:${options.command.actorId}`);
     const householdId = stableUuid(`household:${record.householdId}`);
+    const existingHousehold = await this.database.client.household.findUnique({
+      where: { id: householdId },
+      select: {
+        memberships: {
+          where: { userId, revokedAt: null },
+          select: { userId: true },
+        },
+      },
+    });
+    if (existingHousehold && existingHousehold.memberships.length === 0) {
+      throw new NotFoundException("Household was not found.");
+    }
     await this.database.client.$transaction(async (transaction) => {
       await transaction.user.upsert({
         where: { identityProviderKey: `local:${options.command.actorId}` },
@@ -113,6 +130,7 @@ export class DevelopmentFlowRepository {
         data: this.#snapshotData(record),
       });
       await this.#writeSideEffects(transaction, record, options);
+      await options.relationalWrites?.(transaction);
     });
   }
 
@@ -138,6 +156,7 @@ export class DevelopmentFlowRepository {
         );
       }
       await this.#writeSideEffects(transaction, record, options);
+      await options.relationalWrites?.(transaction);
     });
     record.version += 1;
   }
@@ -161,6 +180,27 @@ export class DevelopmentFlowRepository {
       });
     if (!resource || resource.type !== type) return undefined;
     return this.#record(resource.flow);
+  }
+
+  async latestResource(resourceId: string, type: string): Promise<string> {
+    const resource =
+      await this.database.client.developmentFlowResource.findUnique({
+        where: { id: resourceId },
+        select: { athleteId: true },
+      });
+    if (!resource)
+      throw new ConflictException("Resource ownership could not be resolved.");
+    const related =
+      await this.database.client.developmentFlowResource.findFirst({
+        where: { athleteId: resource.athleteId, type },
+        orderBy: { createdAt: "desc" },
+        select: { id: true },
+      });
+    if (!related)
+      throw new ConflictException(
+        "Prescribed practice plan could not be resolved.",
+      );
+    return related.id;
   }
 
   async list(): Promise<DurableFlowRecord[]> {

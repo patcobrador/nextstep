@@ -6,6 +6,9 @@ import {
 import { APP_FILTER, APP_GUARD } from "@nestjs/core";
 
 import { DevelopmentFlowRepository } from "./development-flow.repository.js";
+import { AuthorisationService } from "./authorisation.service.js";
+import { CheckpointAController } from "./checkpoint-a.controller.js";
+import { CheckpointAService } from "./checkpoint-a.service.js";
 import { HealthController } from "./health.controller.js";
 import {
   ProblemDetailsFilter,
@@ -22,9 +25,15 @@ import { WalkingSkeletonController } from "./walking-skeleton.controller.js";
 import { WalkingSkeletonService } from "./walking-skeleton.service.js";
 
 @Module({
-  controllers: [HealthController, WalkingSkeletonController],
+  controllers: [
+    HealthController,
+    CheckpointAController,
+    WalkingSkeletonController,
+  ],
   providers: [
     PrismaService,
+    AuthorisationService,
+    CheckpointAService,
     DevelopmentFlowRepository,
     WalkingSkeletonService,
     LocalHeaderIdentityAdapter,

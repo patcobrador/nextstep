@@ -117,6 +117,7 @@ export class WalkingSkeleton {
 
   completePractice(
     input: {
+      planId: string;
       sessionId: string;
       successfulAttempts: number;
       safetyFlag?: boolean;
@@ -125,8 +126,6 @@ export class WalkingSkeleton {
   ): WalkingSkeletonState {
     if (!this.#mark(context.idempotencyKey)) return this.snapshot();
     const athlete = this.#requireAthlete();
-    const planId = context.nextId("practice-plan");
-    this.#emit("PracticePlanGenerated", athlete.id, context, { planId });
     this.#practices.push({
       sessionId: input.sessionId,
       completedAt: context.now,
@@ -134,7 +133,7 @@ export class WalkingSkeleton {
       safetyFlag: input.safetyFlag ?? false,
     });
     this.#emit("PracticeSessionCompleted", athlete.id, context, {
-      planId,
+      planId: input.planId,
       sessionId: input.sessionId,
       safetyFlag: input.safetyFlag ?? false,
     });

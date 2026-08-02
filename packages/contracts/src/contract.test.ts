@@ -23,3 +23,37 @@ describe("OpenAPI walking-skeleton coverage", () => {
     expect(contract.paths[path]).toBeDefined();
   });
 });
+
+describe("Checkpoint A contract", () => {
+  it.each([
+    ["/me", "get"],
+    ["/households/{householdId}/athletes", "get"],
+    ["/athletes/{athleteId}", "get"],
+    ["/athletes/{athleteId}/dashboard", "get"],
+    ["/athletes/{athleteId}/skill-tree", "get"],
+    ["/athletes/{athleteId}/skills/{nodeId}", "get"],
+    ["/practice-plans/{planId}", "get"],
+    ["/practice-plans/{planId}/sessions", "post"],
+    ["/practice-sessions/{sessionId}/attempts", "post"],
+    ["/practice-sessions/{sessionId}", "get"],
+    ["/practice-sessions/{sessionId}/complete", "post"],
+    ["/athletes/{athleteId}/passport", "get"],
+  ])("defines %s %s", (path, method) => {
+    expect(contract.paths[path]?.[method]).toBeDefined();
+  });
+
+  it("makes domain progress and practice overview authoritative", () => {
+    const domain =
+      contract.components.schemas.SkillTree.properties.domains.items;
+    expect(domain.required).toEqual(
+      expect.arrayContaining([
+        "completedNodeCount",
+        "totalNodeCount",
+        "progress",
+      ]),
+    );
+    expect(contract.components.schemas.PracticePlan.required).toEqual(
+      expect.arrayContaining(["title", "purpose"]),
+    );
+  });
+});

@@ -745,6 +745,9 @@ export interface components {
         key: string;
         name: string;
         sortOrder: number;
+        completedNodeCount: number;
+        totalNodeCount: number;
+        progress: number;
       }[];
       nodes: components["schemas"]["AthleteSkillNode"][];
       branchChoices?: components["schemas"]["BranchChoice"][];
@@ -827,6 +830,8 @@ export interface components {
       id: string;
       /** Format: uuid */
       athleteId: string;
+      title: string;
+      purpose: string;
       /** @enum {string} */
       status: "GENERATED" | "STARTED" | "COMPLETED" | "EXPIRED" | "CANCELLED";
       targetDurationMinutes: number;

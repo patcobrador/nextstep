@@ -14,7 +14,13 @@ import { IS_PUBLIC_ROUTE } from "./public.decorator.js";
 export interface AuthenticatedIdentity {
   actorId: string;
   householdId?: string;
-  source: "local-header";
+  source: "local-header" | "cognito";
+}
+
+export function requireIdentity(request: Request): AuthenticatedIdentity {
+  if (!request.identity)
+    throw new UnauthorizedException("Authentication is required.");
+  return request.identity;
 }
 
 export interface IdentityAdapter {

@@ -1116,11 +1116,14 @@ components:
           type: array
           items:
             type: object
-            required: [key, name, sortOrder]
+            required: [key, name, sortOrder, completedNodeCount, totalNodeCount, progress]
             properties:
               key: { type: string }
               name: { type: string }
               sortOrder: { type: integer }
+              completedNodeCount: { type: integer, minimum: 0 }
+              totalNodeCount: { type: integer, minimum: 0 }
+              progress: { type: number, minimum: 0, maximum: 1 }
         nodes:
           type: array
           items:
@@ -1229,10 +1232,12 @@ components:
 
     PracticePlan:
       type: object
-      required: [id, athleteId, status, targetDurationMinutes, generationReasons, steps, createdAt]
+      required: [id, athleteId, title, purpose, status, targetDurationMinutes, generationReasons, steps, createdAt]
       properties:
         id: { type: string, format: uuid }
         athleteId: { type: string, format: uuid }
+        title: { type: string }
+        purpose: { type: string }
         status: { type: string, enum: [GENERATED, STARTED, COMPLETED, EXPIRED, CANCELLED] }
         targetDurationMinutes: { type: integer, minimum: 5, maximum: 60 }
         generationReasons:

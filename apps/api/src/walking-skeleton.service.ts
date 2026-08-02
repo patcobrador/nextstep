@@ -172,6 +172,7 @@ export class WalkingSkeletonService {
     actorId: string;
     idempotencyKey: string;
     sessionId: string;
+    planId?: string;
     completedAt: Date;
     successfulAttempts: number;
     safetyFlag: boolean;
@@ -185,9 +186,13 @@ export class WalkingSkeletonService {
     const replay = await this.repository.replay<WalkingSkeletonState>(command);
     if (replay) return replay;
     const record = await this.#resource(input.sessionId, "SESSION");
+    const planId =
+      input.planId ??
+      (await this.repository.latestResource(input.sessionId, "PLAN"));
     const priorEventCount = record.flow.snapshot().events.length;
     const state = record.flow.completePractice(
       {
+        planId,
         sessionId: input.sessionId,
         successfulAttempts: input.successfulAttempts,
         safetyFlag: input.safetyFlag,

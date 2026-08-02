@@ -7,8 +7,12 @@ import {
   HttpCode,
   Param,
   Post,
+  Req,
 } from "@nestjs/common";
+import type { Request } from "express";
 
+import { AuthorisationService } from "./authorisation.service.js";
+import { requireIdentity } from "./identity.js";
 import { WalkingSkeletonService } from "./walking-skeleton.service.js";
 
 const requiredHeader = (value: string | undefined, name: string): string => {
@@ -18,20 +22,23 @@ const requiredHeader = (value: string | undefined, name: string): string => {
 
 @Controller()
 export class WalkingSkeletonController {
-  constructor(private readonly service: WalkingSkeletonService) {}
+  constructor(
+    private readonly service: WalkingSkeletonService,
+    private readonly authorisation: AuthorisationService,
+  ) {}
 
   @Post("households/:householdId/athletes")
   async createAthlete(
     @Param("householdId") householdId: string,
     @Body() body: { displayName: string },
-    @Headers("x-actor-id") actorId?: string,
+    @Req() request: Request,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
     return (
       await this.service.createAthlete({
         householdId,
         displayName: body.displayName,
-        actorId: requiredHeader(actorId, "x-actor-id"),
+        actorId: requireIdentity(request).actorId,
         idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
       })
     ).athlete;
@@ -41,18 +48,15 @@ export class WalkingSkeletonController {
   @HttpCode(200)
   async baseline(
     @Param("athleteId") athleteId: string,
-    @Headers("x-household-id") householdId?: string,
-    @Headers("x-actor-id") actorId?: string,
+    @Req() request: Request,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    await this.service.assertHousehold(
-      athleteId,
-      requiredHeader(householdId, "x-household-id"),
-    );
+    const identity = requireIdentity(request);
+    await this.authorisation.athlete(identity, athleteId);
     return (
       await this.service.baseline(
         athleteId,
-        requiredHeader(actorId, "x-actor-id"),
+        identity.actorId,
         requiredHeader(idempotencyKey, "Idempotency-Key"),
       )
     ).athlete;
@@ -61,63 +65,14 @@ export class WalkingSkeletonController {
   @Post("athletes/:athleteId/practice-plans")
   async generatePlan(
     @Param("athleteId") athleteId: string,
-    @Headers("x-household-id") householdId?: string,
-    @Headers("x-actor-id") actorId?: string,
+    @Req() request: Request,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    await this.service.assertHousehold(
-      athleteId,
-      requiredHeader(householdId, "x-household-id"),
-    );
+    const identity = requireIdentity(request);
+    await this.authorisation.athlete(identity, athleteId);
     return this.service.generatePlan({
       athleteId,
-      actorId: requiredHeader(actorId, "x-actor-id"),
-      idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
-    });
-  }
-
-  @Post("practice-plans/:planId/sessions")
-  async startSession(
-    @Param("planId") planId: string,
-    @Headers("x-household-id") householdId?: string,
-    @Headers("x-actor-id") actorId?: string,
-    @Headers("idempotency-key") idempotencyKey?: string,
-  ) {
-    await this.service.assertPlanHousehold(
-      planId,
-      requiredHeader(householdId, "x-household-id"),
-    );
-    return this.service.startSession({
-      planId,
-      actorId: requiredHeader(actorId, "x-actor-id"),
-      idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
-    });
-  }
-
-  @Post("practice-sessions/:sessionId/complete")
-  @HttpCode(200)
-  async completePractice(
-    @Param("sessionId") sessionId: string,
-    @Body()
-    body: {
-      completedAt: string;
-      successfulAttempts: number;
-      safetyFlag: boolean;
-    },
-    @Headers("x-actor-id") actorId?: string,
-    @Headers("x-household-id") householdId?: string,
-    @Headers("idempotency-key") idempotencyKey?: string,
-  ) {
-    await this.service.assertSessionHousehold(
-      sessionId,
-      requiredHeader(householdId, "x-household-id"),
-    );
-    return this.service.completePractice({
-      sessionId,
-      completedAt: new Date(body.completedAt),
-      successfulAttempts: body.successfulAttempts,
-      safetyFlag: body.safetyFlag,
-      actorId: requiredHeader(actorId, "x-actor-id"),
+      actorId: identity.actorId,
       idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
     });
   }
@@ -125,17 +80,14 @@ export class WalkingSkeletonController {
   @Post("evidence/upload-intents")
   async createUploadIntent(
     @Body() body: { athleteId: string },
-    @Headers("x-household-id") householdId?: string,
-    @Headers("x-actor-id") actorId?: string,
+    @Req() request: Request,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    await this.service.assertHousehold(
-      body.athleteId,
-      requiredHeader(householdId, "x-household-id"),
-    );
+    const identity = requireIdentity(request);
+    await this.authorisation.athlete(identity, body.athleteId);
     return this.service.createUploadIntent({
       athleteId: body.athleteId,
-      actorId: requiredHeader(actorId, "x-actor-id"),
+      actorId: identity.actorId,
       idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
     });
   }
@@ -144,17 +96,18 @@ export class WalkingSkeletonController {
   @HttpCode(202)
   async completeUpload(
     @Param("mediaAssetId") mediaAssetId: string,
-    @Headers("x-household-id") householdId?: string,
-    @Headers("x-actor-id") actorId?: string,
+    @Req() request: Request,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    await this.service.assertMediaHousehold(
+    const identity = requireIdentity(request);
+    await this.authorisation.developmentResource(
+      identity,
       mediaAssetId,
-      requiredHeader(householdId, "x-household-id"),
+      "MEDIA",
     );
     return this.service.completeUpload({
       mediaAssetId,
-      actorId: requiredHeader(actorId, "x-actor-id"),
+      actorId: identity.actorId,
       idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
     });
   }
@@ -168,17 +121,14 @@ export class WalkingSkeletonController {
       consentRecordId: string;
       assignedCoachId: string;
     },
-    @Headers("x-household-id") householdId?: string,
-    @Headers("x-actor-id") actorId?: string,
+    @Req() request: Request,
     @Headers("idempotency-key") idempotencyKey?: string,
   ) {
-    await this.service.assertHousehold(
-      body.athleteId,
-      requiredHeader(householdId, "x-household-id"),
-    );
+    const identity = requireIdentity(request);
+    await this.authorisation.athlete(identity, body.athleteId);
     return this.service.submitEvidence({
       ...body,
-      actorId: requiredHeader(actorId, "x-actor-id"),
+      actorId: identity.actorId,
       idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
     });
   }
@@ -206,29 +156,5 @@ export class WalkingSkeletonController {
       actorId: requiredHeader(actorId, "x-actor-id"),
       idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
     });
-  }
-
-  @Get("athletes/:athleteId/passport")
-  async passport(
-    @Param("athleteId") athleteId: string,
-    @Headers("x-household-id") householdId?: string,
-  ) {
-    await this.service.assertHousehold(
-      athleteId,
-      requiredHeader(householdId, "x-household-id"),
-    );
-    return { timeline: await this.service.passport(athleteId) };
-  }
-
-  @Get("athletes/:athleteId/dashboard")
-  async dashboard(
-    @Param("athleteId") athleteId: string,
-    @Headers("x-household-id") householdId?: string,
-  ) {
-    await this.service.assertHousehold(
-      athleteId,
-      requiredHeader(householdId, "x-household-id"),
-    );
-    return (await this.service.snapshot(athleteId)).athlete;
   }
 }

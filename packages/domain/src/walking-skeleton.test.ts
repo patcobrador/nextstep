@@ -26,15 +26,15 @@ describe("complete parent-to-passport walking skeleton", () => {
       context("baseline", "2026-08-01T09:05:00.000Z"),
     );
     flow.completePractice(
-      { sessionId: "session-1", successfulAttempts: 1 },
+      { planId: "plan-1", sessionId: "session-1", successfulAttempts: 1 },
       context("practice-1", "2026-08-01T09:30:00.000Z"),
     );
     flow.completePractice(
-      { sessionId: "session-2", successfulAttempts: 0 },
+      { planId: "plan-2", sessionId: "session-2", successfulAttempts: 0 },
       context("practice-2", "2026-08-03T09:30:00.000Z"),
     );
     const practiceResult = flow.completePractice(
-      { sessionId: "session-3", successfulAttempts: 1 },
+      { planId: "plan-3", sessionId: "session-3", successfulAttempts: 1 },
       context("practice-3", "2026-08-06T09:30:00.000Z"),
     );
     expect(practiceResult.athlete.checkpointState).toBe("EVIDENCE_PENDING");
