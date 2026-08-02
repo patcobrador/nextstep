@@ -124,6 +124,11 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
     );
     expect(active).toBeTruthy();
     expect(locked.whyLocked).toBeTruthy();
+    const activeDetail = await request(server)
+      .get(`/v1/athletes/${athleteId}/skills/${active.id}`)
+      .set(headers)
+      .expect(200);
+    expect(activeDetail.body.primaryAction.destination).toContain(planId);
     await request(server)
       .get(`/v1/athletes/${athleteId}/skills/${locked.id}`)
       .set(headers)

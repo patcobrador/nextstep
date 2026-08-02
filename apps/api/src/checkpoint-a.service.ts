@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -49,8 +50,10 @@ const stringArray = (value: unknown): string[] =>
 @Injectable()
 export class CheckpointAService {
   constructor(
-    private readonly database: PrismaService,
+    @Inject(PrismaService) private readonly database: PrismaService,
+    @Inject(AuthorisationService)
     private readonly authorisation: AuthorisationService,
+    @Inject(DevelopmentFlowRepository)
     private readonly flowRepository: DevelopmentFlowRepository,
   ) {}
 
@@ -321,7 +324,7 @@ export class CheckpointAService {
       where: {
         athleteId,
         status: { in: ["GENERATED", "STARTED"] },
-        steps: { some: { nodeId } },
+        ...(summary.state === "ACTIVE" ? {} : { steps: { some: { nodeId } } }),
       },
       orderBy: { createdAt: "desc" },
     });

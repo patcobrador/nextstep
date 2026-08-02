@@ -5,6 +5,7 @@ import {
   Get,
   Headers,
   HttpCode,
+  Inject,
   Param,
   Post,
   Req,
@@ -17,7 +18,9 @@ import { requireIdentity } from "./identity.js";
 
 @Controller()
 export class CheckpointAController {
-  constructor(private readonly service: CheckpointAService) {}
+  constructor(
+    @Inject(CheckpointAService) private readonly service: CheckpointAService,
+  ) {}
 
   @Get("me")
   me(@Req() request: Request) {

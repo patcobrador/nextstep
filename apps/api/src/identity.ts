@@ -57,7 +57,7 @@ export class CognitoIdentityAdapter implements IdentityAdapter {
 @Injectable()
 export class IdentityGuard implements CanActivate {
   constructor(
-    private readonly reflector: Reflector,
+    @Inject(Reflector) private readonly reflector: Reflector,
     @Inject(IDENTITY_ADAPTER) private readonly adapter: IdentityAdapter,
   ) {}
 

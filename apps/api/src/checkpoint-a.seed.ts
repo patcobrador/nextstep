@@ -96,6 +96,7 @@ const demo = {
   athleteId: id("athlete", "mason"),
   otherAthleteId: id("athlete", "other"),
   campaignAssignmentId: id("athlete-campaign", "mason-foundation"),
+  otherCampaignAssignmentId: id("athlete-campaign", "taylor-foundation"),
   planId: id("practice-plan", "current"),
 };
 
@@ -376,6 +377,23 @@ await database.$transaction(async (tx) => {
       assignedAt: new Date("2026-07-20T09:00:00.000Z"),
     },
   });
+  await tx.athleteCampaign.upsert({
+    where: {
+      athleteId_campaignId: {
+        athleteId: demo.otherAthleteId,
+        campaignId,
+      },
+    },
+    update: { status: "ACTIVE" },
+    create: {
+      id: demo.otherCampaignAssignmentId,
+      athleteId: demo.otherAthleteId,
+      campaignId,
+      curriculumVersionId: curriculumId,
+      status: "ACTIVE",
+      assignedAt: new Date("2026-07-20T09:00:00.000Z"),
+    },
+  });
   const mastered = new Set([
     "foundation.habits.safe-space-check",
     "foundation.movement.athletic-stance",
@@ -426,6 +444,51 @@ await database.$transaction(async (tx) => {
       title: "Both hands practice",
     },
   ];
+  const fixedPassportIds = [
+    id("passport", "campaign-assigned"),
+    ...historical.map((item) => id("passport", `${item.key}:completed`)),
+  ];
+  const priorSessions = await tx.practiceSession.findMany({
+    where: { practicePlanId: demo.planId },
+    select: { id: true },
+  });
+  await tx.passportEvent.deleteMany({
+    where: {
+      athleteId: demo.athleteId,
+      id: { notIn: fixedPassportIds },
+      eventType: { in: ["PRACTICE_STARTED", "PRACTICE_COMPLETED"] },
+    },
+  });
+  await tx.idempotencyRecord.deleteMany({
+    where: {
+      actorId: stableUuid(demo.parentActor),
+      operation: { startsWith: "checkpoint-a-" },
+    },
+  });
+  await tx.outboxEvent.deleteMany({
+    where: {
+      aggregateId: demo.athleteId,
+      eventType: {
+        in: [
+          "PracticeSessionStarted",
+          "PracticeAttemptRecorded",
+          "PracticeSessionCompleted",
+        ],
+      },
+    },
+  });
+  if (priorSessions.length) {
+    await tx.developmentFlowResource.deleteMany({
+      where: {
+        id: { in: priorSessions.map(({ id: sessionId }) => sessionId) },
+      },
+    });
+    await tx.practiceSession.deleteMany({
+      where: {
+        id: { in: priorSessions.map(({ id: sessionId }) => sessionId) },
+      },
+    });
+  }
   for (const item of historical) {
     const planId = id("practice-plan", item.key);
     const sessionId = id("practice-session", item.key);
@@ -612,6 +675,7 @@ await database.$transaction(async (tx) => {
     where: { athleteId: demo.athleteId },
     update: {
       householdKey: demo.householdId,
+      aggregateVersion: 1,
       state: asJson(flow.persistenceState()),
       adapterState: asJson({ mediaReady: false }),
     },

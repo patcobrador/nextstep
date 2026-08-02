@@ -1,4 +1,9 @@
-import { Controller, Get, ServiceUnavailableException } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Inject,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 
 import { PrismaService } from "./prisma.service.js";
 import { Public } from "./public.decorator.js";
@@ -6,7 +11,9 @@ import { Public } from "./public.decorator.js";
 @Controller("health")
 @Public()
 export class HealthController {
-  constructor(private readonly database: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly database: PrismaService,
+  ) {}
 
   @Get("live")
   live() {

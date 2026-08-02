@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -58,7 +59,9 @@ const requestHash = (request: unknown): string =>
 
 @Injectable()
 export class DevelopmentFlowRepository {
-  constructor(private readonly database: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly database: PrismaService,
+  ) {}
 
   async replay<T>(command: IdempotentCommand): Promise<T | undefined> {
     const record = await this.database.client.idempotencyRecord.findUnique({

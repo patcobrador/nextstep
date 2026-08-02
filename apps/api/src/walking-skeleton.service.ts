@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { WalkingSkeleton, type WalkingSkeletonState } from "@nextstep/domain";
 
 import {
@@ -11,7 +11,10 @@ import {
 
 @Injectable()
 export class WalkingSkeletonService {
-  constructor(private readonly repository: DevelopmentFlowRepository) {}
+  constructor(
+    @Inject(DevelopmentFlowRepository)
+    private readonly repository: DevelopmentFlowRepository,
+  ) {}
 
   async createAthlete(input: {
     householdId: string;

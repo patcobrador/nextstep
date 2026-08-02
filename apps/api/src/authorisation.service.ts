@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 
 import type { AuthenticatedIdentity } from "./identity.js";
 import { PrismaService } from "./prisma.service.js";
@@ -11,7 +11,9 @@ export interface AuthorisedActor {
 
 @Injectable()
 export class AuthorisationService {
-  constructor(private readonly database: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly database: PrismaService,
+  ) {}
 
   async actor(identity: AuthenticatedIdentity): Promise<AuthorisedActor> {
     const user = await this.database.client.user.findUnique({

@@ -5,6 +5,7 @@ import {
   Get,
   Headers,
   HttpCode,
+  Inject,
   Param,
   Post,
   Req,
@@ -23,7 +24,9 @@ const requiredHeader = (value: string | undefined, name: string): string => {
 @Controller()
 export class WalkingSkeletonController {
   constructor(
+    @Inject(WalkingSkeletonService)
     private readonly service: WalkingSkeletonService,
+    @Inject(AuthorisationService)
     private readonly authorisation: AuthorisationService,
   ) {}
 
