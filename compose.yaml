@@ -13,6 +13,7 @@ services:
       LOG_FORMAT: json
       NODE_ENV: development
       PORT: 3001
+      NEXTSTEP_DEMO_MODE: enabled
     ports:
       - "127.0.0.1:3101:3001"
     depends_on:
@@ -36,6 +37,8 @@ services:
       dockerfile: infra/docker/Dockerfile
       target: web
     environment:
+      NEXTSTEP_API_BASE_URL: http://api:3001/v1
+      NEXTSTEP_LOCAL_AUTH: enabled
       NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:3101/v1
       NODE_ENV: production
     ports:

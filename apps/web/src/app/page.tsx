@@ -1,37 +1,28 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function DashboardPage() {
-  return (
-    <div className="page-grid">
-      <section className="hero-card" aria-labelledby="next-action-heading">
-        <p className="eyebrow">Your next step</p>
-        <h1 id="next-action-heading">Build control with both hands</h1>
-        <p>
-          A guided 20-minute Foundation practice with clear parent and athlete
-          cues.
-        </p>
-        <Link className="primary-action" href="/practice">
-          Start practice <span aria-hidden="true">→</span>
-        </Link>
-      </section>
-      <section className="summary-card" aria-labelledby="pathway-heading">
-        <p className="eyebrow">Current campaign</p>
-        <h2 id="pathway-heading">Control First</h2>
-        <dl>
-          <div>
-            <dt>Practices this week</dt>
-            <dd>2</dd>
-          </div>
-          <div>
-            <dt>Next checkpoint</dt>
-            <dd>Both Hands Check</dd>
-          </div>
-          <div>
-            <dt>Status</dt>
-            <dd>Practising</dd>
-          </div>
-        </dl>
-      </section>
-    </div>
-  );
+import { api } from "../lib/api";
+
+export const dynamic = "force-dynamic";
+import { localAuthEnabled, localIdentity } from "../lib/local-auth";
+
+export default async function HomePage() {
+  if (localAuthEnabled() && !(await localIdentity())) redirect("/local-auth");
+  const user = await api.me();
+  const household = user.households[0];
+  if (!household)
+    return (
+      <main className="standalone-state">
+        <h1>No household yet</h1>
+        <p>Your household will appear here when onboarding is complete.</p>
+      </main>
+    );
+  const athletes = await api.athletes(household.id);
+  if (!athletes[0])
+    return (
+      <main className="standalone-state">
+        <h1>No athlete yet</h1>
+        <p>Create an athlete to begin a guided pathway.</p>
+      </main>
+    );
+  redirect(`/athletes/${athletes[0].id}`);
 }

@@ -27,6 +27,8 @@
     "test:security": "turbo run test:security",
     "test:a11y": "turbo run test:a11y",
     "test:e2e:walking-skeleton": "turbo run test:e2e:walking-skeleton",
+    "test:e2e:checkpoint-a": "corepack pnpm --filter @nextstep/web test:e2e:checkpoint-a",
+    "test:visual:checkpoint-a": "corepack pnpm --filter @nextstep/web test:visual:checkpoint-a",
     "contracts:lint": "corepack pnpm --filter @nextstep/contracts lint:openapi",
     "contracts:generate": "corepack pnpm --filter @nextstep/contracts generate",
     "contracts:check-generated": "corepack pnpm --filter @nextstep/contracts check:generated",
