@@ -29,10 +29,11 @@ jobs:
     env:
       DATABASE_URL: postgresql://nextstep:nextstep@localhost:5432/nextstep
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22.18.0
+          package-manager-cache: false
       - run: corepack enable
       - run: corepack prepare pnpm@11.18.0 --activate
       - run: pnpm install --frozen-lockfile
@@ -47,6 +48,7 @@ jobs:
       - run: pnpm prisma:migrate:deploy
       - run: pnpm test:unit
       - run: pnpm test:integration
+      - run: pnpm test:contract
       - run: pnpm test:authz
       - run: pnpm test:a11y
       - run: pnpm test:e2e:walking-skeleton
