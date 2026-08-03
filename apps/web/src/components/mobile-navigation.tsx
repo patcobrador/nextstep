@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function MobileNavigation({ athleteId }: { athleteId: string }) {
   const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const items = [
     ["Dashboard", `/athletes/${athleteId}`],
     ["Skill tree", `/athletes/${athleteId}/skill-tree`],
@@ -12,8 +13,18 @@ export function MobileNavigation({ athleteId }: { athleteId: string }) {
     ["Passport", `/athletes/${athleteId}/passport`],
   ] as const;
   return (
-    <div className="mobile-navigation">
+    <div
+      className="mobile-navigation"
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && open) {
+          event.preventDefault();
+          setOpen(false);
+          buttonRef.current?.focus();
+        }
+      }}
+    >
       <button
+        ref={buttonRef}
         className="menu-button"
         type="button"
         aria-expanded={open}

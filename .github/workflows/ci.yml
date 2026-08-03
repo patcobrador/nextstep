@@ -51,5 +51,7 @@ jobs:
       - run: pnpm test:a11y
       - run: pnpm test:e2e:walking-skeleton
       - run: pnpm build
+      - run: pnpm --filter @nextstep/web exec playwright install --with-deps chromium
+      - run: pnpm test:e2e:checkpoint-a
       - run: docker compose config --quiet
       - run: docker compose build api web
