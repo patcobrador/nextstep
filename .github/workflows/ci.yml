@@ -65,4 +65,31 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
       - run: docker compose config --quiet
-      - run: docker compose build api web
+      - name: Build API image
+        id: docker_build_api
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose --progress=plain build api 2>&1 | tee "$RUNNER_TEMP/docker-build-api.log"
+      - name: Upload API Docker build log
+        if: ${{ failure() && steps.docker_build_api.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-build-api-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/docker-build-api.log
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Build web image
+        id: docker_build_web
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose --progress=plain build web 2>&1 | tee "$RUNNER_TEMP/docker-build-web.log"
+      - name: Upload web Docker build log
+        if: ${{ failure() && steps.docker_build_web.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-build-web-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/docker-build-web.log
+          if-no-files-found: ignore
+          retention-days: 7

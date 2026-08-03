@@ -12,7 +12,8 @@ COPY . .
 RUN pnpm install --frozen-lockfile
 
 FROM workspace AS api
-RUN pnpm --filter @nextstep/api... build
+RUN DATABASE_URL=postgresql://build:build@localhost:5432/build \
+  pnpm --filter @nextstep/api... build
 ENV HOST=0.0.0.0
 ENV PORT=3001
 EXPOSE 3001
