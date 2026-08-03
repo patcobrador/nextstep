@@ -159,6 +159,7 @@ export class CheckpointAService {
       primaryAction: plan
         ? this.practiceAction(athleteId, plan.id, plan.status === "STARTED")
         : this.restAction(
+            athleteId,
             "Practice complete",
             "Your latest prescribed practice is safely recorded.",
           ),
@@ -341,12 +342,14 @@ export class CheckpointAService {
       primaryAction:
         summary.state === "LOCKED"
           ? this.restAction(
+              athleteId,
               "Keep following the pathway",
               summary.whyLocked ?? "A prerequisite is still required.",
             )
           : plan
             ? this.practiceAction(athleteId, plan.id, plan.status === "STARTED")
             : this.restAction(
+                athleteId,
                 "No practice due",
                 "Your next prescribed practice will appear on the dashboard.",
               ),
@@ -756,6 +759,7 @@ export class CheckpointAService {
               },
             ],
       nextAction: this.restAction(
+        authorised.athleteId,
         newState === "EVIDENCE_PENDING"
           ? "Practice requirement complete"
           : "Practice saved",
@@ -888,13 +892,17 @@ export class CheckpointAService {
     };
   }
 
-  private restAction(title: string, description: string): NextActionDto {
+  private restAction(
+    athleteId: string,
+    title: string,
+    description: string,
+  ): NextActionDto {
     return {
       type: "REST",
       title,
       description,
       ctaLabel: "View skill tree",
-      destination: "skill-tree",
+      destination: `/athletes/${athleteId}/skill-tree`,
       reasonCodes: [],
     };
   }

@@ -129,10 +129,13 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
       .set(headers)
       .expect(200);
     expect(activeDetail.body.primaryAction.destination).toContain(planId);
-    await request(server)
+    const lockedDetail = await request(server)
       .get(`/v1/athletes/${athleteId}/skills/${locked.id}`)
       .set(headers)
       .expect(200);
+    expect(lockedDetail.body.primaryAction.destination).toBe(
+      `/athletes/${athleteId}/skill-tree`,
+    );
 
     await request(server)
       .get(`/v1/athletes/${athleteId}/dashboard`)
@@ -215,6 +218,9 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
         status: "COMPLETED",
       }),
     );
+    expect(completed.body.nextAction.destination).toBe(
+      `/athletes/${athleteId}/skill-tree`,
+    );
     const replayed = await request(server)
       .post(`/v1/practice-sessions/${sessionId}/complete`)
       .set(headers)
@@ -231,6 +237,7 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
 
     await app.close();
     app = await startApplication();
+    const serverAfterRestart = app.getHttpServer();
     const persisted = await request(app.getHttpServer())
       .get(`/v1/practice-sessions/${sessionId}`)
       .set(headers)
@@ -270,5 +277,43 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
       where: { athleteId },
     });
     expect(JSON.stringify(snapshot.state)).toContain(sessionId);
+
+    const restDashboard = await request(serverAfterRestart)
+      .get(`/v1/athletes/${athleteId}/dashboard`)
+      .set(headers)
+      .expect(200);
+    expect(restDashboard.body.primaryAction.destination).toBe(
+      `/athletes/${athleteId}/skill-tree`,
+    );
+    const noPracticeDetail = await request(serverAfterRestart)
+      .get(`/v1/athletes/${athleteId}/skills/${active.id}`)
+      .set(headers)
+      .expect(200);
+    expect(noPracticeDetail.body.primaryAction.destination).toBe(
+      `/athletes/${athleteId}/skill-tree`,
+    );
+    const otherDashboard = await request(serverAfterRestart)
+      .get(`/v1/athletes/${otherAthleteId}/dashboard`)
+      .set(otherHeaders)
+      .expect(200);
+    expect(otherDashboard.body.primaryAction.destination).toBe(
+      `/athletes/${otherAthleteId}/skill-tree`,
+    );
+
+    const destinations = [
+      dashboard.body.primaryAction.destination,
+      activeDetail.body.primaryAction.destination,
+      lockedDetail.body.primaryAction.destination,
+      completed.body.nextAction.destination,
+      restDashboard.body.primaryAction.destination,
+      noPracticeDetail.body.primaryAction.destination,
+      otherDashboard.body.primaryAction.destination,
+    ] as string[];
+    expect(
+      destinations.every((destination) => destination.startsWith("/")),
+    ).toBe(true);
+    expect(destinations).not.toEqual(
+      expect.arrayContaining(["skill-tree", "practice", "passport"]),
+    );
   });
 });

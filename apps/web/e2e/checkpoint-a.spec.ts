@@ -353,6 +353,19 @@ test("@visual completes the real Checkpoint A journey", async ({
     page.getByText("Both-hand ball control completed", { exact: true }),
   ).toBeVisible();
 
+  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Mason Johnson’s next step" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "View skill tree" }).click();
+  await expect(page).toHaveURL(
+    `${webUrl}/athletes/25fd56b2-b2f1-4645-8ee6-adbac147069e/skill-tree`,
+  );
+  await expect(page.getByRole("heading", { name: "Skill Tree" })).toBeVisible();
+  await expect(page.locator(".domain-orb")).toHaveCount(8);
+  await expect(page.getByText("This page couldn’t load")).toHaveCount(0);
+  expect(consoleErrors).toEqual([]);
+
   await page.getByRole("button", { name: "Switch persona" }).click();
   await page.waitForURL("**/local-auth");
   await expect(

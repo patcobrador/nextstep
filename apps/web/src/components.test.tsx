@@ -120,7 +120,7 @@ describe("Checkpoint A web components", () => {
         type: "REST",
         title: "Keep following the pathway",
         ctaLabel: "View tree",
-        destination: "skill-tree",
+        destination: "/athletes/athlete/skill-tree",
       },
     };
     render(<SkillDetailPanel athleteId="athlete" skill={skill} />);
