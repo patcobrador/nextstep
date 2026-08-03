@@ -50,10 +50,19 @@ jobs:
       - run: pnpm test:integration
       - run: pnpm test:contract
       - run: pnpm test:authz
+      - run: pnpm test:security
       - run: pnpm test:a11y
       - run: pnpm test:e2e:walking-skeleton
       - run: pnpm build
       - run: pnpm --filter @nextstep/web exec playwright install --with-deps chromium
       - run: pnpm test:e2e:checkpoint-a
+      - name: Upload Playwright failure artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-${{ github.run_attempt }}
+          path: apps/web/.playwright-artifacts/
+          if-no-files-found: ignore
+          retention-days: 7
       - run: docker compose config --quiet
       - run: docker compose build api web

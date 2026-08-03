@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -13,10 +13,13 @@ const databaseUrl =
   "postgresql://nextstep:nextstep@localhost:5433/nextstep";
 const apiUrl = "http://127.0.0.1:3131";
 const webUrl = "http://127.0.0.1:3130";
-let apiProcess: ChildProcess;
-let webProcess: ChildProcess;
+let apiProcess: ChildProcess | undefined;
+let webProcess: ChildProcess | undefined;
 
 const startApi = async () => {
+  if (apiProcess?.exitCode === null) {
+    throw new Error("Cannot start API while the previous process is running.");
+  }
   apiProcess = spawn(process.execPath, ["--import", "tsx", "src/main.ts"], {
     cwd: apiDirectory,
     env: {
@@ -29,10 +32,13 @@ const startApi = async () => {
     },
     stdio: "ignore",
   });
-  await waitForStatus(`${apiUrl}/v1/health/ready`, 200);
+  await waitForStatus(`${apiUrl}/v1/health/ready`, 200, apiProcess, "API");
 };
 
 const startWeb = async (localAuth: boolean) => {
+  if (webProcess?.exitCode === null) {
+    throw new Error("Cannot start web while the previous process is running.");
+  }
   webProcess = spawn(
     process.execPath,
     [
@@ -51,24 +57,43 @@ const startWeb = async (localAuth: boolean) => {
       stdio: "ignore",
     },
   );
-  await waitForStatus(`${webUrl}/local-auth`, localAuth ? 200 : 404);
-};
-
-const stop = async (processToStop: ChildProcess | undefined) => {
-  if (!processToStop || processToStop.exitCode !== null) return;
-  const exited = new Promise<void>((done) =>
-    processToStop.once("exit", () => done()),
+  await waitForStatus(
+    `${webUrl}/local-auth`,
+    localAuth ? 200 : 404,
+    webProcess,
+    "Web",
   );
-  processToStop.kill();
-  await Promise.race([
-    exited,
-    new Promise<void>((done) => setTimeout(done, 5_000)),
-  ]);
 };
 
-const waitForStatus = async (url: string, expected: number) => {
+const stop = async (processToStop: ChildProcess | undefined, label: string) => {
+  if (!processToStop || processToStop.exitCode !== null) return;
+  await new Promise<void>((done, reject) => {
+    const onExit = () => {
+      clearTimeout(timeout);
+      done();
+    };
+    const timeout = setTimeout(() => {
+      processToStop.off("exit", onExit);
+      reject(new Error(`${label} process did not exit within 5 seconds.`));
+    }, 5_000);
+    processToStop.once("exit", onExit);
+    processToStop.kill();
+  });
+};
+
+const waitForStatus = async (
+  url: string,
+  expected: number,
+  processToWatch: ChildProcess,
+  label: string,
+) => {
   const deadline = Date.now() + 60_000;
   while (Date.now() < deadline) {
+    if (processToWatch.exitCode !== null) {
+      throw new Error(
+        `${label} process exited with code ${processToWatch.exitCode} before ${url} returned ${expected}.`,
+      );
+    }
     try {
       if ((await fetch(url)).status === expected) return;
     } catch {}
@@ -131,16 +156,38 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
-  await stop(webProcess);
-  await stop(apiProcess);
+  const results = await Promise.allSettled([
+    stop(webProcess, "Web"),
+    stop(apiProcess, "API"),
+  ]);
+  webProcess = undefined;
+  apiProcess = undefined;
+  const failures = results
+    .filter((result) => result.status === "rejected")
+    .map((result) => result.reason);
+  if (failures.length > 0) {
+    throw new AggregateError(failures, "Failed to stop E2E child processes.");
+  }
 });
 
-test("@visual completes the real Checkpoint A journey", async ({ page }) => {
+test("@visual completes the real Checkpoint A journey", async ({
+  page,
+  request,
+}) => {
   const consoleErrors: string[] = [];
-  page.on("console", (message) => {
+  const onConsole = (message: ConsoleMessage) => {
     if (message.type() === "error") consoleErrors.push(message.text());
-  });
-  page.on("pageerror", (error) => consoleErrors.push(error.message));
+  };
+  const onPageError = (error: Error) => consoleErrors.push(error.message);
+  const observeConsole = () => {
+    page.on("console", onConsole);
+    page.on("pageerror", onPageError);
+  };
+  const stopObservingConsole = () => {
+    page.off("console", onConsole);
+    page.off("pageerror", onPageError);
+  };
+  observeConsole();
 
   await page.goto("/local-auth");
   await expect(
@@ -295,15 +342,16 @@ test("@visual completes the real Checkpoint A journey", async ({ page }) => {
   ).length;
   expect(completionCountAfterReplay).toBe(completionCountBeforeReplay);
   expect(consoleErrors).toEqual([]);
-  consoleErrors.length = 0;
 
-  await stop(apiProcess);
+  stopObservingConsole();
+  await stop(apiProcess, "API");
+  apiProcess = undefined;
   await startApi();
+  observeConsole();
   await page.reload();
   await expect(
     page.getByText("Both-hand ball control completed", { exact: true }),
   ).toBeVisible();
-  consoleErrors.length = 0;
 
   await page.getByRole("button", { name: "Switch persona" }).click();
   await page.waitForURL("**/local-auth");
@@ -324,15 +372,12 @@ test("@visual completes the real Checkpoint A journey", async ({ page }) => {
   );
   expect(deniedApi.status()).toBe(404);
   expect(consoleErrors).toEqual([]);
-  consoleErrors.length = 0;
 
-  await stop(webProcess);
+  stopObservingConsole();
+  await page.close();
+  await stop(webProcess, "Web");
+  webProcess = undefined;
   await startWeb(false);
-  const localAuthResponse = await page.goto("/local-auth");
-  expect(localAuthResponse?.status()).toBe(404);
-  expect(
-    consoleErrors.filter(
-      (message) => !message.includes("404") && !message.includes("500"),
-    ),
-  ).toEqual([]);
+  const localAuthResponse = await request.get(`${webUrl}/local-auth`);
+  expect(localAuthResponse.status()).toBe(404);
 });
