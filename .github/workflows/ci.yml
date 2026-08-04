@@ -11,7 +11,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:17-alpine
@@ -56,6 +56,9 @@ jobs:
       - run: pnpm build
       - run: pnpm --filter @nextstep/web exec playwright install --with-deps chromium
       - run: pnpm test:e2e:checkpoint-a
+      - name: Start private object storage
+        run: docker compose up -d minio minio-init
+      - run: pnpm test:e2e:checkpoint-b1
       - name: Upload Playwright failure artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -91,5 +94,19 @@ jobs:
         with:
           name: docker-build-web-${{ github.run_attempt }}
           path: ${{ runner.temp }}/docker-build-web.log
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Build worker image
+        id: docker_build_worker
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose --progress=plain build worker 2>&1 | tee "$RUNNER_TEMP/docker-build-worker.log"
+      - name: Upload worker Docker build log
+        if: ${{ failure() && steps.docker_build_worker.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-build-worker-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/docker-build-worker.log
           if-no-files-found: ignore
           retention-days: 7
