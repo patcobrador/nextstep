@@ -282,16 +282,20 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
       .get(`/v1/athletes/${athleteId}/dashboard`)
       .set(headers)
       .expect(200);
-    expect(restDashboard.body.primaryAction.destination).toBe(
-      `/athletes/${athleteId}/skill-tree`,
-    );
+    expect(restDashboard.body.primaryAction).toMatchObject({
+      type: "SUBMIT_EVIDENCE",
+      ctaLabel: "Add private evidence",
+      destination: `/athletes/${athleteId}/skills/${active.id}/evidence`,
+    });
     const noPracticeDetail = await request(serverAfterRestart)
       .get(`/v1/athletes/${athleteId}/skills/${active.id}`)
       .set(headers)
       .expect(200);
-    expect(noPracticeDetail.body.primaryAction.destination).toBe(
-      `/athletes/${athleteId}/skill-tree`,
-    );
+    expect(noPracticeDetail.body.primaryAction).toMatchObject({
+      type: "SUBMIT_EVIDENCE",
+      ctaLabel: "Add private evidence",
+      destination: `/athletes/${athleteId}/skills/${active.id}/evidence`,
+    });
     const otherDashboard = await request(serverAfterRestart)
       .get(`/v1/athletes/${otherAthleteId}/dashboard`)
       .set(otherHeaders)

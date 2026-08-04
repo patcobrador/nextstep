@@ -222,6 +222,7 @@ export class DevelopmentFlowRepository {
       this.database.client.idempotencyRecord.deleteMany(),
       this.database.client.developmentFlowResource.deleteMany(),
       this.database.client.developmentFlowSnapshot.deleteMany(),
+      this.database.client.coachProfile.deleteMany(),
       this.database.client.athlete.deleteMany(),
       this.database.client.householdMembership.deleteMany(),
       this.database.client.household.deleteMany(),

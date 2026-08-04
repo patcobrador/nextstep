@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { CircularSkillTree } from "./components/circular-skill-tree";
+import { EvidenceExperience } from "./components/evidence-experience";
 import { MobileNavigation } from "./components/mobile-navigation";
 import { PracticeRunner } from "./components/practice-runner";
 import { SkillDetailPanel } from "./components/skill-detail-panel";
@@ -18,6 +19,16 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("./app/actions/practice", () => ({
   savePracticeStep,
   completePractice: vi.fn().mockResolvedValue(undefined),
+}));
+vi.mock("./app/actions/evidence", () => ({
+  completeEvidenceUpload: vi.fn(),
+  createEvidenceIntent: vi.fn(),
+  grantEvidencePlayback: vi.fn(),
+  loadEvidence: vi.fn(),
+  recordEvidenceConsent: vi.fn(),
+  requestEvidenceDeletion: vi.fn(),
+  submitEvidenceForAssessment: vi.fn(),
+  withdrawEvidenceConsent: vi.fn(),
 }));
 
 afterEach(() => {
@@ -184,5 +195,34 @@ describe("Checkpoint A web components", () => {
       expect(savePracticeStep).toHaveBeenCalledWith("session", plan.steps[0]),
     );
     expect(screen.getByRole("heading", { name: "Left hand" })).not.toBeNull();
+  });
+
+  it("presents accessible recording, safety, privacy, format and consent guidance", () => {
+    render(
+      <EvidenceExperience
+        athleteId="athlete"
+        householdId="household"
+        isOwner
+        nodeId="node"
+        instructions={{
+          movement: "Dribble with the right hand, then the left hand.",
+          framing: "Keep the full athlete and ball visible.",
+          maxDurationSeconds: 60,
+          requiredSequence: ["20 seconds right", "20 seconds left"],
+          equipment: ["One basketball", "A clear practice area"],
+          safety: ["Stop if the surface becomes unsafe."],
+          privacy: ["Keep names and addresses out of frame."],
+          supportedFormat: "MP4 with H.264 video",
+        }}
+      />,
+    );
+    expect(
+      screen.getByRole("heading", { name: "Record the Both Hands Check" }),
+    ).not.toBeNull();
+    expect(screen.getByText(/does not yet allow coach review/i)).not.toBeNull();
+    expect(screen.getByText(/MOV, HEVC/i)).not.toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Record capture/upload consent" }),
+    ).not.toBeNull();
   });
 });

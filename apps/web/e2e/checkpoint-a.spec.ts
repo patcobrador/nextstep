@@ -357,7 +357,13 @@ test("@visual completes the real Checkpoint A journey", async ({
   await expect(
     page.getByRole("heading", { name: "Mason Johnson’s next step" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "View skill tree" }).click();
+  await expect(
+    page.getByRole("link", { name: "Add private evidence" }),
+  ).toHaveAttribute(
+    "href",
+    "/athletes/25fd56b2-b2f1-4645-8ee6-adbac147069e/skills/7f37471f-1b08-4f5d-9529-3d13c7aa79c4/evidence",
+  );
+  await page.getByRole("link", { name: "Skill Tree", exact: true }).click();
   await expect(page).toHaveURL(
     `${webUrl}/athletes/25fd56b2-b2f1-4645-8ee6-adbac147069e/skill-tree`,
   );

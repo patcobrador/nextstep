@@ -144,6 +144,9 @@ export class CheckpointAService {
     ).length;
     const total = assignment.campaign.steps.length;
     const plan = athlete.practicePlans[0];
+    const evidencePending = athlete.skillProgress.find(
+      ({ state }) => state === "EVIDENCE_PENDING",
+    );
     const startOfWeek = new Date();
     startOfWeek.setUTCDate(startOfWeek.getUTCDate() - 7);
     const meaningfulPractices =
@@ -156,13 +159,15 @@ export class CheckpointAService {
       });
     return {
       athlete: this.athleteDto(athlete),
-      primaryAction: plan
-        ? this.practiceAction(athleteId, plan.id, plan.status === "STARTED")
-        : this.restAction(
-            athleteId,
-            "Practice complete",
-            "Your latest prescribed practice is safely recorded.",
-          ),
+      primaryAction: evidencePending
+        ? this.evidenceAction(athleteId, evidencePending.nodeId)
+        : plan
+          ? this.practiceAction(athleteId, plan.id, plan.status === "STARTED")
+          : this.restAction(
+              athleteId,
+              "Practice complete",
+              "Your latest prescribed practice is safely recorded.",
+            ),
       campaign: {
         id: assignment.campaign.id,
         key: assignment.campaign.key,
@@ -318,6 +323,13 @@ export class CheckpointAService {
     if (!summary) throw new NotFoundException("Skill was not found.");
     const node = await this.database.client.skillNode.findUnique({
       where: { id: nodeId },
+      include: {
+        rubrics: {
+          where: { assessmentType: "ASYNC_VIDEO" },
+          orderBy: { version: "desc" },
+          take: 1,
+        },
+      },
     });
     if (!node) throw new NotFoundException("Skill was not found.");
     const content = jsonObject(node.content);
@@ -339,6 +351,14 @@ export class CheckpointAService {
       childCues: stringArray(content["childCues"]).slice(0, 3),
       commonErrors: stringArray(content["commonErrors"]),
       safety: stringArray(content["safety"]),
+      evidenceInstructions:
+        summary.state === "EVIDENCE_PENDING" && node.rubrics[0]
+          ? this.evidenceInstructions(
+              node.objective,
+              content,
+              node.rubrics[0].evidenceInstructions,
+            )
+          : null,
       primaryAction:
         summary.state === "LOCKED"
           ? this.restAction(
@@ -346,13 +366,19 @@ export class CheckpointAService {
               "Keep following the pathway",
               summary.whyLocked ?? "A prerequisite is still required.",
             )
-          : plan
-            ? this.practiceAction(athleteId, plan.id, plan.status === "STARTED")
-            : this.restAction(
-                athleteId,
-                "No practice due",
-                "Your next prescribed practice will appear on the dashboard.",
-              ),
+          : summary.state === "EVIDENCE_PENDING"
+            ? this.evidenceAction(athleteId, nodeId)
+            : plan
+              ? this.practiceAction(
+                  athleteId,
+                  plan.id,
+                  plan.status === "STARTED",
+                )
+              : this.restAction(
+                  athleteId,
+                  "No practice due",
+                  "Your next prescribed practice will appear on the dashboard.",
+                ),
     };
   }
 
@@ -904,6 +930,49 @@ export class CheckpointAService {
       ctaLabel: "View skill tree",
       destination: `/athletes/${athleteId}/skill-tree`,
       reasonCodes: [],
+    };
+  }
+
+  private evidenceAction(athleteId: string, nodeId: string): NextActionDto {
+    return {
+      type: "SUBMIT_EVIDENCE",
+      title: "Record checkpoint evidence",
+      description:
+        "Review the safety and privacy guidance before choosing a private video.",
+      ctaLabel: "Add private evidence",
+      destination: `/athletes/${athleteId}/skills/${nodeId}/evidence`,
+      reasonCodes: ["EVIDENCE_REQUIRED"],
+    };
+  }
+
+  private evidenceInstructions(
+    movement: string,
+    content: Record<string, unknown>,
+    value: Prisma.JsonValue,
+  ): components["schemas"]["EvidenceInstructions"] {
+    const instructions = jsonObject(value);
+    return {
+      movement,
+      framing:
+        typeof instructions["framing"] === "string"
+          ? instructions["framing"]
+          : "Keep the full athlete and ball visible throughout the clip.",
+      maxDurationSeconds:
+        typeof instructions["maxDurationSeconds"] === "number"
+          ? Math.min(90, instructions["maxDurationSeconds"])
+          : 90,
+      requiredSequence: stringArray(instructions["requiredSequence"]),
+      equipment: [
+        "One age-appropriate basketball",
+        "A dry, clear practice area",
+      ],
+      safety: stringArray(content["safety"]),
+      privacy: [
+        "Record only the athlete and supervising adult where possible.",
+        "Avoid names, addresses, school details and other identifying information in frame or audio.",
+        "Evidence remains private and is not used for advertising or model training.",
+      ],
+      supportedFormat: "MP4 with H.264 video",
     };
   }
 

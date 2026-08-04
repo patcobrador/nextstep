@@ -9,6 +9,8 @@ import { DevelopmentFlowRepository } from "./development-flow.repository.js";
 import { AuthorisationService } from "./authorisation.service.js";
 import { CheckpointAController } from "./checkpoint-a.controller.js";
 import { CheckpointAService } from "./checkpoint-a.service.js";
+import { EvidenceController } from "./evidence.controller.js";
+import { EvidenceService } from "./evidence.service.js";
 import { HealthController } from "./health.controller.js";
 import {
   ProblemDetailsFilter,
@@ -21,6 +23,11 @@ import {
   LocalHeaderIdentityAdapter,
 } from "./identity.js";
 import { PrismaService } from "./prisma.service.js";
+import { IdempotencyService } from "./idempotency.service.js";
+import {
+  mediaConfigurationProvider,
+  privateMediaStoreProvider,
+} from "./media.provider.js";
 import { WalkingSkeletonController } from "./walking-skeleton.controller.js";
 import { WalkingSkeletonService } from "./walking-skeleton.service.js";
 
@@ -28,12 +35,17 @@ import { WalkingSkeletonService } from "./walking-skeleton.service.js";
   controllers: [
     HealthController,
     CheckpointAController,
+    EvidenceController,
     WalkingSkeletonController,
   ],
   providers: [
     PrismaService,
     AuthorisationService,
     CheckpointAService,
+    EvidenceService,
+    IdempotencyService,
+    mediaConfigurationProvider,
+    privateMediaStoreProvider,
     DevelopmentFlowRepository,
     WalkingSkeletonService,
     LocalHeaderIdentityAdapter,
