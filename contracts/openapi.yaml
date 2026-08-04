@@ -568,6 +568,21 @@ paths:
                 $ref: "#/components/schemas/EvidenceSubmission"
         default:
           $ref: "#/components/responses/Problem"
+    delete:
+      tags: [Evidence]
+      operationId: requestEvidenceDeletion
+      summary: Request worker-driven deletion of private evidence
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "202":
+          description: Deletion workflow accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvidenceSubmission"
+        default:
+          $ref: "#/components/responses/Problem"
 
   /evidence-submissions/{evidenceId}/playback-grants:
     parameters:
@@ -585,14 +600,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PlaybackGrant"
-        default:
-          $ref: "#/components/responses/Problem"
-    delete:
-      tags: [Evidence]
-      operationId: requestEvidenceDeletion
-      responses:
-        "202":
-          description: Deletion workflow accepted
         default:
           $ref: "#/components/responses/Problem"
 
@@ -1009,7 +1016,9 @@ components:
       required: [purposeKey, policyVersion, granted]
       properties:
         athleteId: { type: [string, "null"], format: uuid }
-        purposeKey: { type: string }
+        purposeKey:
+          type: string
+          enum: [PRIVATE_EVIDENCE_CAPTURE_UPLOAD, ASSIGNED_COACH_EVIDENCE_REVIEW]
         policyVersion: { type: string }
         granted: { type: boolean }
 
@@ -1020,7 +1029,9 @@ components:
         id: { type: string, format: uuid }
         householdId: { type: string, format: uuid }
         athleteId: { type: [string, "null"], format: uuid }
-        purposeKey: { type: string }
+        purposeKey:
+          type: string
+          enum: [PRIVATE_EVIDENCE_CAPTURE_UPLOAD, ASSIGNED_COACH_EVIDENCE_REVIEW]
         policyVersion: { type: string }
         granted: { type: boolean }
         recordedAt: { type: string, format: date-time }
@@ -1178,6 +1189,31 @@ components:
               items: { type: string }
             primaryAction:
               $ref: "#/components/schemas/NextAction"
+            evidenceInstructions:
+              oneOf:
+                - type: "null"
+                - $ref: "#/components/schemas/EvidenceInstructions"
+
+    EvidenceInstructions:
+      type: object
+      required: [movement, framing, maxDurationSeconds, requiredSequence, equipment, safety, privacy, supportedFormat]
+      properties:
+        movement: { type: string }
+        framing: { type: string }
+        maxDurationSeconds: { type: integer, minimum: 1, maximum: 90 }
+        requiredSequence:
+          type: array
+          items: { type: string }
+        equipment:
+          type: array
+          items: { type: string }
+        safety:
+          type: array
+          items: { type: string }
+        privacy:
+          type: array
+          items: { type: string }
+        supportedFormat: { type: string, const: "MP4 with H.264 video" }
 
     BranchChoice:
       type: object
@@ -1359,14 +1395,15 @@ components:
         consentRecordId: { type: string, format: uuid }
         filename: { type: string, maxLength: 255 }
         mimeType: { type: string }
-        sizeBytes: { type: integer, minimum: 1 }
+        sizeBytes: { type: integer, minimum: 1, maximum: 157286400 }
         durationMs: { type: [integer, "null"], minimum: 1, maximum: 90000 }
         checksumSha256: { type: [string, "null"] }
 
     UploadIntent:
       type: object
-      required: [mediaAssetId, uploadUrl, expiresAt, requiredHeaders]
+      required: [evidenceId, mediaAssetId, uploadUrl, expiresAt, requiredHeaders, multipart]
       properties:
+        evidenceId: { type: string, format: uuid }
         mediaAssetId: { type: string, format: uuid }
         uploadUrl: { type: string, format: uri }
         expiresAt: { type: string, format: date-time }
@@ -1394,12 +1431,17 @@ components:
 
     MediaAsset:
       type: object
-      required: [id, athleteId, status, createdAt]
+      required: [id, athleteId, status, sizeBytes, version, createdAt]
       properties:
         id: { type: string, format: uuid }
         athleteId: { type: string, format: uuid }
         status: { type: string, enum: [UPLOADING, UPLOADED, PROCESSING, READY, REJECTED, QUARANTINED, DELETION_PENDING, DELETED] }
         rejectionCode: { type: [string, "null"] }
+        sizeBytes: { type: integer, minimum: 1 }
+        durationMs: { type: [integer, "null"], minimum: 1 }
+        version: { type: integer, minimum: 1 }
+        uploadExpiresAt: { type: [string, "null"], format: date-time }
+        retentionExpiresAt: { type: [string, "null"], format: date-time }
         createdAt: { type: string, format: date-time }
         readyAt: { type: [string, "null"], format: date-time }
 
@@ -1412,26 +1454,30 @@ components:
 
     SubmitEvidenceRequest:
       type: object
-      required: [athleteId, nodeId, mediaAssetId, consentRecordId]
+      required: [evidenceId, reviewConsentRecordId]
       properties:
-        athleteId: { type: string, format: uuid }
-        nodeId: { type: string, format: uuid }
-        mediaAssetId: { type: string, format: uuid }
-        consentRecordId: { type: string, format: uuid }
+        evidenceId: { type: string, format: uuid }
+        reviewConsentRecordId: { type: string, format: uuid }
 
     EvidenceSubmission:
       type: object
-      required: [id, athleteId, nodeId, mediaAssetId, status, createdAt]
+      required: [id, athleteId, nodeId, mediaAssetId, consentRecordId, media, status, version, createdAt]
       properties:
         id: { type: string, format: uuid }
         athleteId: { type: string, format: uuid }
         nodeId: { type: string, format: uuid }
         mediaAssetId: { type: string, format: uuid }
-        status: { type: string, enum: [DRAFT, UPLOADING, SUBMITTED, ASSIGNED, REVIEWED, RETRY_REQUIRED, WITHDRAWN, DELETED] }
-        playbackUrl: { type: [string, "null"], format: uri }
-        playbackExpiresAt: { type: [string, "null"], format: date-time }
+        consentRecordId: { type: string, format: uuid }
+        reviewConsentRecordId: { type: [string, "null"], format: uuid }
+        status: { type: string, enum: [DRAFT, SUBMITTED, ASSIGNED, REVIEWED, WITHDRAWN, DELETED] }
+        media: { $ref: "#/components/schemas/MediaAsset" }
+        version: { type: integer, minimum: 1 }
         assessmentId: { type: [string, "null"], format: uuid }
         createdAt: { type: string, format: date-time }
+        submittedAt: { type: [string, "null"], format: date-time }
+        withdrawnAt: { type: [string, "null"], format: date-time }
+        deletionRequestedAt: { type: [string, "null"], format: date-time }
+        deletedAt: { type: [string, "null"], format: date-time }
 
     AssessmentSummary:
       type: object

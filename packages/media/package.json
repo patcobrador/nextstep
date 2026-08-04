@@ -1,12 +1,14 @@
 {
-  "name": "@nextstep/worker",
+  "name": "@nextstep/media",
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev": "tsx watch src/main.ts",
-    "start": "node dist/main.js",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "lint": "tsc -p tsconfig.json --noEmit",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -15,18 +17,17 @@
     "test:integration": "vitest run --passWithNoTests",
     "test:contract": "vitest run --passWithNoTests",
     "test:authz": "vitest run --passWithNoTests",
-    "test:security": "vitest run --passWithNoTests",
+    "test:security": "vitest run",
     "test:a11y": "vitest run --passWithNoTests",
-    "test:e2e:walking-skeleton": "vitest run"
+    "test:e2e:walking-skeleton": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@nextstep/database": "workspace:*",
-    "@nextstep/domain": "workspace:*",
-    "@nextstep/media": "workspace:*"
+    "@aws-sdk/client-s3": "3.883.0",
+    "@aws-sdk/s3-request-presigner": "3.883.0"
   },
   "devDependencies": {
+    "@types/node": "22.18.6",
     "typescript": "5.9.3",
-    "tsx": "4.20.6",
     "vitest": "4.1.10"
   }
 }

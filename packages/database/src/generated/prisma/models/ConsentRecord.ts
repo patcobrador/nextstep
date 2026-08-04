@@ -217,7 +217,8 @@ export type ConsentRecordWhereInput = {
   household?: Prisma.XOR<Prisma.HouseholdScalarRelationFilter, Prisma.HouseholdWhereInput>
   athlete?: Prisma.XOR<Prisma.AthleteNullableScalarRelationFilter, Prisma.AthleteWhereInput> | null
   consentingUser?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  evidence?: Prisma.EvidenceSubmissionListRelationFilter
+  captureEvidence?: Prisma.EvidenceSubmissionListRelationFilter
+  reviewEvidence?: Prisma.EvidenceSubmissionListRelationFilter
 }
 
 export type ConsentRecordOrderByWithRelationInput = {
@@ -233,7 +234,8 @@ export type ConsentRecordOrderByWithRelationInput = {
   household?: Prisma.HouseholdOrderByWithRelationInput
   athlete?: Prisma.AthleteOrderByWithRelationInput
   consentingUser?: Prisma.UserOrderByWithRelationInput
-  evidence?: Prisma.EvidenceSubmissionOrderByRelationAggregateInput
+  captureEvidence?: Prisma.EvidenceSubmissionOrderByRelationAggregateInput
+  reviewEvidence?: Prisma.EvidenceSubmissionOrderByRelationAggregateInput
 }
 
 export type ConsentRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -252,7 +254,8 @@ export type ConsentRecordWhereUniqueInput = Prisma.AtLeast<{
   household?: Prisma.XOR<Prisma.HouseholdScalarRelationFilter, Prisma.HouseholdWhereInput>
   athlete?: Prisma.XOR<Prisma.AthleteNullableScalarRelationFilter, Prisma.AthleteWhereInput> | null
   consentingUser?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  evidence?: Prisma.EvidenceSubmissionListRelationFilter
+  captureEvidence?: Prisma.EvidenceSubmissionListRelationFilter
+  reviewEvidence?: Prisma.EvidenceSubmissionListRelationFilter
 }, "id">
 
 export type ConsentRecordOrderByWithAggregationInput = {
@@ -295,7 +298,8 @@ export type ConsentRecordCreateInput = {
   household: Prisma.HouseholdCreateNestedOneWithoutConsentsInput
   athlete?: Prisma.AthleteCreateNestedOneWithoutConsentsInput
   consentingUser: Prisma.UserCreateNestedOneWithoutConsentsInput
-  evidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+  captureEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+  reviewEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutReviewConsentRecordInput
 }
 
 export type ConsentRecordUncheckedCreateInput = {
@@ -308,7 +312,8 @@ export type ConsentRecordUncheckedCreateInput = {
   granted: boolean
   recordedAt?: Date | string
   withdrawnAt?: Date | string | null
-  evidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutReviewConsentRecordInput
 }
 
 export type ConsentRecordUpdateInput = {
@@ -321,7 +326,8 @@ export type ConsentRecordUpdateInput = {
   household?: Prisma.HouseholdUpdateOneRequiredWithoutConsentsNestedInput
   athlete?: Prisma.AthleteUpdateOneWithoutConsentsNestedInput
   consentingUser?: Prisma.UserUpdateOneRequiredWithoutConsentsNestedInput
-  evidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
 export type ConsentRecordUncheckedUpdateInput = {
@@ -334,7 +340,8 @@ export type ConsentRecordUncheckedUpdateInput = {
   granted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  evidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
 export type ConsentRecordCreateManyInput = {
@@ -419,6 +426,11 @@ export type ConsentRecordMinOrderByAggregateInput = {
 export type ConsentRecordScalarRelationFilter = {
   is?: Prisma.ConsentRecordWhereInput
   isNot?: Prisma.ConsentRecordWhereInput
+}
+
+export type ConsentRecordNullableScalarRelationFilter = {
+  is?: Prisma.ConsentRecordWhereInput | null
+  isNot?: Prisma.ConsentRecordWhereInput | null
 }
 
 export type ConsentRecordCreateNestedManyWithoutConsentingUserInput = {
@@ -547,18 +559,34 @@ export type ConsentRecordUncheckedUpdateManyWithoutAthleteNestedInput = {
   deleteMany?: Prisma.ConsentRecordScalarWhereInput | Prisma.ConsentRecordScalarWhereInput[]
 }
 
-export type ConsentRecordCreateNestedOneWithoutEvidenceInput = {
-  create?: Prisma.XOR<Prisma.ConsentRecordCreateWithoutEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutEvidenceInput>
-  connectOrCreate?: Prisma.ConsentRecordCreateOrConnectWithoutEvidenceInput
+export type ConsentRecordCreateNestedOneWithoutCaptureEvidenceInput = {
+  create?: Prisma.XOR<Prisma.ConsentRecordCreateWithoutCaptureEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutCaptureEvidenceInput>
+  connectOrCreate?: Prisma.ConsentRecordCreateOrConnectWithoutCaptureEvidenceInput
   connect?: Prisma.ConsentRecordWhereUniqueInput
 }
 
-export type ConsentRecordUpdateOneRequiredWithoutEvidenceNestedInput = {
-  create?: Prisma.XOR<Prisma.ConsentRecordCreateWithoutEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutEvidenceInput>
-  connectOrCreate?: Prisma.ConsentRecordCreateOrConnectWithoutEvidenceInput
-  upsert?: Prisma.ConsentRecordUpsertWithoutEvidenceInput
+export type ConsentRecordCreateNestedOneWithoutReviewEvidenceInput = {
+  create?: Prisma.XOR<Prisma.ConsentRecordCreateWithoutReviewEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutReviewEvidenceInput>
+  connectOrCreate?: Prisma.ConsentRecordCreateOrConnectWithoutReviewEvidenceInput
   connect?: Prisma.ConsentRecordWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ConsentRecordUpdateToOneWithWhereWithoutEvidenceInput, Prisma.ConsentRecordUpdateWithoutEvidenceInput>, Prisma.ConsentRecordUncheckedUpdateWithoutEvidenceInput>
+}
+
+export type ConsentRecordUpdateOneRequiredWithoutCaptureEvidenceNestedInput = {
+  create?: Prisma.XOR<Prisma.ConsentRecordCreateWithoutCaptureEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutCaptureEvidenceInput>
+  connectOrCreate?: Prisma.ConsentRecordCreateOrConnectWithoutCaptureEvidenceInput
+  upsert?: Prisma.ConsentRecordUpsertWithoutCaptureEvidenceInput
+  connect?: Prisma.ConsentRecordWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConsentRecordUpdateToOneWithWhereWithoutCaptureEvidenceInput, Prisma.ConsentRecordUpdateWithoutCaptureEvidenceInput>, Prisma.ConsentRecordUncheckedUpdateWithoutCaptureEvidenceInput>
+}
+
+export type ConsentRecordUpdateOneWithoutReviewEvidenceNestedInput = {
+  create?: Prisma.XOR<Prisma.ConsentRecordCreateWithoutReviewEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutReviewEvidenceInput>
+  connectOrCreate?: Prisma.ConsentRecordCreateOrConnectWithoutReviewEvidenceInput
+  upsert?: Prisma.ConsentRecordUpsertWithoutReviewEvidenceInput
+  disconnect?: Prisma.ConsentRecordWhereInput | boolean
+  delete?: Prisma.ConsentRecordWhereInput | boolean
+  connect?: Prisma.ConsentRecordWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConsentRecordUpdateToOneWithWhereWithoutReviewEvidenceInput, Prisma.ConsentRecordUpdateWithoutReviewEvidenceInput>, Prisma.ConsentRecordUncheckedUpdateWithoutReviewEvidenceInput>
 }
 
 export type ConsentRecordCreateWithoutConsentingUserInput = {
@@ -570,7 +598,8 @@ export type ConsentRecordCreateWithoutConsentingUserInput = {
   withdrawnAt?: Date | string | null
   household: Prisma.HouseholdCreateNestedOneWithoutConsentsInput
   athlete?: Prisma.AthleteCreateNestedOneWithoutConsentsInput
-  evidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+  captureEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+  reviewEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutReviewConsentRecordInput
 }
 
 export type ConsentRecordUncheckedCreateWithoutConsentingUserInput = {
@@ -582,7 +611,8 @@ export type ConsentRecordUncheckedCreateWithoutConsentingUserInput = {
   granted: boolean
   recordedAt?: Date | string
   withdrawnAt?: Date | string | null
-  evidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutReviewConsentRecordInput
 }
 
 export type ConsentRecordCreateOrConnectWithoutConsentingUserInput = {
@@ -635,7 +665,8 @@ export type ConsentRecordCreateWithoutHouseholdInput = {
   withdrawnAt?: Date | string | null
   athlete?: Prisma.AthleteCreateNestedOneWithoutConsentsInput
   consentingUser: Prisma.UserCreateNestedOneWithoutConsentsInput
-  evidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+  captureEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+  reviewEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutReviewConsentRecordInput
 }
 
 export type ConsentRecordUncheckedCreateWithoutHouseholdInput = {
@@ -647,7 +678,8 @@ export type ConsentRecordUncheckedCreateWithoutHouseholdInput = {
   granted: boolean
   recordedAt?: Date | string
   withdrawnAt?: Date | string | null
-  evidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutReviewConsentRecordInput
 }
 
 export type ConsentRecordCreateOrConnectWithoutHouseholdInput = {
@@ -685,7 +717,8 @@ export type ConsentRecordCreateWithoutAthleteInput = {
   withdrawnAt?: Date | string | null
   household: Prisma.HouseholdCreateNestedOneWithoutConsentsInput
   consentingUser: Prisma.UserCreateNestedOneWithoutConsentsInput
-  evidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+  captureEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+  reviewEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutReviewConsentRecordInput
 }
 
 export type ConsentRecordUncheckedCreateWithoutAthleteInput = {
@@ -697,7 +730,8 @@ export type ConsentRecordUncheckedCreateWithoutAthleteInput = {
   granted: boolean
   recordedAt?: Date | string
   withdrawnAt?: Date | string | null
-  evidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutReviewConsentRecordInput
 }
 
 export type ConsentRecordCreateOrConnectWithoutAthleteInput = {
@@ -726,7 +760,7 @@ export type ConsentRecordUpdateManyWithWhereWithoutAthleteInput = {
   data: Prisma.XOR<Prisma.ConsentRecordUpdateManyMutationInput, Prisma.ConsentRecordUncheckedUpdateManyWithoutAthleteInput>
 }
 
-export type ConsentRecordCreateWithoutEvidenceInput = {
+export type ConsentRecordCreateWithoutCaptureEvidenceInput = {
   id?: string
   purposeKey: string
   policyVersion: string
@@ -736,9 +770,10 @@ export type ConsentRecordCreateWithoutEvidenceInput = {
   household: Prisma.HouseholdCreateNestedOneWithoutConsentsInput
   athlete?: Prisma.AthleteCreateNestedOneWithoutConsentsInput
   consentingUser: Prisma.UserCreateNestedOneWithoutConsentsInput
+  reviewEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutReviewConsentRecordInput
 }
 
-export type ConsentRecordUncheckedCreateWithoutEvidenceInput = {
+export type ConsentRecordUncheckedCreateWithoutCaptureEvidenceInput = {
   id?: string
   householdId: string
   athleteId?: string | null
@@ -748,25 +783,57 @@ export type ConsentRecordUncheckedCreateWithoutEvidenceInput = {
   granted: boolean
   recordedAt?: Date | string
   withdrawnAt?: Date | string | null
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutReviewConsentRecordInput
 }
 
-export type ConsentRecordCreateOrConnectWithoutEvidenceInput = {
+export type ConsentRecordCreateOrConnectWithoutCaptureEvidenceInput = {
   where: Prisma.ConsentRecordWhereUniqueInput
-  create: Prisma.XOR<Prisma.ConsentRecordCreateWithoutEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutEvidenceInput>
+  create: Prisma.XOR<Prisma.ConsentRecordCreateWithoutCaptureEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutCaptureEvidenceInput>
 }
 
-export type ConsentRecordUpsertWithoutEvidenceInput = {
-  update: Prisma.XOR<Prisma.ConsentRecordUpdateWithoutEvidenceInput, Prisma.ConsentRecordUncheckedUpdateWithoutEvidenceInput>
-  create: Prisma.XOR<Prisma.ConsentRecordCreateWithoutEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutEvidenceInput>
+export type ConsentRecordCreateWithoutReviewEvidenceInput = {
+  id?: string
+  purposeKey: string
+  policyVersion: string
+  granted: boolean
+  recordedAt?: Date | string
+  withdrawnAt?: Date | string | null
+  household: Prisma.HouseholdCreateNestedOneWithoutConsentsInput
+  athlete?: Prisma.AthleteCreateNestedOneWithoutConsentsInput
+  consentingUser: Prisma.UserCreateNestedOneWithoutConsentsInput
+  captureEvidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutConsentRecordInput
+}
+
+export type ConsentRecordUncheckedCreateWithoutReviewEvidenceInput = {
+  id?: string
+  householdId: string
+  athleteId?: string | null
+  consentingUserId: string
+  purposeKey: string
+  policyVersion: string
+  granted: boolean
+  recordedAt?: Date | string
+  withdrawnAt?: Date | string | null
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutConsentRecordInput
+}
+
+export type ConsentRecordCreateOrConnectWithoutReviewEvidenceInput = {
+  where: Prisma.ConsentRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConsentRecordCreateWithoutReviewEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutReviewEvidenceInput>
+}
+
+export type ConsentRecordUpsertWithoutCaptureEvidenceInput = {
+  update: Prisma.XOR<Prisma.ConsentRecordUpdateWithoutCaptureEvidenceInput, Prisma.ConsentRecordUncheckedUpdateWithoutCaptureEvidenceInput>
+  create: Prisma.XOR<Prisma.ConsentRecordCreateWithoutCaptureEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutCaptureEvidenceInput>
   where?: Prisma.ConsentRecordWhereInput
 }
 
-export type ConsentRecordUpdateToOneWithWhereWithoutEvidenceInput = {
+export type ConsentRecordUpdateToOneWithWhereWithoutCaptureEvidenceInput = {
   where?: Prisma.ConsentRecordWhereInput
-  data: Prisma.XOR<Prisma.ConsentRecordUpdateWithoutEvidenceInput, Prisma.ConsentRecordUncheckedUpdateWithoutEvidenceInput>
+  data: Prisma.XOR<Prisma.ConsentRecordUpdateWithoutCaptureEvidenceInput, Prisma.ConsentRecordUncheckedUpdateWithoutCaptureEvidenceInput>
 }
 
-export type ConsentRecordUpdateWithoutEvidenceInput = {
+export type ConsentRecordUpdateWithoutCaptureEvidenceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   purposeKey?: Prisma.StringFieldUpdateOperationsInput | string
   policyVersion?: Prisma.StringFieldUpdateOperationsInput | string
@@ -776,9 +843,10 @@ export type ConsentRecordUpdateWithoutEvidenceInput = {
   household?: Prisma.HouseholdUpdateOneRequiredWithoutConsentsNestedInput
   athlete?: Prisma.AthleteUpdateOneWithoutConsentsNestedInput
   consentingUser?: Prisma.UserUpdateOneRequiredWithoutConsentsNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
-export type ConsentRecordUncheckedUpdateWithoutEvidenceInput = {
+export type ConsentRecordUncheckedUpdateWithoutCaptureEvidenceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   householdId?: Prisma.StringFieldUpdateOperationsInput | string
   athleteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -788,6 +856,44 @@ export type ConsentRecordUncheckedUpdateWithoutEvidenceInput = {
   granted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutReviewConsentRecordNestedInput
+}
+
+export type ConsentRecordUpsertWithoutReviewEvidenceInput = {
+  update: Prisma.XOR<Prisma.ConsentRecordUpdateWithoutReviewEvidenceInput, Prisma.ConsentRecordUncheckedUpdateWithoutReviewEvidenceInput>
+  create: Prisma.XOR<Prisma.ConsentRecordCreateWithoutReviewEvidenceInput, Prisma.ConsentRecordUncheckedCreateWithoutReviewEvidenceInput>
+  where?: Prisma.ConsentRecordWhereInput
+}
+
+export type ConsentRecordUpdateToOneWithWhereWithoutReviewEvidenceInput = {
+  where?: Prisma.ConsentRecordWhereInput
+  data: Prisma.XOR<Prisma.ConsentRecordUpdateWithoutReviewEvidenceInput, Prisma.ConsentRecordUncheckedUpdateWithoutReviewEvidenceInput>
+}
+
+export type ConsentRecordUpdateWithoutReviewEvidenceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  purposeKey?: Prisma.StringFieldUpdateOperationsInput | string
+  policyVersion?: Prisma.StringFieldUpdateOperationsInput | string
+  granted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  household?: Prisma.HouseholdUpdateOneRequiredWithoutConsentsNestedInput
+  athlete?: Prisma.AthleteUpdateOneWithoutConsentsNestedInput
+  consentingUser?: Prisma.UserUpdateOneRequiredWithoutConsentsNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+}
+
+export type ConsentRecordUncheckedUpdateWithoutReviewEvidenceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  householdId?: Prisma.StringFieldUpdateOperationsInput | string
+  athleteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentingUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  purposeKey?: Prisma.StringFieldUpdateOperationsInput | string
+  policyVersion?: Prisma.StringFieldUpdateOperationsInput | string
+  granted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
 }
 
 export type ConsentRecordCreateManyConsentingUserInput = {
@@ -810,7 +916,8 @@ export type ConsentRecordUpdateWithoutConsentingUserInput = {
   withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   household?: Prisma.HouseholdUpdateOneRequiredWithoutConsentsNestedInput
   athlete?: Prisma.AthleteUpdateOneWithoutConsentsNestedInput
-  evidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
 export type ConsentRecordUncheckedUpdateWithoutConsentingUserInput = {
@@ -822,7 +929,8 @@ export type ConsentRecordUncheckedUpdateWithoutConsentingUserInput = {
   granted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  evidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
 export type ConsentRecordUncheckedUpdateManyWithoutConsentingUserInput = {
@@ -856,7 +964,8 @@ export type ConsentRecordUpdateWithoutHouseholdInput = {
   withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   athlete?: Prisma.AthleteUpdateOneWithoutConsentsNestedInput
   consentingUser?: Prisma.UserUpdateOneRequiredWithoutConsentsNestedInput
-  evidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
 export type ConsentRecordUncheckedUpdateWithoutHouseholdInput = {
@@ -868,7 +977,8 @@ export type ConsentRecordUncheckedUpdateWithoutHouseholdInput = {
   granted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  evidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
 export type ConsentRecordUncheckedUpdateManyWithoutHouseholdInput = {
@@ -902,7 +1012,8 @@ export type ConsentRecordUpdateWithoutAthleteInput = {
   withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   household?: Prisma.HouseholdUpdateOneRequiredWithoutConsentsNestedInput
   consentingUser?: Prisma.UserUpdateOneRequiredWithoutConsentsNestedInput
-  evidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutConsentRecordNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
 export type ConsentRecordUncheckedUpdateWithoutAthleteInput = {
@@ -914,7 +1025,8 @@ export type ConsentRecordUncheckedUpdateWithoutAthleteInput = {
   granted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   recordedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   withdrawnAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  evidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
+  captureEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutConsentRecordNestedInput
+  reviewEvidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutReviewConsentRecordNestedInput
 }
 
 export type ConsentRecordUncheckedUpdateManyWithoutAthleteInput = {
@@ -934,11 +1046,13 @@ export type ConsentRecordUncheckedUpdateManyWithoutAthleteInput = {
  */
 
 export type ConsentRecordCountOutputType = {
-  evidence: number
+  captureEvidence: number
+  reviewEvidence: number
 }
 
 export type ConsentRecordCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  evidence?: boolean | ConsentRecordCountOutputTypeCountEvidenceArgs
+  captureEvidence?: boolean | ConsentRecordCountOutputTypeCountCaptureEvidenceArgs
+  reviewEvidence?: boolean | ConsentRecordCountOutputTypeCountReviewEvidenceArgs
 }
 
 /**
@@ -954,7 +1068,14 @@ export type ConsentRecordCountOutputTypeDefaultArgs<ExtArgs extends runtime.Type
 /**
  * ConsentRecordCountOutputType without action
  */
-export type ConsentRecordCountOutputTypeCountEvidenceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type ConsentRecordCountOutputTypeCountCaptureEvidenceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EvidenceSubmissionWhereInput
+}
+
+/**
+ * ConsentRecordCountOutputType without action
+ */
+export type ConsentRecordCountOutputTypeCountReviewEvidenceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.EvidenceSubmissionWhereInput
 }
 
@@ -972,7 +1093,8 @@ export type ConsentRecordSelect<ExtArgs extends runtime.Types.Extensions.Interna
   household?: boolean | Prisma.HouseholdDefaultArgs<ExtArgs>
   athlete?: boolean | Prisma.ConsentRecord$athleteArgs<ExtArgs>
   consentingUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  evidence?: boolean | Prisma.ConsentRecord$evidenceArgs<ExtArgs>
+  captureEvidence?: boolean | Prisma.ConsentRecord$captureEvidenceArgs<ExtArgs>
+  reviewEvidence?: boolean | Prisma.ConsentRecord$reviewEvidenceArgs<ExtArgs>
   _count?: boolean | Prisma.ConsentRecordCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["consentRecord"]>
 
@@ -1023,7 +1145,8 @@ export type ConsentRecordInclude<ExtArgs extends runtime.Types.Extensions.Intern
   household?: boolean | Prisma.HouseholdDefaultArgs<ExtArgs>
   athlete?: boolean | Prisma.ConsentRecord$athleteArgs<ExtArgs>
   consentingUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  evidence?: boolean | Prisma.ConsentRecord$evidenceArgs<ExtArgs>
+  captureEvidence?: boolean | Prisma.ConsentRecord$captureEvidenceArgs<ExtArgs>
+  reviewEvidence?: boolean | Prisma.ConsentRecord$reviewEvidenceArgs<ExtArgs>
   _count?: boolean | Prisma.ConsentRecordCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ConsentRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1043,7 +1166,8 @@ export type $ConsentRecordPayload<ExtArgs extends runtime.Types.Extensions.Inter
     household: Prisma.$HouseholdPayload<ExtArgs>
     athlete: Prisma.$AthletePayload<ExtArgs> | null
     consentingUser: Prisma.$UserPayload<ExtArgs>
-    evidence: Prisma.$EvidenceSubmissionPayload<ExtArgs>[]
+    captureEvidence: Prisma.$EvidenceSubmissionPayload<ExtArgs>[]
+    reviewEvidence: Prisma.$EvidenceSubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1452,7 +1576,8 @@ export interface Prisma__ConsentRecordClient<T, Null = never, ExtArgs extends ru
   household<T extends Prisma.HouseholdDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.HouseholdDefaultArgs<ExtArgs>>): Prisma.Prisma__HouseholdClient<runtime.Types.Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   athlete<T extends Prisma.ConsentRecord$athleteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConsentRecord$athleteArgs<ExtArgs>>): Prisma.Prisma__AthleteClient<runtime.Types.Result.GetResult<Prisma.$AthletePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   consentingUser<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  evidence<T extends Prisma.ConsentRecord$evidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConsentRecord$evidenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  captureEvidence<T extends Prisma.ConsentRecord$captureEvidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConsentRecord$captureEvidenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reviewEvidence<T extends Prisma.ConsentRecord$reviewEvidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConsentRecord$reviewEvidenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1911,9 +2036,33 @@ export type ConsentRecord$athleteArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
- * ConsentRecord.evidence
+ * ConsentRecord.captureEvidence
  */
-export type ConsentRecord$evidenceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type ConsentRecord$captureEvidenceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EvidenceSubmission
+   */
+  select?: Prisma.EvidenceSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EvidenceSubmission
+   */
+  omit?: Prisma.EvidenceSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EvidenceSubmissionInclude<ExtArgs> | null
+  where?: Prisma.EvidenceSubmissionWhereInput
+  orderBy?: Prisma.EvidenceSubmissionOrderByWithRelationInput | Prisma.EvidenceSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.EvidenceSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EvidenceSubmissionScalarFieldEnum | Prisma.EvidenceSubmissionScalarFieldEnum[]
+}
+
+/**
+ * ConsentRecord.reviewEvidence
+ */
+export type ConsentRecord$reviewEvidenceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the EvidenceSubmission
    */

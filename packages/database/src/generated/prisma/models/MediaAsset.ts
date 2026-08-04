@@ -29,11 +29,13 @@ export type AggregateMediaAsset = {
 export type MediaAssetAvgAggregateOutputType = {
   sizeBytes: number | null
   durationMs: number | null
+  version: number | null
 }
 
 export type MediaAssetSumAggregateOutputType = {
   sizeBytes: bigint | null
   durationMs: number | null
+  version: number | null
 }
 
 export type MediaAssetMinAggregateOutputType = {
@@ -50,6 +52,12 @@ export type MediaAssetMinAggregateOutputType = {
   checksumSha256: string | null
   rejectionCode: string | null
   retentionPolicyKey: string | null
+  version: number | null
+  uploadExpiresAt: Date | null
+  processingStartedAt: Date | null
+  retentionExpiresAt: Date | null
+  retentionHoldUntil: Date | null
+  retentionHoldReason: string | null
   createdAt: Date | null
   readyAt: Date | null
   deletedAt: Date | null
@@ -69,6 +77,12 @@ export type MediaAssetMaxAggregateOutputType = {
   checksumSha256: string | null
   rejectionCode: string | null
   retentionPolicyKey: string | null
+  version: number | null
+  uploadExpiresAt: Date | null
+  processingStartedAt: Date | null
+  retentionExpiresAt: Date | null
+  retentionHoldUntil: Date | null
+  retentionHoldReason: string | null
   createdAt: Date | null
   readyAt: Date | null
   deletedAt: Date | null
@@ -88,6 +102,12 @@ export type MediaAssetCountAggregateOutputType = {
   checksumSha256: number
   rejectionCode: number
   retentionPolicyKey: number
+  version: number
+  uploadExpiresAt: number
+  processingStartedAt: number
+  retentionExpiresAt: number
+  retentionHoldUntil: number
+  retentionHoldReason: number
   createdAt: number
   readyAt: number
   deletedAt: number
@@ -98,11 +118,13 @@ export type MediaAssetCountAggregateOutputType = {
 export type MediaAssetAvgAggregateInputType = {
   sizeBytes?: true
   durationMs?: true
+  version?: true
 }
 
 export type MediaAssetSumAggregateInputType = {
   sizeBytes?: true
   durationMs?: true
+  version?: true
 }
 
 export type MediaAssetMinAggregateInputType = {
@@ -119,6 +141,12 @@ export type MediaAssetMinAggregateInputType = {
   checksumSha256?: true
   rejectionCode?: true
   retentionPolicyKey?: true
+  version?: true
+  uploadExpiresAt?: true
+  processingStartedAt?: true
+  retentionExpiresAt?: true
+  retentionHoldUntil?: true
+  retentionHoldReason?: true
   createdAt?: true
   readyAt?: true
   deletedAt?: true
@@ -138,6 +166,12 @@ export type MediaAssetMaxAggregateInputType = {
   checksumSha256?: true
   rejectionCode?: true
   retentionPolicyKey?: true
+  version?: true
+  uploadExpiresAt?: true
+  processingStartedAt?: true
+  retentionExpiresAt?: true
+  retentionHoldUntil?: true
+  retentionHoldReason?: true
   createdAt?: true
   readyAt?: true
   deletedAt?: true
@@ -157,6 +191,12 @@ export type MediaAssetCountAggregateInputType = {
   checksumSha256?: true
   rejectionCode?: true
   retentionPolicyKey?: true
+  version?: true
+  uploadExpiresAt?: true
+  processingStartedAt?: true
+  retentionExpiresAt?: true
+  retentionHoldUntil?: true
+  retentionHoldReason?: true
   createdAt?: true
   readyAt?: true
   deletedAt?: true
@@ -263,6 +303,12 @@ export type MediaAssetGroupByOutputType = {
   checksumSha256: string | null
   rejectionCode: string | null
   retentionPolicyKey: string
+  version: number
+  uploadExpiresAt: Date | null
+  processingStartedAt: Date | null
+  retentionExpiresAt: Date | null
+  retentionHoldUntil: Date | null
+  retentionHoldReason: string | null
   createdAt: Date
   readyAt: Date | null
   deletedAt: Date | null
@@ -305,10 +351,17 @@ export type MediaAssetWhereInput = {
   checksumSha256?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
   rejectionCode?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
   retentionPolicyKey?: Prisma.StringFilter<"MediaAsset"> | string
+  version?: Prisma.IntFilter<"MediaAsset"> | number
+  uploadExpiresAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  processingStartedAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionExpiresAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionHoldUntil?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionHoldReason?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
   createdAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
   readyAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
   athlete?: Prisma.XOR<Prisma.AthleteScalarRelationFilter, Prisma.AthleteWhereInput>
+  uploader?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   evidence?: Prisma.EvidenceSubmissionListRelationFilter
 }
 
@@ -326,10 +379,17 @@ export type MediaAssetOrderByWithRelationInput = {
   checksumSha256?: Prisma.SortOrderInput | Prisma.SortOrder
   rejectionCode?: Prisma.SortOrderInput | Prisma.SortOrder
   retentionPolicyKey?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  uploadExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  processingStartedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  retentionExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  retentionHoldUntil?: Prisma.SortOrderInput | Prisma.SortOrder
+  retentionHoldReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   readyAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   athlete?: Prisma.AthleteOrderByWithRelationInput
+  uploader?: Prisma.UserOrderByWithRelationInput
   evidence?: Prisma.EvidenceSubmissionOrderByRelationAggregateInput
 }
 
@@ -350,10 +410,17 @@ export type MediaAssetWhereUniqueInput = Prisma.AtLeast<{
   checksumSha256?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
   rejectionCode?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
   retentionPolicyKey?: Prisma.StringFilter<"MediaAsset"> | string
+  version?: Prisma.IntFilter<"MediaAsset"> | number
+  uploadExpiresAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  processingStartedAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionExpiresAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionHoldUntil?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionHoldReason?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
   createdAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
   readyAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
   athlete?: Prisma.XOR<Prisma.AthleteScalarRelationFilter, Prisma.AthleteWhereInput>
+  uploader?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   evidence?: Prisma.EvidenceSubmissionListRelationFilter
 }, "id" | "objectKey">
 
@@ -371,6 +438,12 @@ export type MediaAssetOrderByWithAggregationInput = {
   checksumSha256?: Prisma.SortOrderInput | Prisma.SortOrder
   rejectionCode?: Prisma.SortOrderInput | Prisma.SortOrder
   retentionPolicyKey?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  uploadExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  processingStartedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  retentionExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  retentionHoldUntil?: Prisma.SortOrderInput | Prisma.SortOrder
+  retentionHoldReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   readyAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -398,6 +471,12 @@ export type MediaAssetScalarWhereWithAggregatesInput = {
   checksumSha256?: Prisma.StringNullableWithAggregatesFilter<"MediaAsset"> | string | null
   rejectionCode?: Prisma.StringNullableWithAggregatesFilter<"MediaAsset"> | string | null
   retentionPolicyKey?: Prisma.StringWithAggregatesFilter<"MediaAsset"> | string
+  version?: Prisma.IntWithAggregatesFilter<"MediaAsset"> | number
+  uploadExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MediaAsset"> | Date | string | null
+  processingStartedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MediaAsset"> | Date | string | null
+  retentionExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MediaAsset"> | Date | string | null
+  retentionHoldUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"MediaAsset"> | Date | string | null
+  retentionHoldReason?: Prisma.StringNullableWithAggregatesFilter<"MediaAsset"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"MediaAsset"> | Date | string
   readyAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MediaAsset"> | Date | string | null
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MediaAsset"> | Date | string | null
@@ -405,7 +484,6 @@ export type MediaAssetScalarWhereWithAggregatesInput = {
 
 export type MediaAssetCreateInput = {
   id?: string
-  uploaderUserId: string
   status?: $Enums.MediaStatus
   objectKey: string
   originalName: string
@@ -416,10 +494,17 @@ export type MediaAssetCreateInput = {
   checksumSha256?: string | null
   rejectionCode?: string | null
   retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
   createdAt?: Date | string
   readyAt?: Date | string | null
   deletedAt?: Date | string | null
   athlete: Prisma.AthleteCreateNestedOneWithoutMediaAssetsInput
+  uploader: Prisma.UserCreateNestedOneWithoutUploadedMediaInput
   evidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMediaAssetInput
 }
 
@@ -437,6 +522,12 @@ export type MediaAssetUncheckedCreateInput = {
   checksumSha256?: string | null
   rejectionCode?: string | null
   retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
   createdAt?: Date | string
   readyAt?: Date | string | null
   deletedAt?: Date | string | null
@@ -445,7 +536,6 @@ export type MediaAssetUncheckedCreateInput = {
 
 export type MediaAssetUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  uploaderUserId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumMediaStatusFieldUpdateOperationsInput | $Enums.MediaStatus
   objectKey?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -456,10 +546,17 @@ export type MediaAssetUpdateInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   athlete?: Prisma.AthleteUpdateOneRequiredWithoutMediaAssetsNestedInput
+  uploader?: Prisma.UserUpdateOneRequiredWithoutUploadedMediaNestedInput
   evidence?: Prisma.EvidenceSubmissionUpdateManyWithoutMediaAssetNestedInput
 }
 
@@ -477,6 +574,12 @@ export type MediaAssetUncheckedUpdateInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -497,6 +600,12 @@ export type MediaAssetCreateManyInput = {
   checksumSha256?: string | null
   rejectionCode?: string | null
   retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
   createdAt?: Date | string
   readyAt?: Date | string | null
   deletedAt?: Date | string | null
@@ -504,7 +613,6 @@ export type MediaAssetCreateManyInput = {
 
 export type MediaAssetUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  uploaderUserId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumMediaStatusFieldUpdateOperationsInput | $Enums.MediaStatus
   objectKey?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -515,6 +623,12 @@ export type MediaAssetUpdateManyMutationInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -534,6 +648,12 @@ export type MediaAssetUncheckedUpdateManyInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -563,6 +683,12 @@ export type MediaAssetCountOrderByAggregateInput = {
   checksumSha256?: Prisma.SortOrder
   rejectionCode?: Prisma.SortOrder
   retentionPolicyKey?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  uploadExpiresAt?: Prisma.SortOrder
+  processingStartedAt?: Prisma.SortOrder
+  retentionExpiresAt?: Prisma.SortOrder
+  retentionHoldUntil?: Prisma.SortOrder
+  retentionHoldReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   readyAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -571,6 +697,7 @@ export type MediaAssetCountOrderByAggregateInput = {
 export type MediaAssetAvgOrderByAggregateInput = {
   sizeBytes?: Prisma.SortOrder
   durationMs?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type MediaAssetMaxOrderByAggregateInput = {
@@ -587,6 +714,12 @@ export type MediaAssetMaxOrderByAggregateInput = {
   checksumSha256?: Prisma.SortOrder
   rejectionCode?: Prisma.SortOrder
   retentionPolicyKey?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  uploadExpiresAt?: Prisma.SortOrder
+  processingStartedAt?: Prisma.SortOrder
+  retentionExpiresAt?: Prisma.SortOrder
+  retentionHoldUntil?: Prisma.SortOrder
+  retentionHoldReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   readyAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -606,6 +739,12 @@ export type MediaAssetMinOrderByAggregateInput = {
   checksumSha256?: Prisma.SortOrder
   rejectionCode?: Prisma.SortOrder
   retentionPolicyKey?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  uploadExpiresAt?: Prisma.SortOrder
+  processingStartedAt?: Prisma.SortOrder
+  retentionExpiresAt?: Prisma.SortOrder
+  retentionHoldUntil?: Prisma.SortOrder
+  retentionHoldReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   readyAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -614,11 +753,54 @@ export type MediaAssetMinOrderByAggregateInput = {
 export type MediaAssetSumOrderByAggregateInput = {
   sizeBytes?: Prisma.SortOrder
   durationMs?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type MediaAssetScalarRelationFilter = {
   is?: Prisma.MediaAssetWhereInput
   isNot?: Prisma.MediaAssetWhereInput
+}
+
+export type MediaAssetCreateNestedManyWithoutUploaderInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutUploaderInput, Prisma.MediaAssetUncheckedCreateWithoutUploaderInput> | Prisma.MediaAssetCreateWithoutUploaderInput[] | Prisma.MediaAssetUncheckedCreateWithoutUploaderInput[]
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutUploaderInput | Prisma.MediaAssetCreateOrConnectWithoutUploaderInput[]
+  createMany?: Prisma.MediaAssetCreateManyUploaderInputEnvelope
+  connect?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+}
+
+export type MediaAssetUncheckedCreateNestedManyWithoutUploaderInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutUploaderInput, Prisma.MediaAssetUncheckedCreateWithoutUploaderInput> | Prisma.MediaAssetCreateWithoutUploaderInput[] | Prisma.MediaAssetUncheckedCreateWithoutUploaderInput[]
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutUploaderInput | Prisma.MediaAssetCreateOrConnectWithoutUploaderInput[]
+  createMany?: Prisma.MediaAssetCreateManyUploaderInputEnvelope
+  connect?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+}
+
+export type MediaAssetUpdateManyWithoutUploaderNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutUploaderInput, Prisma.MediaAssetUncheckedCreateWithoutUploaderInput> | Prisma.MediaAssetCreateWithoutUploaderInput[] | Prisma.MediaAssetUncheckedCreateWithoutUploaderInput[]
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutUploaderInput | Prisma.MediaAssetCreateOrConnectWithoutUploaderInput[]
+  upsert?: Prisma.MediaAssetUpsertWithWhereUniqueWithoutUploaderInput | Prisma.MediaAssetUpsertWithWhereUniqueWithoutUploaderInput[]
+  createMany?: Prisma.MediaAssetCreateManyUploaderInputEnvelope
+  set?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+  disconnect?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+  delete?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+  connect?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+  update?: Prisma.MediaAssetUpdateWithWhereUniqueWithoutUploaderInput | Prisma.MediaAssetUpdateWithWhereUniqueWithoutUploaderInput[]
+  updateMany?: Prisma.MediaAssetUpdateManyWithWhereWithoutUploaderInput | Prisma.MediaAssetUpdateManyWithWhereWithoutUploaderInput[]
+  deleteMany?: Prisma.MediaAssetScalarWhereInput | Prisma.MediaAssetScalarWhereInput[]
+}
+
+export type MediaAssetUncheckedUpdateManyWithoutUploaderNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutUploaderInput, Prisma.MediaAssetUncheckedCreateWithoutUploaderInput> | Prisma.MediaAssetCreateWithoutUploaderInput[] | Prisma.MediaAssetUncheckedCreateWithoutUploaderInput[]
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutUploaderInput | Prisma.MediaAssetCreateOrConnectWithoutUploaderInput[]
+  upsert?: Prisma.MediaAssetUpsertWithWhereUniqueWithoutUploaderInput | Prisma.MediaAssetUpsertWithWhereUniqueWithoutUploaderInput[]
+  createMany?: Prisma.MediaAssetCreateManyUploaderInputEnvelope
+  set?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+  disconnect?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+  delete?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+  connect?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
+  update?: Prisma.MediaAssetUpdateWithWhereUniqueWithoutUploaderInput | Prisma.MediaAssetUpdateWithWhereUniqueWithoutUploaderInput[]
+  updateMany?: Prisma.MediaAssetUpdateManyWithWhereWithoutUploaderInput | Prisma.MediaAssetUpdateManyWithWhereWithoutUploaderInput[]
+  deleteMany?: Prisma.MediaAssetScalarWhereInput | Prisma.MediaAssetScalarWhereInput[]
 }
 
 export type MediaAssetCreateNestedManyWithoutAthleteInput = {
@@ -689,9 +871,8 @@ export type MediaAssetUpdateOneRequiredWithoutEvidenceNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MediaAssetUpdateToOneWithWhereWithoutEvidenceInput, Prisma.MediaAssetUpdateWithoutEvidenceInput>, Prisma.MediaAssetUncheckedUpdateWithoutEvidenceInput>
 }
 
-export type MediaAssetCreateWithoutAthleteInput = {
+export type MediaAssetCreateWithoutUploaderInput = {
   id?: string
-  uploaderUserId: string
   status?: $Enums.MediaStatus
   objectKey: string
   originalName: string
@@ -702,9 +883,120 @@ export type MediaAssetCreateWithoutAthleteInput = {
   checksumSha256?: string | null
   rejectionCode?: string | null
   retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
   createdAt?: Date | string
   readyAt?: Date | string | null
   deletedAt?: Date | string | null
+  athlete: Prisma.AthleteCreateNestedOneWithoutMediaAssetsInput
+  evidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMediaAssetInput
+}
+
+export type MediaAssetUncheckedCreateWithoutUploaderInput = {
+  id?: string
+  athleteId: string
+  status?: $Enums.MediaStatus
+  objectKey: string
+  originalName: string
+  declaredMimeType: string
+  detectedMimeType?: string | null
+  sizeBytes: bigint | number
+  durationMs?: number | null
+  checksumSha256?: string | null
+  rejectionCode?: string | null
+  retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
+  createdAt?: Date | string
+  readyAt?: Date | string | null
+  deletedAt?: Date | string | null
+  evidence?: Prisma.EvidenceSubmissionUncheckedCreateNestedManyWithoutMediaAssetInput
+}
+
+export type MediaAssetCreateOrConnectWithoutUploaderInput = {
+  where: Prisma.MediaAssetWhereUniqueInput
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutUploaderInput, Prisma.MediaAssetUncheckedCreateWithoutUploaderInput>
+}
+
+export type MediaAssetCreateManyUploaderInputEnvelope = {
+  data: Prisma.MediaAssetCreateManyUploaderInput | Prisma.MediaAssetCreateManyUploaderInput[]
+  skipDuplicates?: boolean
+}
+
+export type MediaAssetUpsertWithWhereUniqueWithoutUploaderInput = {
+  where: Prisma.MediaAssetWhereUniqueInput
+  update: Prisma.XOR<Prisma.MediaAssetUpdateWithoutUploaderInput, Prisma.MediaAssetUncheckedUpdateWithoutUploaderInput>
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutUploaderInput, Prisma.MediaAssetUncheckedCreateWithoutUploaderInput>
+}
+
+export type MediaAssetUpdateWithWhereUniqueWithoutUploaderInput = {
+  where: Prisma.MediaAssetWhereUniqueInput
+  data: Prisma.XOR<Prisma.MediaAssetUpdateWithoutUploaderInput, Prisma.MediaAssetUncheckedUpdateWithoutUploaderInput>
+}
+
+export type MediaAssetUpdateManyWithWhereWithoutUploaderInput = {
+  where: Prisma.MediaAssetScalarWhereInput
+  data: Prisma.XOR<Prisma.MediaAssetUpdateManyMutationInput, Prisma.MediaAssetUncheckedUpdateManyWithoutUploaderInput>
+}
+
+export type MediaAssetScalarWhereInput = {
+  AND?: Prisma.MediaAssetScalarWhereInput | Prisma.MediaAssetScalarWhereInput[]
+  OR?: Prisma.MediaAssetScalarWhereInput[]
+  NOT?: Prisma.MediaAssetScalarWhereInput | Prisma.MediaAssetScalarWhereInput[]
+  id?: Prisma.UuidFilter<"MediaAsset"> | string
+  athleteId?: Prisma.UuidFilter<"MediaAsset"> | string
+  uploaderUserId?: Prisma.UuidFilter<"MediaAsset"> | string
+  status?: Prisma.EnumMediaStatusFilter<"MediaAsset"> | $Enums.MediaStatus
+  objectKey?: Prisma.StringFilter<"MediaAsset"> | string
+  originalName?: Prisma.StringFilter<"MediaAsset"> | string
+  declaredMimeType?: Prisma.StringFilter<"MediaAsset"> | string
+  detectedMimeType?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
+  sizeBytes?: Prisma.BigIntFilter<"MediaAsset"> | bigint | number
+  durationMs?: Prisma.IntNullableFilter<"MediaAsset"> | number | null
+  checksumSha256?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
+  rejectionCode?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
+  retentionPolicyKey?: Prisma.StringFilter<"MediaAsset"> | string
+  version?: Prisma.IntFilter<"MediaAsset"> | number
+  uploadExpiresAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  processingStartedAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionExpiresAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionHoldUntil?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  retentionHoldReason?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
+  readyAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+}
+
+export type MediaAssetCreateWithoutAthleteInput = {
+  id?: string
+  status?: $Enums.MediaStatus
+  objectKey: string
+  originalName: string
+  declaredMimeType: string
+  detectedMimeType?: string | null
+  sizeBytes: bigint | number
+  durationMs?: number | null
+  checksumSha256?: string | null
+  rejectionCode?: string | null
+  retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
+  createdAt?: Date | string
+  readyAt?: Date | string | null
+  deletedAt?: Date | string | null
+  uploader: Prisma.UserCreateNestedOneWithoutUploadedMediaInput
   evidence?: Prisma.EvidenceSubmissionCreateNestedManyWithoutMediaAssetInput
 }
 
@@ -721,6 +1013,12 @@ export type MediaAssetUncheckedCreateWithoutAthleteInput = {
   checksumSha256?: string | null
   rejectionCode?: string | null
   retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
   createdAt?: Date | string
   readyAt?: Date | string | null
   deletedAt?: Date | string | null
@@ -753,31 +1051,8 @@ export type MediaAssetUpdateManyWithWhereWithoutAthleteInput = {
   data: Prisma.XOR<Prisma.MediaAssetUpdateManyMutationInput, Prisma.MediaAssetUncheckedUpdateManyWithoutAthleteInput>
 }
 
-export type MediaAssetScalarWhereInput = {
-  AND?: Prisma.MediaAssetScalarWhereInput | Prisma.MediaAssetScalarWhereInput[]
-  OR?: Prisma.MediaAssetScalarWhereInput[]
-  NOT?: Prisma.MediaAssetScalarWhereInput | Prisma.MediaAssetScalarWhereInput[]
-  id?: Prisma.UuidFilter<"MediaAsset"> | string
-  athleteId?: Prisma.UuidFilter<"MediaAsset"> | string
-  uploaderUserId?: Prisma.UuidFilter<"MediaAsset"> | string
-  status?: Prisma.EnumMediaStatusFilter<"MediaAsset"> | $Enums.MediaStatus
-  objectKey?: Prisma.StringFilter<"MediaAsset"> | string
-  originalName?: Prisma.StringFilter<"MediaAsset"> | string
-  declaredMimeType?: Prisma.StringFilter<"MediaAsset"> | string
-  detectedMimeType?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
-  sizeBytes?: Prisma.BigIntFilter<"MediaAsset"> | bigint | number
-  durationMs?: Prisma.IntNullableFilter<"MediaAsset"> | number | null
-  checksumSha256?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
-  rejectionCode?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
-  retentionPolicyKey?: Prisma.StringFilter<"MediaAsset"> | string
-  createdAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
-  readyAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"MediaAsset"> | Date | string | null
-}
-
 export type MediaAssetCreateWithoutEvidenceInput = {
   id?: string
-  uploaderUserId: string
   status?: $Enums.MediaStatus
   objectKey: string
   originalName: string
@@ -788,10 +1063,17 @@ export type MediaAssetCreateWithoutEvidenceInput = {
   checksumSha256?: string | null
   rejectionCode?: string | null
   retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
   createdAt?: Date | string
   readyAt?: Date | string | null
   deletedAt?: Date | string | null
   athlete: Prisma.AthleteCreateNestedOneWithoutMediaAssetsInput
+  uploader: Prisma.UserCreateNestedOneWithoutUploadedMediaInput
 }
 
 export type MediaAssetUncheckedCreateWithoutEvidenceInput = {
@@ -808,6 +1090,12 @@ export type MediaAssetUncheckedCreateWithoutEvidenceInput = {
   checksumSha256?: string | null
   rejectionCode?: string | null
   retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
   createdAt?: Date | string
   readyAt?: Date | string | null
   deletedAt?: Date | string | null
@@ -831,7 +1119,6 @@ export type MediaAssetUpdateToOneWithWhereWithoutEvidenceInput = {
 
 export type MediaAssetUpdateWithoutEvidenceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  uploaderUserId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumMediaStatusFieldUpdateOperationsInput | $Enums.MediaStatus
   objectKey?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -842,10 +1129,17 @@ export type MediaAssetUpdateWithoutEvidenceInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   athlete?: Prisma.AthleteUpdateOneRequiredWithoutMediaAssetsNestedInput
+  uploader?: Prisma.UserUpdateOneRequiredWithoutUploadedMediaNestedInput
 }
 
 export type MediaAssetUncheckedUpdateWithoutEvidenceInput = {
@@ -862,6 +1156,110 @@ export type MediaAssetUncheckedUpdateWithoutEvidenceInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type MediaAssetCreateManyUploaderInput = {
+  id?: string
+  athleteId: string
+  status?: $Enums.MediaStatus
+  objectKey: string
+  originalName: string
+  declaredMimeType: string
+  detectedMimeType?: string | null
+  sizeBytes: bigint | number
+  durationMs?: number | null
+  checksumSha256?: string | null
+  rejectionCode?: string | null
+  retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
+  createdAt?: Date | string
+  readyAt?: Date | string | null
+  deletedAt?: Date | string | null
+}
+
+export type MediaAssetUpdateWithoutUploaderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMediaStatusFieldUpdateOperationsInput | $Enums.MediaStatus
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  originalName?: Prisma.StringFieldUpdateOperationsInput | string
+  declaredMimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  detectedMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  athlete?: Prisma.AthleteUpdateOneRequiredWithoutMediaAssetsNestedInput
+  evidence?: Prisma.EvidenceSubmissionUpdateManyWithoutMediaAssetNestedInput
+}
+
+export type MediaAssetUncheckedUpdateWithoutUploaderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  athleteId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMediaStatusFieldUpdateOperationsInput | $Enums.MediaStatus
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  originalName?: Prisma.StringFieldUpdateOperationsInput | string
+  declaredMimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  detectedMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  evidence?: Prisma.EvidenceSubmissionUncheckedUpdateManyWithoutMediaAssetNestedInput
+}
+
+export type MediaAssetUncheckedUpdateManyWithoutUploaderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  athleteId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumMediaStatusFieldUpdateOperationsInput | $Enums.MediaStatus
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  originalName?: Prisma.StringFieldUpdateOperationsInput | string
+  declaredMimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  detectedMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -880,6 +1278,12 @@ export type MediaAssetCreateManyAthleteInput = {
   checksumSha256?: string | null
   rejectionCode?: string | null
   retentionPolicyKey: string
+  version?: number
+  uploadExpiresAt?: Date | string | null
+  processingStartedAt?: Date | string | null
+  retentionExpiresAt?: Date | string | null
+  retentionHoldUntil?: Date | string | null
+  retentionHoldReason?: string | null
   createdAt?: Date | string
   readyAt?: Date | string | null
   deletedAt?: Date | string | null
@@ -887,7 +1291,6 @@ export type MediaAssetCreateManyAthleteInput = {
 
 export type MediaAssetUpdateWithoutAthleteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  uploaderUserId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumMediaStatusFieldUpdateOperationsInput | $Enums.MediaStatus
   objectKey?: Prisma.StringFieldUpdateOperationsInput | string
   originalName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -898,9 +1301,16 @@ export type MediaAssetUpdateWithoutAthleteInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploader?: Prisma.UserUpdateOneRequiredWithoutUploadedMediaNestedInput
   evidence?: Prisma.EvidenceSubmissionUpdateManyWithoutMediaAssetNestedInput
 }
 
@@ -917,6 +1327,12 @@ export type MediaAssetUncheckedUpdateWithoutAthleteInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -936,6 +1352,12 @@ export type MediaAssetUncheckedUpdateManyWithoutAthleteInput = {
   checksumSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rejectionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   retentionPolicyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  uploadExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStartedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retentionHoldReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   readyAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -986,10 +1408,17 @@ export type MediaAssetSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   checksumSha256?: boolean
   rejectionCode?: boolean
   retentionPolicyKey?: boolean
+  version?: boolean
+  uploadExpiresAt?: boolean
+  processingStartedAt?: boolean
+  retentionExpiresAt?: boolean
+  retentionHoldUntil?: boolean
+  retentionHoldReason?: boolean
   createdAt?: boolean
   readyAt?: boolean
   deletedAt?: boolean
   athlete?: boolean | Prisma.AthleteDefaultArgs<ExtArgs>
+  uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   evidence?: boolean | Prisma.MediaAsset$evidenceArgs<ExtArgs>
   _count?: boolean | Prisma.MediaAssetCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mediaAsset"]>
@@ -1008,10 +1437,17 @@ export type MediaAssetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   checksumSha256?: boolean
   rejectionCode?: boolean
   retentionPolicyKey?: boolean
+  version?: boolean
+  uploadExpiresAt?: boolean
+  processingStartedAt?: boolean
+  retentionExpiresAt?: boolean
+  retentionHoldUntil?: boolean
+  retentionHoldReason?: boolean
   createdAt?: boolean
   readyAt?: boolean
   deletedAt?: boolean
   athlete?: boolean | Prisma.AthleteDefaultArgs<ExtArgs>
+  uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mediaAsset"]>
 
 export type MediaAssetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1028,10 +1464,17 @@ export type MediaAssetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   checksumSha256?: boolean
   rejectionCode?: boolean
   retentionPolicyKey?: boolean
+  version?: boolean
+  uploadExpiresAt?: boolean
+  processingStartedAt?: boolean
+  retentionExpiresAt?: boolean
+  retentionHoldUntil?: boolean
+  retentionHoldReason?: boolean
   createdAt?: boolean
   readyAt?: boolean
   deletedAt?: boolean
   athlete?: boolean | Prisma.AthleteDefaultArgs<ExtArgs>
+  uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mediaAsset"]>
 
 export type MediaAssetSelectScalar = {
@@ -1048,28 +1491,38 @@ export type MediaAssetSelectScalar = {
   checksumSha256?: boolean
   rejectionCode?: boolean
   retentionPolicyKey?: boolean
+  version?: boolean
+  uploadExpiresAt?: boolean
+  processingStartedAt?: boolean
+  retentionExpiresAt?: boolean
+  retentionHoldUntil?: boolean
+  retentionHoldReason?: boolean
   createdAt?: boolean
   readyAt?: boolean
   deletedAt?: boolean
 }
 
-export type MediaAssetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "athleteId" | "uploaderUserId" | "status" | "objectKey" | "originalName" | "declaredMimeType" | "detectedMimeType" | "sizeBytes" | "durationMs" | "checksumSha256" | "rejectionCode" | "retentionPolicyKey" | "createdAt" | "readyAt" | "deletedAt", ExtArgs["result"]["mediaAsset"]>
+export type MediaAssetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "athleteId" | "uploaderUserId" | "status" | "objectKey" | "originalName" | "declaredMimeType" | "detectedMimeType" | "sizeBytes" | "durationMs" | "checksumSha256" | "rejectionCode" | "retentionPolicyKey" | "version" | "uploadExpiresAt" | "processingStartedAt" | "retentionExpiresAt" | "retentionHoldUntil" | "retentionHoldReason" | "createdAt" | "readyAt" | "deletedAt", ExtArgs["result"]["mediaAsset"]>
 export type MediaAssetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   athlete?: boolean | Prisma.AthleteDefaultArgs<ExtArgs>
+  uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   evidence?: boolean | Prisma.MediaAsset$evidenceArgs<ExtArgs>
   _count?: boolean | Prisma.MediaAssetCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MediaAssetIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   athlete?: boolean | Prisma.AthleteDefaultArgs<ExtArgs>
+  uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type MediaAssetIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   athlete?: boolean | Prisma.AthleteDefaultArgs<ExtArgs>
+  uploader?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $MediaAssetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MediaAsset"
   objects: {
     athlete: Prisma.$AthletePayload<ExtArgs>
+    uploader: Prisma.$UserPayload<ExtArgs>
     evidence: Prisma.$EvidenceSubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1086,6 +1539,12 @@ export type $MediaAssetPayload<ExtArgs extends runtime.Types.Extensions.Internal
     checksumSha256: string | null
     rejectionCode: string | null
     retentionPolicyKey: string
+    version: number
+    uploadExpiresAt: Date | null
+    processingStartedAt: Date | null
+    retentionExpiresAt: Date | null
+    retentionHoldUntil: Date | null
+    retentionHoldReason: string | null
     createdAt: Date
     readyAt: Date | null
     deletedAt: Date | null
@@ -1484,6 +1943,7 @@ readonly fields: MediaAssetFieldRefs;
 export interface Prisma__MediaAssetClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   athlete<T extends Prisma.AthleteDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AthleteDefaultArgs<ExtArgs>>): Prisma.Prisma__AthleteClient<runtime.Types.Result.GetResult<Prisma.$AthletePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  uploader<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   evidence<T extends Prisma.MediaAsset$evidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$evidenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidenceSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1527,6 +1987,12 @@ export interface MediaAssetFieldRefs {
   readonly checksumSha256: Prisma.FieldRef<"MediaAsset", 'String'>
   readonly rejectionCode: Prisma.FieldRef<"MediaAsset", 'String'>
   readonly retentionPolicyKey: Prisma.FieldRef<"MediaAsset", 'String'>
+  readonly version: Prisma.FieldRef<"MediaAsset", 'Int'>
+  readonly uploadExpiresAt: Prisma.FieldRef<"MediaAsset", 'DateTime'>
+  readonly processingStartedAt: Prisma.FieldRef<"MediaAsset", 'DateTime'>
+  readonly retentionExpiresAt: Prisma.FieldRef<"MediaAsset", 'DateTime'>
+  readonly retentionHoldUntil: Prisma.FieldRef<"MediaAsset", 'DateTime'>
+  readonly retentionHoldReason: Prisma.FieldRef<"MediaAsset", 'String'>
   readonly createdAt: Prisma.FieldRef<"MediaAsset", 'DateTime'>
   readonly readyAt: Prisma.FieldRef<"MediaAsset", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"MediaAsset", 'DateTime'>

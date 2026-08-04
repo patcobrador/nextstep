@@ -165,6 +165,7 @@ model User {
   mfaSatisfied        Boolean               @default(false)
   memberships         HouseholdMembership[]
   consents            ConsentRecord[]       @relation("ConsentingAdult")
+  uploadedMedia       MediaAsset[]          @relation("MediaUploader")
   coachProfile        CoachProfile?
   createdAt           DateTime              @default(now()) @db.Timestamptz(3)
   updatedAt           DateTime              @updatedAt @db.Timestamptz(3)
@@ -208,7 +209,8 @@ model ConsentRecord {
   household        Household            @relation(fields: [householdId], references: [id], onDelete: Cascade)
   athlete          Athlete?             @relation(fields: [athleteId], references: [id], onDelete: Cascade)
   consentingUser   User                 @relation("ConsentingAdult", fields: [consentingUserId], references: [id])
-  evidence         EvidenceSubmission[]
+  captureEvidence  EvidenceSubmission[] @relation("CaptureConsent")
+  reviewEvidence   EvidenceSubmission[] @relation("ReviewConsent")
 
   @@index([householdId, purposeKey, recordedAt])
   @@index([athleteId, purposeKey])
@@ -563,44 +565,59 @@ model PracticeAttempt {
 }
 
 model MediaAsset {
-  id                 String               @id @default(uuid()) @db.Uuid
-  athleteId          String               @db.Uuid
-  uploaderUserId     String               @db.Uuid
-  status             MediaStatus          @default(UPLOADING)
-  objectKey          String               @unique
-  originalName       String
-  declaredMimeType   String
-  detectedMimeType   String?
-  sizeBytes          BigInt
-  durationMs         Int?
-  checksumSha256     String?
-  rejectionCode      String?
-  retentionPolicyKey String
-  athlete            Athlete              @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-  evidence           EvidenceSubmission[]
-  createdAt          DateTime             @default(now()) @db.Timestamptz(3)
-  readyAt            DateTime?            @db.Timestamptz(3)
-  deletedAt          DateTime?            @db.Timestamptz(3)
+  id                  String               @id @default(uuid()) @db.Uuid
+  athleteId           String               @db.Uuid
+  uploaderUserId      String               @db.Uuid
+  status              MediaStatus          @default(UPLOADING)
+  objectKey           String               @unique
+  originalName        String
+  declaredMimeType    String
+  detectedMimeType    String?
+  sizeBytes           BigInt
+  durationMs          Int?
+  checksumSha256      String?
+  rejectionCode       String?
+  retentionPolicyKey  String
+  version             Int                  @default(1)
+  uploadExpiresAt     DateTime?            @db.Timestamptz(3)
+  processingStartedAt DateTime?            @db.Timestamptz(3)
+  retentionExpiresAt  DateTime?            @db.Timestamptz(3)
+  retentionHoldUntil  DateTime?            @db.Timestamptz(3)
+  retentionHoldReason String?
+  athlete             Athlete              @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  uploader            User                 @relation("MediaUploader", fields: [uploaderUserId], references: [id], onDelete: Restrict)
+  evidence            EvidenceSubmission[]
+  createdAt           DateTime             @default(now()) @db.Timestamptz(3)
+  readyAt             DateTime?            @db.Timestamptz(3)
+  deletedAt           DateTime?            @db.Timestamptz(3)
 
   @@index([athleteId, status])
+  @@index([status, uploadExpiresAt])
+  @@index([status, retentionExpiresAt])
 }
 
 model EvidenceSubmission {
-  id                 String         @id @default(uuid()) @db.Uuid
-  athleteId          String         @db.Uuid
-  nodeId             String         @db.Uuid
-  mediaAssetId       String         @db.Uuid
-  consentRecordId    String         @db.Uuid
-  status             EvidenceStatus @default(DRAFT)
-  captureTime        DateTime?      @db.Timestamptz(3)
-  retentionPolicyKey String
-  athlete            Athlete        @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-  node               SkillNode      @relation(fields: [nodeId], references: [id], onDelete: Restrict)
-  mediaAsset         MediaAsset     @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
-  consentRecord      ConsentRecord  @relation(fields: [consentRecordId], references: [id], onDelete: Restrict)
-  assessment         Assessment?
-  createdAt          DateTime       @default(now()) @db.Timestamptz(3)
-  submittedAt        DateTime?      @db.Timestamptz(3)
+  id                    String         @id @default(uuid()) @db.Uuid
+  athleteId             String         @db.Uuid
+  nodeId                String         @db.Uuid
+  mediaAssetId          String         @db.Uuid
+  consentRecordId       String         @db.Uuid
+  reviewConsentRecordId String?        @db.Uuid
+  status                EvidenceStatus @default(DRAFT)
+  captureTime           DateTime?      @db.Timestamptz(3)
+  retentionPolicyKey    String
+  athlete               Athlete        @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  node                  SkillNode      @relation(fields: [nodeId], references: [id], onDelete: Restrict)
+  mediaAsset            MediaAsset     @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
+  consentRecord         ConsentRecord  @relation("CaptureConsent", fields: [consentRecordId], references: [id], onDelete: Restrict)
+  reviewConsentRecord   ConsentRecord? @relation("ReviewConsent", fields: [reviewConsentRecordId], references: [id], onDelete: Restrict)
+  assessment            Assessment?
+  version               Int            @default(1)
+  createdAt             DateTime       @default(now()) @db.Timestamptz(3)
+  submittedAt           DateTime?      @db.Timestamptz(3)
+  withdrawnAt           DateTime?      @db.Timestamptz(3)
+  deletionRequestedAt   DateTime?      @db.Timestamptz(3)
+  deletedAt             DateTime?      @db.Timestamptz(3)
 
   @@unique([mediaAssetId])
   @@index([athleteId, nodeId, status])
@@ -655,11 +672,13 @@ model Assessment {
   assignedCoachId      String?                    @db.Uuid
   type                 AssessmentType
   status               AssessmentStatus           @default(REQUESTED)
+  version              Int                        @default(1)
   outcome              AssessmentOutcome?
   rubricSnapshot       Json
   dueAt                DateTime?                  @db.Timestamptz(3)
   requestedAt          DateTime                   @default(now()) @db.Timestamptz(3)
   assignedAt           DateTime?                  @db.Timestamptz(3)
+  startedAt            DateTime?                  @db.Timestamptz(3)
   completedAt          DateTime?                  @db.Timestamptz(3)
   athlete              Athlete                    @relation(fields: [athleteId], references: [id], onDelete: Cascade)
   evidenceSubmission   EvidenceSubmission         @relation(fields: [evidenceSubmissionId], references: [id], onDelete: Restrict)

@@ -392,7 +392,8 @@ export interface paths {
     get: operations["getEvidenceSubmission"];
     put?: never;
     post?: never;
-    delete?: never;
+    /** Request worker-driven deletion of private evidence */
+    delete: operations["requestEvidenceDeletion"];
     options?: never;
     head?: never;
     patch?: never;
@@ -411,7 +412,7 @@ export interface paths {
     put?: never;
     /** Create a short-lived, audited playback grant after object authorisation */
     post: operations["createEvidencePlaybackGrant"];
-    delete: operations["requestEvidenceDeletion"];
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -662,7 +663,10 @@ export interface components {
     RecordConsentRequest: {
       /** Format: uuid */
       athleteId?: string | null;
-      purposeKey: string;
+      /** @enum {string} */
+      purposeKey:
+        | "PRIVATE_EVIDENCE_CAPTURE_UPLOAD"
+        | "ASSIGNED_COACH_EVIDENCE_REVIEW";
       policyVersion: string;
       granted: boolean;
     };
@@ -673,7 +677,10 @@ export interface components {
       householdId: string;
       /** Format: uuid */
       athleteId?: string | null;
-      purposeKey: string;
+      /** @enum {string} */
+      purposeKey:
+        | "PRIVATE_EVIDENCE_CAPTURE_UPLOAD"
+        | "ASSIGNED_COACH_EVIDENCE_REVIEW";
       policyVersion: string;
       granted: boolean;
       /** Format: date-time */
@@ -778,6 +785,20 @@ export interface components {
       commonErrors?: string[];
       safety: string[];
       primaryAction: components["schemas"]["NextAction"];
+      evidenceInstructions?:
+        | null
+        | components["schemas"]["EvidenceInstructions"];
+    };
+    EvidenceInstructions: {
+      movement: string;
+      framing: string;
+      maxDurationSeconds: number;
+      requiredSequence: string[];
+      equipment: string[];
+      safety: string[];
+      privacy: string[];
+      /** @constant */
+      supportedFormat: "MP4 with H.264 video";
     };
     BranchChoice: {
       branchGroupKey: string;
@@ -966,6 +987,8 @@ export interface components {
     };
     UploadIntent: {
       /** Format: uuid */
+      evidenceId: string;
+      /** Format: uuid */
       mediaAssetId: string;
       /** Format: uri */
       uploadUrl: string;
@@ -1001,6 +1024,13 @@ export interface components {
         | "DELETION_PENDING"
         | "DELETED";
       rejectionCode?: string | null;
+      sizeBytes: number;
+      durationMs?: number | null;
+      version: number;
+      /** Format: date-time */
+      uploadExpiresAt?: string | null;
+      /** Format: date-time */
+      retentionExpiresAt?: string | null;
       /** Format: date-time */
       createdAt: string;
       /** Format: date-time */
@@ -1014,13 +1044,9 @@ export interface components {
     };
     SubmitEvidenceRequest: {
       /** Format: uuid */
-      athleteId: string;
+      evidenceId: string;
       /** Format: uuid */
-      nodeId: string;
-      /** Format: uuid */
-      mediaAssetId: string;
-      /** Format: uuid */
-      consentRecordId: string;
+      reviewConsentRecordId: string;
     };
     EvidenceSubmission: {
       /** Format: uuid */
@@ -1031,24 +1057,32 @@ export interface components {
       nodeId: string;
       /** Format: uuid */
       mediaAssetId: string;
+      /** Format: uuid */
+      consentRecordId: string;
+      /** Format: uuid */
+      reviewConsentRecordId?: string | null;
       /** @enum {string} */
       status:
         | "DRAFT"
-        | "UPLOADING"
         | "SUBMITTED"
         | "ASSIGNED"
         | "REVIEWED"
-        | "RETRY_REQUIRED"
         | "WITHDRAWN"
         | "DELETED";
-      /** Format: uri */
-      playbackUrl?: string | null;
-      /** Format: date-time */
-      playbackExpiresAt?: string | null;
+      media: components["schemas"]["MediaAsset"];
+      version: number;
       /** Format: uuid */
       assessmentId?: string | null;
       /** Format: date-time */
       createdAt: string;
+      /** Format: date-time */
+      submittedAt?: string | null;
+      /** Format: date-time */
+      withdrawnAt?: string | null;
+      /** Format: date-time */
+      deletionRequestedAt?: string | null;
+      /** Format: date-time */
+      deletedAt?: string | null;
     };
     AssessmentSummary: {
       /** Format: uuid */
@@ -1993,6 +2027,31 @@ export interface operations {
       default: components["responses"]["Problem"];
     };
   };
+  requestEvidenceDeletion: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+      };
+      path: {
+        evidenceId: components["parameters"]["EvidenceId"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Deletion workflow accepted */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EvidenceSubmission"];
+        };
+      };
+      default: components["responses"]["Problem"];
+    };
+  };
   createEvidencePlaybackGrant: {
     parameters: {
       query?: never;
@@ -2014,27 +2073,6 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["PlaybackGrant"];
         };
-      };
-      default: components["responses"]["Problem"];
-    };
-  };
-  requestEvidenceDeletion: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        evidenceId: components["parameters"]["EvidenceId"];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Deletion workflow accepted */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
       };
       default: components["responses"]["Problem"];
     };

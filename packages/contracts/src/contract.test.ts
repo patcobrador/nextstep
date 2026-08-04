@@ -57,3 +57,42 @@ describe("Checkpoint A contract", () => {
     );
   });
 });
+
+describe("Checkpoint B1 private evidence contract", () => {
+  it.each([
+    ["/households/{householdId}/consents", "post"],
+    ["/consents/{consentId}/withdraw", "post"],
+    ["/evidence/upload-intents", "post"],
+    ["/evidence/upload-intents/{mediaAssetId}/complete", "post"],
+    ["/evidence-submissions", "post"],
+    ["/evidence-submissions/{evidenceId}", "get"],
+    ["/evidence-submissions/{evidenceId}", "delete"],
+    ["/evidence-submissions/{evidenceId}/playback-grants", "post"],
+  ])("defines %s %s", (path, method) => {
+    expect(contract.paths[path]?.[method]).toBeDefined();
+  });
+
+  it("keeps deletion off the playback-grant collection", () => {
+    expect(
+      contract.paths["/evidence-submissions/{evidenceId}/playback-grants"]
+        .delete,
+    ).toBeUndefined();
+  });
+
+  it("separates capture and review consent and never embeds playback in evidence", () => {
+    expect(
+      contract.components.schemas.RecordConsentRequest.properties.purposeKey
+        .enum,
+    ).toEqual([
+      "PRIVATE_EVIDENCE_CAPTURE_UPLOAD",
+      "ASSIGNED_COACH_EVIDENCE_REVIEW",
+    ]);
+    expect(contract.components.schemas.SubmitEvidenceRequest.required).toEqual([
+      "evidenceId",
+      "reviewConsentRecordId",
+    ]);
+    expect(
+      contract.components.schemas.EvidenceSubmission.properties.playbackUrl,
+    ).toBeUndefined();
+  });
+});

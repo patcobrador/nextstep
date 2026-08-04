@@ -208,6 +208,7 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   memberships?: Prisma.HouseholdMembershipListRelationFilter
   consents?: Prisma.ConsentRecordListRelationFilter
+  uploadedMedia?: Prisma.MediaAssetListRelationFilter
   coachProfile?: Prisma.XOR<Prisma.CoachProfileNullableScalarRelationFilter, Prisma.CoachProfileWhereInput> | null
 }
 
@@ -222,6 +223,7 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   memberships?: Prisma.HouseholdMembershipOrderByRelationAggregateInput
   consents?: Prisma.ConsentRecordOrderByRelationAggregateInput
+  uploadedMedia?: Prisma.MediaAssetOrderByRelationAggregateInput
   coachProfile?: Prisma.CoachProfileOrderByWithRelationInput
 }
 
@@ -239,6 +241,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   memberships?: Prisma.HouseholdMembershipListRelationFilter
   consents?: Prisma.ConsentRecordListRelationFilter
+  uploadedMedia?: Prisma.MediaAssetListRelationFilter
   coachProfile?: Prisma.XOR<Prisma.CoachProfileNullableScalarRelationFilter, Prisma.CoachProfileWhereInput> | null
 }, "id" | "identityProviderKey">
 
@@ -281,6 +284,7 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   memberships?: Prisma.HouseholdMembershipCreateNestedManyWithoutUserInput
   consents?: Prisma.ConsentRecordCreateNestedManyWithoutConsentingUserInput
+  uploadedMedia?: Prisma.MediaAssetCreateNestedManyWithoutUploaderInput
   coachProfile?: Prisma.CoachProfileCreateNestedOneWithoutUserInput
 }
 
@@ -295,6 +299,7 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   memberships?: Prisma.HouseholdMembershipUncheckedCreateNestedManyWithoutUserInput
   consents?: Prisma.ConsentRecordUncheckedCreateNestedManyWithoutConsentingUserInput
+  uploadedMedia?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutUploaderInput
   coachProfile?: Prisma.CoachProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
@@ -309,6 +314,7 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.HouseholdMembershipUpdateManyWithoutUserNestedInput
   consents?: Prisma.ConsentRecordUpdateManyWithoutConsentingUserNestedInput
+  uploadedMedia?: Prisma.MediaAssetUpdateManyWithoutUploaderNestedInput
   coachProfile?: Prisma.CoachProfileUpdateOneWithoutUserNestedInput
 }
 
@@ -323,6 +329,7 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.HouseholdMembershipUncheckedUpdateManyWithoutUserNestedInput
   consents?: Prisma.ConsentRecordUncheckedUpdateManyWithoutConsentingUserNestedInput
+  uploadedMedia?: Prisma.MediaAssetUncheckedUpdateManyWithoutUploaderNestedInput
   coachProfile?: Prisma.CoachProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
@@ -445,6 +452,20 @@ export type UserUpdateOneRequiredWithoutConsentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutConsentsInput, Prisma.UserUpdateWithoutConsentsInput>, Prisma.UserUncheckedUpdateWithoutConsentsInput>
 }
 
+export type UserCreateNestedOneWithoutUploadedMediaInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUploadedMediaInput, Prisma.UserUncheckedCreateWithoutUploadedMediaInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUploadedMediaInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUploadedMediaNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUploadedMediaInput, Prisma.UserUncheckedCreateWithoutUploadedMediaInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUploadedMediaInput
+  upsert?: Prisma.UserUpsertWithoutUploadedMediaInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUploadedMediaInput, Prisma.UserUpdateWithoutUploadedMediaInput>, Prisma.UserUncheckedUpdateWithoutUploadedMediaInput>
+}
+
 export type UserCreateNestedOneWithoutCoachProfileInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutCoachProfileInput, Prisma.UserUncheckedCreateWithoutCoachProfileInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutCoachProfileInput
@@ -469,6 +490,7 @@ export type UserCreateWithoutMembershipsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   consents?: Prisma.ConsentRecordCreateNestedManyWithoutConsentingUserInput
+  uploadedMedia?: Prisma.MediaAssetCreateNestedManyWithoutUploaderInput
   coachProfile?: Prisma.CoachProfileCreateNestedOneWithoutUserInput
 }
 
@@ -482,6 +504,7 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   consents?: Prisma.ConsentRecordUncheckedCreateNestedManyWithoutConsentingUserInput
+  uploadedMedia?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutUploaderInput
   coachProfile?: Prisma.CoachProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
@@ -511,6 +534,7 @@ export type UserUpdateWithoutMembershipsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   consents?: Prisma.ConsentRecordUpdateManyWithoutConsentingUserNestedInput
+  uploadedMedia?: Prisma.MediaAssetUpdateManyWithoutUploaderNestedInput
   coachProfile?: Prisma.CoachProfileUpdateOneWithoutUserNestedInput
 }
 
@@ -524,6 +548,7 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   consents?: Prisma.ConsentRecordUncheckedUpdateManyWithoutConsentingUserNestedInput
+  uploadedMedia?: Prisma.MediaAssetUncheckedUpdateManyWithoutUploaderNestedInput
   coachProfile?: Prisma.CoachProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
@@ -537,6 +562,7 @@ export type UserCreateWithoutConsentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.HouseholdMembershipCreateNestedManyWithoutUserInput
+  uploadedMedia?: Prisma.MediaAssetCreateNestedManyWithoutUploaderInput
   coachProfile?: Prisma.CoachProfileCreateNestedOneWithoutUserInput
 }
 
@@ -550,6 +576,7 @@ export type UserUncheckedCreateWithoutConsentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.HouseholdMembershipUncheckedCreateNestedManyWithoutUserInput
+  uploadedMedia?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutUploaderInput
   coachProfile?: Prisma.CoachProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
@@ -579,6 +606,7 @@ export type UserUpdateWithoutConsentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.HouseholdMembershipUpdateManyWithoutUserNestedInput
+  uploadedMedia?: Prisma.MediaAssetUpdateManyWithoutUploaderNestedInput
   coachProfile?: Prisma.CoachProfileUpdateOneWithoutUserNestedInput
 }
 
@@ -592,6 +620,79 @@ export type UserUncheckedUpdateWithoutConsentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.HouseholdMembershipUncheckedUpdateManyWithoutUserNestedInput
+  uploadedMedia?: Prisma.MediaAssetUncheckedUpdateManyWithoutUploaderNestedInput
+  coachProfile?: Prisma.CoachProfileUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutUploadedMediaInput = {
+  id?: string
+  identityProviderKey: string
+  displayName?: string | null
+  emailHash?: string | null
+  status?: $Enums.UserStatus
+  mfaSatisfied?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.HouseholdMembershipCreateNestedManyWithoutUserInput
+  consents?: Prisma.ConsentRecordCreateNestedManyWithoutConsentingUserInput
+  coachProfile?: Prisma.CoachProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutUploadedMediaInput = {
+  id?: string
+  identityProviderKey: string
+  displayName?: string | null
+  emailHash?: string | null
+  status?: $Enums.UserStatus
+  mfaSatisfied?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.HouseholdMembershipUncheckedCreateNestedManyWithoutUserInput
+  consents?: Prisma.ConsentRecordUncheckedCreateNestedManyWithoutConsentingUserInput
+  coachProfile?: Prisma.CoachProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutUploadedMediaInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutUploadedMediaInput, Prisma.UserUncheckedCreateWithoutUploadedMediaInput>
+}
+
+export type UserUpsertWithoutUploadedMediaInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUploadedMediaInput, Prisma.UserUncheckedUpdateWithoutUploadedMediaInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUploadedMediaInput, Prisma.UserUncheckedCreateWithoutUploadedMediaInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUploadedMediaInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUploadedMediaInput, Prisma.UserUncheckedUpdateWithoutUploadedMediaInput>
+}
+
+export type UserUpdateWithoutUploadedMediaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  identityProviderKey?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  mfaSatisfied?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.HouseholdMembershipUpdateManyWithoutUserNestedInput
+  consents?: Prisma.ConsentRecordUpdateManyWithoutConsentingUserNestedInput
+  coachProfile?: Prisma.CoachProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUploadedMediaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  identityProviderKey?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  mfaSatisfied?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.HouseholdMembershipUncheckedUpdateManyWithoutUserNestedInput
+  consents?: Prisma.ConsentRecordUncheckedUpdateManyWithoutConsentingUserNestedInput
   coachProfile?: Prisma.CoachProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
@@ -606,6 +707,7 @@ export type UserCreateWithoutCoachProfileInput = {
   updatedAt?: Date | string
   memberships?: Prisma.HouseholdMembershipCreateNestedManyWithoutUserInput
   consents?: Prisma.ConsentRecordCreateNestedManyWithoutConsentingUserInput
+  uploadedMedia?: Prisma.MediaAssetCreateNestedManyWithoutUploaderInput
 }
 
 export type UserUncheckedCreateWithoutCoachProfileInput = {
@@ -619,6 +721,7 @@ export type UserUncheckedCreateWithoutCoachProfileInput = {
   updatedAt?: Date | string
   memberships?: Prisma.HouseholdMembershipUncheckedCreateNestedManyWithoutUserInput
   consents?: Prisma.ConsentRecordUncheckedCreateNestedManyWithoutConsentingUserInput
+  uploadedMedia?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutUploaderInput
 }
 
 export type UserCreateOrConnectWithoutCoachProfileInput = {
@@ -648,6 +751,7 @@ export type UserUpdateWithoutCoachProfileInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.HouseholdMembershipUpdateManyWithoutUserNestedInput
   consents?: Prisma.ConsentRecordUpdateManyWithoutConsentingUserNestedInput
+  uploadedMedia?: Prisma.MediaAssetUpdateManyWithoutUploaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCoachProfileInput = {
@@ -661,6 +765,7 @@ export type UserUncheckedUpdateWithoutCoachProfileInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.HouseholdMembershipUncheckedUpdateManyWithoutUserNestedInput
   consents?: Prisma.ConsentRecordUncheckedUpdateManyWithoutConsentingUserNestedInput
+  uploadedMedia?: Prisma.MediaAssetUncheckedUpdateManyWithoutUploaderNestedInput
 }
 
 
@@ -671,11 +776,13 @@ export type UserUncheckedUpdateWithoutCoachProfileInput = {
 export type UserCountOutputType = {
   memberships: number
   consents: number
+  uploadedMedia: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | UserCountOutputTypeCountMembershipsArgs
   consents?: boolean | UserCountOutputTypeCountConsentsArgs
+  uploadedMedia?: boolean | UserCountOutputTypeCountUploadedMediaArgs
 }
 
 /**
@@ -702,6 +809,13 @@ export type UserCountOutputTypeCountConsentsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.ConsentRecordWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUploadedMediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MediaAssetWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -714,6 +828,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   consents?: boolean | Prisma.User$consentsArgs<ExtArgs>
+  uploadedMedia?: boolean | Prisma.User$uploadedMediaArgs<ExtArgs>
   coachProfile?: boolean | Prisma.User$coachProfileArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -755,6 +870,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   consents?: boolean | Prisma.User$consentsArgs<ExtArgs>
+  uploadedMedia?: boolean | Prisma.User$uploadedMediaArgs<ExtArgs>
   coachProfile?: boolean | Prisma.User$coachProfileArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -766,6 +882,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     memberships: Prisma.$HouseholdMembershipPayload<ExtArgs>[]
     consents: Prisma.$ConsentRecordPayload<ExtArgs>[]
+    uploadedMedia: Prisma.$MediaAssetPayload<ExtArgs>[]
     coachProfile: Prisma.$CoachProfilePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1173,6 +1290,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   memberships<T extends Prisma.User$membershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HouseholdMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   consents<T extends Prisma.User$consentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$consentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConsentRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  uploadedMedia<T extends Prisma.User$uploadedMediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedMediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   coachProfile<T extends Prisma.User$coachProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coachProfileArgs<ExtArgs>>): Prisma.Prisma__CoachProfileClient<runtime.Types.Result.GetResult<Prisma.$CoachProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1649,6 +1767,30 @@ export type User$consentsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.ConsentRecordScalarFieldEnum | Prisma.ConsentRecordScalarFieldEnum[]
+}
+
+/**
+ * User.uploadedMedia
+ */
+export type User$uploadedMediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MediaAsset
+   */
+  select?: Prisma.MediaAssetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MediaAsset
+   */
+  omit?: Prisma.MediaAssetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MediaAssetInclude<ExtArgs> | null
+  where?: Prisma.MediaAssetWhereInput
+  orderBy?: Prisma.MediaAssetOrderByWithRelationInput | Prisma.MediaAssetOrderByWithRelationInput[]
+  cursor?: Prisma.MediaAssetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MediaAssetScalarFieldEnum | Prisma.MediaAssetScalarFieldEnum[]
 }
 
 /**
