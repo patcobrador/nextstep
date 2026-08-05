@@ -197,6 +197,13 @@ test("@visual completes the real Checkpoint A journey", async ({
   await expect(
     page.getByRole("heading", { name: "Mason Johnson’s next step" }),
   ).toBeVisible();
+  const dashboardHero = page.locator(".dashboard-hero");
+  await expect(
+    dashboardHero.getByRole("link", { name: /Start practice/ }),
+  ).toBeVisible();
+  await expect(
+    dashboardHero.getByRole("link", { name: "View pathway" }),
+  ).toHaveClass("text-link");
   await capture(page, "dashboard");
   await expectAccessible(page);
   await page.waitForLoadState("networkidle");
@@ -216,30 +223,68 @@ test("@visual completes the real Checkpoint A journey", async ({
   await expect(mobileMenu).toBeFocused();
   await page.setViewportSize({ width: 1440, height: 1000 });
 
-  await page.getByRole("link", { name: "Skill Tree" }).click();
+  await dashboardHero.getByRole("link", { name: "View pathway" }).click();
   await expect(page.getByRole("heading", { name: "Skill Tree" })).toBeVisible();
+  await expect(page.getByText("Current focus", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Both Hands Check" }),
+  ).toBeVisible();
   await expect(page.locator(".domain-orb")).toHaveCount(8);
-  await capture(page, "skill-tree");
+  await expect(page.locator(".domain-orb.path-state-current")).toHaveCount(1);
+  await capture(page, "skill-tree-current-focus");
+  await capture(page, "skill-tree-map");
   await expectAccessible(page);
 
-  const activeNode = page.locator(".domain-orb.state-active");
-  await expect(activeNode).toHaveCount(1);
-  await activeNode.focus();
+  const upNextPassing = page
+    .locator(".domain-orb.path-state-up-next")
+    .filter({ hasText: "Passing & Receiving" });
+  await expect(upNextPassing).toHaveCount(1);
+  await upNextPassing.focus();
   await page.keyboard.press("Enter");
   await expect(
-    page
-      .locator(".skill-detail-panel")
-      .getByText("Current focus", { exact: true }),
+    page.locator(".skill-detail-panel").getByText("Up next", { exact: true }),
   ).toBeVisible();
-  await capture(page, "skill-detail");
+  await expect(
+    page.getByText(/Both Hands Check is the prescribed focus/),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Return to Current Step" }),
+  ).toBeVisible();
+  await expect(page.getByText("No practice due")).toHaveCount(0);
+  await capture(page, "skill-tree-up-next-detail");
+
+  const listView = page.getByRole("button", { name: "List view" });
+  await listView.focus();
+  await page.keyboard.press("Enter");
+  await expect(listView).toBeFocused();
+  await expect(page.locator('[data-pathway-view="map"]')).toHaveCount(0);
+  await expect(page.locator('[data-pathway-view="list"]')).toHaveCount(1);
+  await expect(
+    page.locator('[data-pathway-view="list"] a[aria-current="true"]'),
+  ).toHaveCount(1);
+  await expect(
+    page.getByRole("link", { name: "Return to Current Step" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Return to Current Step" }).click();
+  await expect(
+    page.locator(".skill-detail-panel").getByText("Current", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("This is the prescribed focus", { exact: true }),
+  ).toBeVisible();
+  await capture(page, "skill-tree-current-detail");
   await expectAccessible(page);
   await page.keyboard.press("Escape");
   await expect(page).toHaveURL(/\/skill-tree$/);
 
-  const lockedItem = page
-    .locator(".skill-domain-list li")
-    .filter({ hasText: "Locked" })
-    .first();
+  await page.getByRole("button", { name: "List view" }).click();
+  await capture(page, "skill-tree-list");
+  const lockedItems = page
+    .locator(".skill-domain-list li.path-state-locked")
+    .filter({ hasText: "Locked" });
+  const lockedCount = await lockedItems.count();
+  expect(lockedCount).toBeGreaterThan(0);
+  const lockedItem = lockedItems.nth(0);
   await lockedItem.getByRole("link").click();
   await expect(
     page.getByRole("heading", { name: "What comes first" }),
@@ -358,11 +403,12 @@ test("@visual completes the real Checkpoint A journey", async ({
     page.getByRole("heading", { name: "Mason Johnson’s next step" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Add private evidence" }),
+    page.getByRole("link", { name: "Upload evidence" }),
   ).toHaveAttribute(
     "href",
     "/athletes/25fd56b2-b2f1-4645-8ee6-adbac147069e/skills/7f37471f-1b08-4f5d-9529-3d13c7aa79c4/evidence",
   );
+  await capture(page, "dashboard-evidence-pending");
   await page.getByRole("link", { name: "Skill Tree", exact: true }).click();
   await expect(page).toHaveURL(
     `${webUrl}/athletes/25fd56b2-b2f1-4645-8ee6-adbac147069e/skill-tree`,

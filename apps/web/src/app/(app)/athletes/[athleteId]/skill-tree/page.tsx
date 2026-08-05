@@ -1,4 +1,5 @@
 import { CircularSkillTree } from "../../../../../components/circular-skill-tree";
+import { PathwayOrientation } from "../../../../../components/pathway-orientation";
 import { api } from "../../../../../lib/api";
 
 export const metadata = { title: "Skill Tree" };
@@ -17,8 +18,9 @@ export default async function SkillTreePage({
           <p className="eyebrow">{tree.campaign.stageKey} pathway</p>
           <h1>Skill Tree</h1>
         </div>
-        <p>Explore the pathway without skipping the progression rules.</p>
+        <p>See where you are in the journey and what comes later.</p>
       </header>
+      <PathwayOrientation athleteId={athleteId} tree={tree} />
       <CircularSkillTree athleteId={athleteId} tree={tree} />
     </div>
   );

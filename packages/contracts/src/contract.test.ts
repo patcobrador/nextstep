@@ -56,6 +56,27 @@ describe("Checkpoint A contract", () => {
       expect.arrayContaining(["title", "purpose"]),
     );
   });
+
+  it("makes the prescribed focus and parent-facing pathway state authoritative", () => {
+    const tree = contract.components.schemas.SkillTree;
+    expect(tree.required).toEqual(
+      expect.arrayContaining([
+        "currentNodeId",
+        "currentFocusReason",
+        "primaryAction",
+      ]),
+    );
+    expect(contract.components.schemas.PathwayPresentationState.enum).toEqual([
+      "CURRENT",
+      "COMPLETED",
+      "UP_NEXT",
+      "LOCKED",
+      "CHOOSE_NEXT_FOCUS",
+    ]);
+    expect(contract.components.schemas.AthleteSkillNode.required).toContain(
+      "presentationState",
+    );
+  });
 });
 
 describe("Checkpoint B1 private evidence contract", () => {

@@ -200,9 +200,13 @@ test("@visual completes the private parent evidence flow", async ({ page }) => {
   await page.goto(`${webUrl}/local-auth`);
   await page.getByRole("button", { name: "Continue to NextStep" }).click();
   await expect(
-    page.getByRole("link", { name: "Add private evidence" }),
+    page.getByRole("link", { name: "Upload evidence" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Add private evidence" }).click();
+  await expect(page.getByRole("link", { name: "View pathway" })).toHaveClass(
+    "text-link",
+  );
+  await capture(page, "dashboard-evidence-pending");
+  await page.getByRole("link", { name: "Upload evidence" }).click();
   await expect(
     page.getByRole("heading", { name: "Record the Both Hands Check" }),
   ).toBeVisible();
@@ -260,11 +264,23 @@ test("@visual completes the private parent evidence flow", async ({ page }) => {
     .getByRole("button", { name: "Consent and submit for assessment" })
     .click();
   await expect(
-    page.getByText("Submitted for assessment.", { exact: true }),
+    page.getByText("Waiting for coach assignment", { exact: true }),
   ).toBeVisible();
   await expect(page).toHaveURL(/\/athletes\/.+\/evidence\/.+/);
 
   const evidenceId = page.url().split("/").at(-1)!;
+  await page.goto(`${webUrl}/athletes/25fd56b2-b2f1-4645-8ee6-adbac147069e`);
+  await expect(
+    page.getByRole("heading", { name: "Waiting for coach assignment" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "View submission" }),
+  ).toBeVisible();
+  await capture(page, "dashboard-submitted");
+  await page.getByRole("link", { name: "View submission" }).click();
+  await expect(
+    page.getByText("Waiting for coach assignment", { exact: true }),
+  ).toBeVisible();
   const denied = await page.request.get(
     `${apiUrl}/v1/evidence-submissions/${evidenceId}`,
     {

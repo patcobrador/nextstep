@@ -471,8 +471,19 @@ export function EvidenceExperience({
                 Consent and submit for assessment
               </button>
             </div>
+          ) : evidence.status === "ASSIGNED" ? (
+            <div className="status-success">
+              <strong>Waiting for coach review</strong>
+              <p>No new practice is required while the review is pending.</p>
+            </div>
           ) : (
-            <p className="status-success">Submitted for assessment.</p>
+            <div className="status-success">
+              <strong>Waiting for coach assignment</strong>
+              <p>
+                Submitted safely. A coach has not been assigned or begun review
+                yet.
+              </p>
+            </div>
           )}
         </section>
       ) : null}

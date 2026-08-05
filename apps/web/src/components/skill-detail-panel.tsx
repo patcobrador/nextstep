@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import { stateLabel } from "./circular-skill-tree";
+import { stateClass, stateLabel } from "./circular-skill-tree";
 
 export function SkillDetailPanel({
   athleteId,
@@ -38,8 +38,8 @@ export function SkillDetailPanel({
       <h2 id="skill-detail-title" ref={heading} tabIndex={-1}>
         {skill.childName ?? skill.name}
       </h2>
-      <p className={`state-badge state-${skill.state.toLowerCase()}`}>
-        {stateLabel[skill.state]}
+      <p className={`state-badge ${stateClass(skill.presentationState)}`}>
+        {stateLabel[skill.presentationState]}
       </p>
       <p className="skill-objective">{skill.objective}</p>
       <div className="detail-section">
@@ -56,7 +56,37 @@ export function SkillDetailPanel({
           </ul>
         </div>
       ) : null}
-      {skill.state === "LOCKED" ? (
+      {skill.presentationState === "CURRENT" ? (
+        <div className="current-guidance">
+          <h3>
+            {skill.state === "EVIDENCE_PENDING"
+              ? "Evidence is the next step"
+              : skill.state === "REVIEW_PENDING"
+                ? "Review is pending"
+                : "This is the prescribed focus"}
+          </h3>
+          <p>
+            {skill.state === "EVIDENCE_PENDING"
+              ? "Practice requirements are complete. Upload or continue the private evidence submission to move forward."
+              : skill.state === "REVIEW_PENDING"
+                ? "No new practice is required while the private submission waits for assignment or review."
+                : "The pathway has selected this step as the athlete's work right now."}
+          </p>
+        </div>
+      ) : null}
+      {skill.presentationState === "UP_NEXT" ? (
+        <div className="up-next-guidance">
+          <h3>{skill.primaryAction.title}</h3>
+          <p>{skill.primaryAction.description}</p>
+        </div>
+      ) : null}
+      {skill.presentationState === "COMPLETED" ? (
+        <div className="completion-guidance">
+          <h3>Completed</h3>
+          <p>This step is complete and recorded in the athlete's passport.</p>
+        </div>
+      ) : null}
+      {skill.presentationState === "LOCKED" ? (
         <div className="lock-explanation">
           <h3>What comes first</h3>
           <p>{skill.whyLocked}</p>

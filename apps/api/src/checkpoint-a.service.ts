@@ -15,6 +15,13 @@ import {
   DevelopmentFlowRepository,
   type IdempotentCommand,
 } from "./development-flow.repository.js";
+import {
+  createEvidenceUploadAction,
+  createGuidedNavigation,
+  createSkillDetailAction,
+  presentationStateFor,
+  selectCurrentNode,
+} from "./guided-navigation.js";
 import type { AuthenticatedIdentity } from "./identity.js";
 import { PrismaService } from "./prisma.service.js";
 
@@ -110,43 +117,12 @@ export class CheckpointAService {
     athleteId: string,
   ): Promise<DashboardDto> {
     await this.authorisation.athlete(identity, athleteId);
-    const athlete = await this.database.client.athlete.findUnique({
-      where: { id: athleteId },
-      include: {
-        campaigns: {
-          where: { status: "ACTIVE" },
-          take: 1,
-          orderBy: { assignedAt: "desc" },
-          include: { campaign: { include: { stage: true, steps: true } } },
-        },
-        practicePlans: {
-          where: { status: { in: ["GENERATED", "STARTED"] } },
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
-        skillProgress: true,
-        assessments: {
-          where: {
-            status: {
-              in: ["REQUESTED", "UNASSIGNED", "ASSIGNED", "IN_REVIEW"],
-            },
-          },
-          orderBy: { requestedAt: "desc" },
-          take: 1,
-        },
-      },
-    });
-    if (!athlete || !athlete.campaigns[0])
+    const [athlete, tree] = await Promise.all([
+      this.database.client.athlete.findUnique({ where: { id: athleteId } }),
+      this.skillTree(identity, athleteId),
+    ]);
+    if (!athlete)
       throw new NotFoundException("Athlete campaign was not found.");
-    const assignment = athlete.campaigns[0];
-    const completed = athlete.skillProgress.filter(({ state }) =>
-      completedStates.has(state),
-    ).length;
-    const total = assignment.campaign.steps.length;
-    const plan = athlete.practicePlans[0];
-    const evidencePending = athlete.skillProgress.find(
-      ({ state }) => state === "EVIDENCE_PENDING",
-    );
     const startOfWeek = new Date();
     startOfWeek.setUTCDate(startOfWeek.getUTCDate() - 7);
     const meaningfulPractices =
@@ -159,27 +135,12 @@ export class CheckpointAService {
       });
     return {
       athlete: this.athleteDto(athlete),
-      primaryAction: evidencePending
-        ? this.evidenceAction(athleteId, evidencePending.nodeId)
-        : plan
-          ? this.practiceAction(athleteId, plan.id, plan.status === "STARTED")
-          : this.restAction(
-              athleteId,
-              "Practice complete",
-              "Your latest prescribed practice is safely recorded.",
-            ),
-      campaign: {
-        id: assignment.campaign.id,
-        key: assignment.campaign.key,
-        name: assignment.campaign.name,
-        stageKey: assignment.campaign.stage.key,
-        progress: total === 0 ? 0 : completed / total,
-        nextMilestoneName: null,
-      },
+      primaryAction: tree.primaryAction,
+      campaign: tree.campaign,
       weeklySummary: {
         meaningfulPractices,
         progressing: meaningfulPractices > 0,
-        revisitDueCount: athlete.skillProgress.filter(
+        revisitDueCount: tree.nodes.filter(
           ({ state }) => state === "REVISIT_DUE",
         ).length,
       },
@@ -247,6 +208,93 @@ export class CheckpointAService {
       (sum, domain) => sum + domain.completed,
       0,
     );
+    const nodeSummaries = steps.map(({ node }) => {
+      const state = node.progress[0]?.state ?? "LOCKED";
+      const remaining = node.prerequisites
+        .filter(({ prerequisiteNodeId }) => {
+          const prerequisite = steps.find(
+            ({ node: candidate }) => candidate.id === prerequisiteNodeId,
+          )?.node;
+          return (
+            !prerequisite ||
+            !completedStates.has(prerequisite.progress[0]?.state ?? "LOCKED")
+          );
+        })
+        .map(
+          ({ prerequisiteNodeId }) =>
+            steps.find(
+              ({ node: candidate }) => candidate.id === prerequisiteNodeId,
+            )?.node.name ?? "Complete the prerequisite skill",
+        );
+      return {
+        id: node.id,
+        key: node.key,
+        name: node.name,
+        childName: node.childName,
+        domainKey: node.domain.key,
+        stageKey: node.stage.key,
+        type: node.type,
+        state,
+        demonstrated: completedStates.has(state),
+        verified: state === "MASTERED",
+        whyLocked:
+          state === "LOCKED"
+            ? `Complete ${remaining.join(" and ") || "the earlier pathway steps"} first.`
+            : null,
+        prerequisiteNodeIds: node.prerequisites.map(
+          ({ prerequisiteNodeId }) => prerequisiteNodeId,
+        ),
+        revisitDueAt: node.progress[0]?.revisitDueAt?.toISOString() ?? null,
+        remainingRequirements: remaining,
+      };
+    });
+    const current = selectCurrentNode(nodeSummaries);
+    const [plan, evidence] = await Promise.all([
+      this.database.client.practicePlan.findFirst({
+        where: { athleteId, status: { in: ["GENERATED", "STARTED"] } },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, status: true },
+      }),
+      current
+        ? this.database.client.evidenceSubmission.findFirst({
+            where: {
+              athleteId,
+              nodeId: current.id,
+              status: { in: ["DRAFT", "SUBMITTED", "ASSIGNED"] },
+            },
+            orderBy: { createdAt: "desc" },
+            select: {
+              id: true,
+              status: true,
+              mediaAsset: { select: { status: true } },
+              assessment: { select: { status: true } },
+            },
+          })
+        : null,
+    ]);
+    const guidance = createGuidedNavigation({
+      athleteId,
+      nodesInCampaignOrder: nodeSummaries,
+      plan: plan
+        ? {
+            id: plan.id,
+            status: plan.status === "STARTED" ? "STARTED" : "GENERATED",
+          }
+        : null,
+      evidence: evidence
+        ? {
+            id: evidence.id,
+            status:
+              evidence.status === "ASSIGNED"
+                ? "ASSIGNED"
+                : evidence.status === "SUBMITTED"
+                  ? "SUBMITTED"
+                  : "DRAFT",
+            mediaStatus: evidence.mediaAsset.status,
+            assessmentStatus: evidence.assessment?.status,
+          }
+        : null,
+    });
     return {
       curriculumVersion: assignment.curriculumVersion.versionKey,
       campaign: {
@@ -269,46 +317,11 @@ export class CheckpointAService {
           totalNodeCount: domain.total,
           progress: domain.total === 0 ? 0 : domain.completed / domain.total,
         })),
-      nodes: steps.map(({ node }) => {
-        const state = node.progress[0]?.state ?? "LOCKED";
-        const remaining = node.prerequisites
-          .filter(({ prerequisiteNodeId }) => {
-            const prerequisite = steps.find(
-              ({ node: candidate }) => candidate.id === prerequisiteNodeId,
-            )?.node;
-            return (
-              !prerequisite ||
-              !completedStates.has(prerequisite.progress[0]?.state ?? "LOCKED")
-            );
-          })
-          .map(
-            ({ prerequisiteNodeId }) =>
-              steps.find(
-                ({ node: candidate }) => candidate.id === prerequisiteNodeId,
-              )?.node.name ?? "Complete the prerequisite skill",
-          );
-        return {
-          id: node.id,
-          key: node.key,
-          name: node.name,
-          childName: node.childName,
-          domainKey: node.domain.key,
-          stageKey: node.stage.key,
-          type: node.type,
-          state,
-          demonstrated: completedStates.has(state),
-          verified: state === "MASTERED",
-          whyLocked:
-            state === "LOCKED"
-              ? `Complete ${remaining.join(" and ") || "the earlier pathway steps"} first.`
-              : null,
-          prerequisiteNodeIds: node.prerequisites.map(
-            ({ prerequisiteNodeId }) => prerequisiteNodeId,
-          ),
-          revisitDueAt: node.progress[0]?.revisitDueAt?.toISOString() ?? null,
-          remainingRequirements: remaining,
-        };
-      }),
+      nodes: nodeSummaries.map((node) => ({
+        ...node,
+        presentationState: presentationStateFor(node, guidance.currentNodeId),
+      })),
+      ...guidance,
       branchChoices: [],
     };
   }
@@ -333,14 +346,8 @@ export class CheckpointAService {
     });
     if (!node) throw new NotFoundException("Skill was not found.");
     const content = jsonObject(node.content);
-    const plan = await this.database.client.practicePlan.findFirst({
-      where: {
-        athleteId,
-        status: { in: ["GENERATED", "STARTED"] },
-        ...(summary.state === "ACTIVE" ? {} : { steps: { some: { nodeId } } }),
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const current =
+      tree.nodes.find(({ id }) => id === tree.currentNodeId) ?? null;
     return {
       ...summary,
       objective: node.objective,
@@ -352,33 +359,20 @@ export class CheckpointAService {
       commonErrors: stringArray(content["commonErrors"]),
       safety: stringArray(content["safety"]),
       evidenceInstructions:
-        summary.state === "EVIDENCE_PENDING" && node.rubrics[0]
+        ["EVIDENCE_PENDING", "REVIEW_PENDING"].includes(summary.state) &&
+        node.rubrics[0]
           ? this.evidenceInstructions(
               node.objective,
               content,
               node.rubrics[0].evidenceInstructions,
             )
           : null,
-      primaryAction:
-        summary.state === "LOCKED"
-          ? this.restAction(
-              athleteId,
-              "Keep following the pathway",
-              summary.whyLocked ?? "A prerequisite is still required.",
-            )
-          : summary.state === "EVIDENCE_PENDING"
-            ? this.evidenceAction(athleteId, nodeId)
-            : plan
-              ? this.practiceAction(
-                  athleteId,
-                  plan.id,
-                  plan.status === "STARTED",
-                )
-              : this.restAction(
-                  athleteId,
-                  "No practice due",
-                  "Your next prescribed practice will appear on the dashboard.",
-                ),
+      primaryAction: createSkillDetailAction({
+        athleteId,
+        selected: summary,
+        current,
+        primaryAction: tree.primaryAction,
+      }),
     };
   }
 
@@ -784,15 +778,14 @@ export class CheckpointAService {
                 reason: "Authoritative practice requirements were evaluated.",
               },
             ],
-      nextAction: this.restAction(
-        authorised.athleteId,
+      nextAction:
         newState === "EVIDENCE_PENDING"
-          ? "Practice requirement complete"
-          : "Practice saved",
-        newState === "EVIDENCE_PENDING"
-          ? "The checkpoint is ready for the next milestone in a later checkpoint."
-          : "Return to the pathway when you are ready.",
-      ),
+          ? createEvidenceUploadAction(authorised.athleteId, checkpoint.id)
+          : this.restAction(
+              authorised.athleteId,
+              "You're caught up for today",
+              "Your next practice will appear here when it is ready.",
+            ),
     };
     await this.flowRepository.save(record, {
       command,
@@ -901,23 +894,6 @@ export class CheckpointAService {
     };
   }
 
-  private practiceAction(
-    athleteId: string,
-    planId: string,
-    started: boolean,
-  ): NextActionDto {
-    return {
-      type: started ? "CONTINUE_PRACTICE" : "START_PRACTICE",
-      title: started
-        ? "Continue prescribed practice"
-        : "Your prescribed practice is ready",
-      description: "A short guided session based on the current pathway state.",
-      ctaLabel: started ? "Continue practice" : "Start practice",
-      destination: `/athletes/${athleteId}/practice/${planId}`,
-      reasonCodes: ["CURRENT_PATHWAY_FOCUS"],
-    };
-  }
-
   private restAction(
     athleteId: string,
     title: string,
@@ -927,21 +903,9 @@ export class CheckpointAService {
       type: "REST",
       title,
       description,
-      ctaLabel: "View skill tree",
+      ctaLabel: "View pathway",
       destination: `/athletes/${athleteId}/skill-tree`,
-      reasonCodes: [],
-    };
-  }
-
-  private evidenceAction(athleteId: string, nodeId: string): NextActionDto {
-    return {
-      type: "SUBMIT_EVIDENCE",
-      title: "Record checkpoint evidence",
-      description:
-        "Review the safety and privacy guidance before choosing a private video.",
-      ctaLabel: "Add private evidence",
-      destination: `/athletes/${athleteId}/skills/${nodeId}/evidence`,
-      reasonCodes: ["EVIDENCE_REQUIRED"],
+      reasonCodes: ["NO_IMMEDIATE_WORK"],
     };
   }
 

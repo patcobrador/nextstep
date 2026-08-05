@@ -726,6 +726,12 @@ export interface components {
         | "CONTINUE_PRACTICE"
         | "CHOOSE_BRANCH"
         | "SUBMIT_EVIDENCE"
+        | "UPLOAD_EVIDENCE"
+        | "CONTINUE_EVIDENCE"
+        | "VIEW_SUBMISSION"
+        | "VIEW_STATUS"
+        | "RETURN_TO_CURRENT"
+        | "VIEW_HISTORY"
         | "REVIEW_FEEDBACK"
         | "BOOK_ASSESSMENT"
         | "REVISIT"
@@ -757,8 +763,19 @@ export interface components {
         progress: number;
       }[];
       nodes: components["schemas"]["AthleteSkillNode"][];
+      /** Format: uuid */
+      currentNodeId: string | null;
+      currentFocusReason: string;
+      primaryAction: components["schemas"]["NextAction"];
       branchChoices?: components["schemas"]["BranchChoice"][];
     };
+    /** @enum {string} */
+    PathwayPresentationState:
+      | "CURRENT"
+      | "COMPLETED"
+      | "UP_NEXT"
+      | "LOCKED"
+      | "CHOOSE_NEXT_FOCUS";
     AthleteSkillNode: {
       /** Format: uuid */
       id: string;
@@ -770,6 +787,7 @@ export interface components {
       /** @enum {string} */
       type?: "SKILL" | "CHECKPOINT" | "MILESTONE";
       state: components["schemas"]["ProgressState"];
+      presentationState: components["schemas"]["PathwayPresentationState"];
       demonstrated: boolean;
       verified: boolean;
       whyLocked?: string | null;

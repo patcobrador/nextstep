@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ProgressRing } from "../../../../components/progress-ring";
+import { DashboardPrimaryAction } from "../../../../components/dashboard-primary-action";
 import { api } from "../../../../lib/api";
 
 export const metadata = { title: "Dashboard" };
@@ -16,9 +16,7 @@ export default async function DashboardPage({
     api.skillTree(athleteId),
     api.passport(athleteId),
   ]);
-  const focus =
-    tree.nodes.find(({ state }) => state === "ACTIVE") ??
-    tree.nodes.find(({ state }) => state === "AVAILABLE");
+  const focus = tree.nodes.find(({ id }) => id === tree.currentNodeId) ?? null;
   const recent = passport.timeline
     .filter(({ eventType }) => eventType === "PRACTICE_COMPLETED")
     .slice(0, 3);
@@ -32,26 +30,11 @@ export default async function DashboardPage({
         </div>
         <p>One clear pathway. One prescribed practice at a time.</p>
       </header>
-      <section
-        className="dashboard-hero"
-        aria-labelledby="primary-action-title"
-      >
-        <div>
-          <p className="eyebrow">Continue the pathway</p>
-          <h2 id="primary-action-title">{dashboard.primaryAction.title}</h2>
-          <p>{dashboard.primaryAction.description}</p>
-          <Link
-            className="button button-primary"
-            href={dashboard.primaryAction.destination}
-          >
-            {dashboard.primaryAction.ctaLabel} <span aria-hidden="true">→</span>
-          </Link>
-        </div>
-        <ProgressRing
-          value={dashboard.campaign.progress}
-          label={`${dashboard.campaign.name} pathway`}
-        />
-      </section>
+      <DashboardPrimaryAction
+        athleteId={athleteId}
+        action={dashboard.primaryAction}
+        campaign={dashboard.campaign}
+      />
       <div className="dashboard-grid">
         <section className="surface-card">
           <p className="eyebrow">Current campaign</p>
@@ -71,7 +54,7 @@ export default async function DashboardPage({
           <h2>{focus?.childName ?? focus?.name ?? "Pathway orientation"}</h2>
           <p>
             {focus
-              ? `Status: ${focus.state.toLowerCase().replaceAll("_", " ")}`
+              ? `Status: ${focus.presentationState.toLowerCase().replaceAll("_", " ")}`
               : "A new focus will appear when it is prescribed."}
           </p>
           {focus ? (

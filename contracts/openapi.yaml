@@ -1096,7 +1096,7 @@ components:
       properties:
         type:
           type: string
-          enum: [START_PRACTICE, CONTINUE_PRACTICE, CHOOSE_BRANCH, SUBMIT_EVIDENCE, REVIEW_FEEDBACK, BOOK_ASSESSMENT, REVISIT, REST]
+          enum: [START_PRACTICE, CONTINUE_PRACTICE, CHOOSE_BRANCH, SUBMIT_EVIDENCE, UPLOAD_EVIDENCE, CONTINUE_EVIDENCE, VIEW_SUBMISSION, VIEW_STATUS, RETURN_TO_CURRENT, VIEW_HISTORY, REVIEW_FEEDBACK, BOOK_ASSESSMENT, REVISIT, REST]
         title: { type: string }
         description: { type: [string, "null"] }
         ctaLabel: { type: string }
@@ -1118,7 +1118,7 @@ components:
 
     SkillTree:
       type: object
-      required: [curriculumVersion, campaign, domains, nodes]
+      required: [curriculumVersion, campaign, domains, nodes, currentNodeId, currentFocusReason, primaryAction]
       properties:
         curriculumVersion: { type: string }
         campaign:
@@ -1139,14 +1139,22 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AthleteSkillNode"
+        currentNodeId: { type: [string, "null"], format: uuid }
+        currentFocusReason: { type: string }
+        primaryAction:
+          $ref: "#/components/schemas/NextAction"
         branchChoices:
           type: array
           items:
             $ref: "#/components/schemas/BranchChoice"
 
+    PathwayPresentationState:
+      type: string
+      enum: [CURRENT, COMPLETED, UP_NEXT, LOCKED, CHOOSE_NEXT_FOCUS]
+
     AthleteSkillNode:
       type: object
-      required: [id, key, name, domainKey, stageKey, state, demonstrated, verified]
+      required: [id, key, name, domainKey, stageKey, state, presentationState, demonstrated, verified]
       properties:
         id: { type: string, format: uuid }
         key: { type: string }
@@ -1157,6 +1165,8 @@ components:
         type: { type: string, enum: [SKILL, CHECKPOINT, MILESTONE] }
         state:
           $ref: "#/components/schemas/ProgressState"
+        presentationState:
+          $ref: "#/components/schemas/PathwayPresentationState"
         demonstrated: { type: boolean }
         verified: { type: boolean }
         whyLocked:
