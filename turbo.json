@@ -28,7 +28,8 @@
       "outputs": ["coverage/**"]
     },
     "test:integration": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "cache": false
     },
     "test:contract": {
       "dependsOn": ["^build"]

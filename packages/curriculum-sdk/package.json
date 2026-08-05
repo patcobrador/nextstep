@@ -11,7 +11,7 @@
     "validate:seed": "node scripts/validate-seed.mjs",
     "test": "vitest run",
     "test:unit": "vitest run",
-    "test:integration": "vitest run --passWithNoTests",
+    "test:integration": "vitest run .integration.test.ts --passWithNoTests",
     "test:contract": "vitest run --passWithNoTests",
     "test:authz": "vitest run --passWithNoTests",
     "test:security": "vitest run --passWithNoTests",

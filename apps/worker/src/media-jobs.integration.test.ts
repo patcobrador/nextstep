@@ -53,6 +53,9 @@ class MemoryStore implements PrivateMediaStore {
 
 describe("restart-durable B1 media jobs", () => {
   const database = createPrismaClient();
+  const ownedConsentIds = new Set<string>();
+  const ownedEventIds = new Set<string>();
+  const ownedMediaIds = new Set<string>();
 
   beforeEach(() => {
     execFileSync(
@@ -66,7 +69,30 @@ describe("restart-durable B1 media jobs", () => {
     );
   });
 
-  afterEach(async () => database.$disconnect());
+  afterEach(async () => {
+    const eventIds = [...ownedEventIds];
+    const mediaIds = [...ownedMediaIds];
+    await database.processedEvent.deleteMany({
+      where: { eventId: { in: eventIds } },
+    });
+    await database.outboxEvent.deleteMany({
+      where: {
+        OR: [
+          { id: { in: eventIds } },
+          { aggregateId: { in: mediaIds }, aggregateType: "MediaAsset" },
+          { causationId: { in: eventIds } },
+        ],
+      },
+    });
+    await database.evidenceSubmission.deleteMany({
+      where: { mediaAssetId: { in: mediaIds } },
+    });
+    await database.mediaAsset.deleteMany({ where: { id: { in: mediaIds } } });
+    await database.consentRecord.deleteMany({
+      where: { id: { in: [...ownedConsentIds] } },
+    });
+    await database.$disconnect();
+  });
 
   it("validates a queued synthetic MP4 and physically deletes a withdrawn draft", async () => {
     const bytes = await readFile(
@@ -97,6 +123,9 @@ describe("restart-durable B1 media jobs", () => {
     const mediaAssetId = randomUUID();
     const evidenceId = randomUUID();
     const eventId = randomUUID();
+    ownedConsentIds.add(consent.id);
+    ownedEventIds.add(eventId);
+    ownedMediaIds.add(mediaAssetId);
     const objectKey = `evidence/${randomUUID()}/${randomUUID()}`;
     const checksum = createHash("sha256").update(bytes).digest("hex");
     await database.$transaction([
@@ -189,6 +218,8 @@ describe("restart-durable B1 media jobs", () => {
 
     const racingMediaId = randomUUID();
     const racingEventId = randomUUID();
+    ownedEventIds.add(racingEventId);
+    ownedMediaIds.add(racingMediaId);
     const racingObjectKey = `evidence/${randomUUID()}/${randomUUID()}`;
     await database.$transaction([
       database.mediaAsset.create({
