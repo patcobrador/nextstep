@@ -11,13 +11,15 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run src",
     "test:unit": "vitest run src",
-    "test:integration": "vitest run src --passWithNoTests",
+    "test:integration": "vitest run .integration.test.ts --passWithNoTests",
     "test:contract": "vitest run src --passWithNoTests",
     "test:authz": "vitest run src --passWithNoTests",
     "test:security": "vitest run src --passWithNoTests",
     "test:a11y": "vitest run src/components.test.tsx",
     "test:e2e:walking-skeleton": "vitest run --passWithNoTests",
-    "test:e2e:checkpoint-a": "next build && playwright test",
+    "test:e2e:checkpoint-a": "next build && playwright test checkpoint-a.spec.ts",
+    "test:e2e:checkpoint-b1": "next build && playwright test checkpoint-b1.spec.ts",
+    "test:visual:checkpoint-b1": "next build && playwright test checkpoint-b1.spec.ts --grep @visual",
     "test:visual:checkpoint-a": "next build && playwright test --grep @visual"
   },
   "dependencies": {

@@ -119,6 +119,19 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
     const active = tree.body.nodes.find(
       (node: { state: string }) => node.state === "ACTIVE",
     );
+    expect(tree.body.currentNodeId).toBe(active.id);
+    expect(tree.body.primaryAction).toEqual(dashboard.body.primaryAction);
+    expect(
+      tree.body.nodes.filter(
+        (node: { presentationState: string }) =>
+          node.presentationState === "CURRENT",
+      ),
+    ).toHaveLength(1);
+    expect(
+      tree.body.nodes.find(
+        (node: { state: string }) => node.state === "AVAILABLE",
+      ).presentationState,
+    ).toBe("UP_NEXT");
     const locked = tree.body.nodes.find(
       (node: { state: string }) => node.state === "LOCKED",
     );
@@ -134,7 +147,7 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
       .set(headers)
       .expect(200);
     expect(lockedDetail.body.primaryAction.destination).toBe(
-      `/athletes/${athleteId}/skill-tree`,
+      `/athletes/${athleteId}/skill-tree/${active.id}`,
     );
 
     await request(server)
@@ -218,9 +231,11 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
         status: "COMPLETED",
       }),
     );
-    expect(completed.body.nextAction.destination).toBe(
-      `/athletes/${athleteId}/skill-tree`,
-    );
+    expect(completed.body.nextAction).toMatchObject({
+      type: "UPLOAD_EVIDENCE",
+      ctaLabel: "Upload evidence",
+      destination: `/athletes/${athleteId}/skills/${active.id}/evidence`,
+    });
     const replayed = await request(server)
       .post(`/v1/practice-sessions/${sessionId}/complete`)
       .set(headers)
@@ -282,23 +297,30 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
       .get(`/v1/athletes/${athleteId}/dashboard`)
       .set(headers)
       .expect(200);
-    expect(restDashboard.body.primaryAction.destination).toBe(
-      `/athletes/${athleteId}/skill-tree`,
-    );
+    expect(restDashboard.body.primaryAction).toMatchObject({
+      type: "UPLOAD_EVIDENCE",
+      ctaLabel: "Upload evidence",
+      destination: `/athletes/${athleteId}/skills/${active.id}/evidence`,
+    });
     const noPracticeDetail = await request(serverAfterRestart)
       .get(`/v1/athletes/${athleteId}/skills/${active.id}`)
       .set(headers)
       .expect(200);
-    expect(noPracticeDetail.body.primaryAction.destination).toBe(
-      `/athletes/${athleteId}/skill-tree`,
-    );
+    expect(noPracticeDetail.body.primaryAction).toMatchObject({
+      type: "UPLOAD_EVIDENCE",
+      ctaLabel: "Upload evidence",
+      destination: `/athletes/${athleteId}/skills/${active.id}/evidence`,
+    });
     const otherDashboard = await request(serverAfterRestart)
       .get(`/v1/athletes/${otherAthleteId}/dashboard`)
       .set(otherHeaders)
       .expect(200);
-    expect(otherDashboard.body.primaryAction.destination).toBe(
-      `/athletes/${otherAthleteId}/skill-tree`,
-    );
+    expect(otherDashboard.body.primaryAction).toMatchObject({
+      type: "REST",
+      title: "You're caught up for today",
+      ctaLabel: "View pathway",
+      destination: `/athletes/${otherAthleteId}/skill-tree`,
+    });
 
     const destinations = [
       dashboard.body.primaryAction.destination,
@@ -315,5 +337,5 @@ describe("Checkpoint A HTTP contract and object authorisation", () => {
     expect(destinations).not.toEqual(
       expect.arrayContaining(["skill-tree", "practice", "passport"]),
     );
-  });
+  }, 30_000);
 });

@@ -19,6 +19,11 @@ ENV PORT=3001
 EXPOSE 3001
 CMD ["sh", "-c", "pnpm prisma:migrate:deploy && pnpm --filter @nextstep/api start"]
 
+FROM workspace AS worker
+RUN DATABASE_URL=postgresql://build:build@localhost:5432/build \
+  pnpm --filter @nextstep/worker... build
+CMD ["pnpm", "--filter", "@nextstep/worker", "start"]
+
 FROM workspace AS web
 RUN pnpm --filter @nextstep/web... build
 EXPOSE 3000

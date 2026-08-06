@@ -3805,6 +3805,12 @@ export const MediaAssetScalarFieldEnum = {
   checksumSha256: 'checksumSha256',
   rejectionCode: 'rejectionCode',
   retentionPolicyKey: 'retentionPolicyKey',
+  version: 'version',
+  uploadExpiresAt: 'uploadExpiresAt',
+  processingStartedAt: 'processingStartedAt',
+  retentionExpiresAt: 'retentionExpiresAt',
+  retentionHoldUntil: 'retentionHoldUntil',
+  retentionHoldReason: 'retentionHoldReason',
   createdAt: 'createdAt',
   readyAt: 'readyAt',
   deletedAt: 'deletedAt'
@@ -3819,11 +3825,16 @@ export const EvidenceSubmissionScalarFieldEnum = {
   nodeId: 'nodeId',
   mediaAssetId: 'mediaAssetId',
   consentRecordId: 'consentRecordId',
+  reviewConsentRecordId: 'reviewConsentRecordId',
   status: 'status',
   captureTime: 'captureTime',
   retentionPolicyKey: 'retentionPolicyKey',
+  version: 'version',
   createdAt: 'createdAt',
-  submittedAt: 'submittedAt'
+  submittedAt: 'submittedAt',
+  withdrawnAt: 'withdrawnAt',
+  deletionRequestedAt: 'deletionRequestedAt',
+  deletedAt: 'deletedAt'
 } as const
 
 export type EvidenceSubmissionScalarFieldEnum = (typeof EvidenceSubmissionScalarFieldEnum)[keyof typeof EvidenceSubmissionScalarFieldEnum]
@@ -3875,11 +3886,13 @@ export const AssessmentScalarFieldEnum = {
   assignedCoachId: 'assignedCoachId',
   type: 'type',
   status: 'status',
+  version: 'version',
   outcome: 'outcome',
   rubricSnapshot: 'rubricSnapshot',
   dueAt: 'dueAt',
   requestedAt: 'requestedAt',
   assignedAt: 'assignedAt',
+  startedAt: 'startedAt',
   completedAt: 'completedAt'
 } as const
 

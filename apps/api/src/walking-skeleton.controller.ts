@@ -80,62 +80,6 @@ export class WalkingSkeletonController {
     });
   }
 
-  @Post("evidence/upload-intents")
-  async createUploadIntent(
-    @Body() body: { athleteId: string },
-    @Req() request: Request,
-    @Headers("idempotency-key") idempotencyKey?: string,
-  ) {
-    const identity = requireIdentity(request);
-    await this.authorisation.athlete(identity, body.athleteId);
-    return this.service.createUploadIntent({
-      athleteId: body.athleteId,
-      actorId: identity.actorId,
-      idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
-    });
-  }
-
-  @Post("evidence/upload-intents/:mediaAssetId/complete")
-  @HttpCode(202)
-  async completeUpload(
-    @Param("mediaAssetId") mediaAssetId: string,
-    @Req() request: Request,
-    @Headers("idempotency-key") idempotencyKey?: string,
-  ) {
-    const identity = requireIdentity(request);
-    await this.authorisation.developmentResource(
-      identity,
-      mediaAssetId,
-      "MEDIA",
-    );
-    return this.service.completeUpload({
-      mediaAssetId,
-      actorId: identity.actorId,
-      idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
-    });
-  }
-
-  @Post("evidence-submissions")
-  async submitEvidence(
-    @Body()
-    body: {
-      athleteId: string;
-      evidenceId: string;
-      consentRecordId: string;
-      assignedCoachId: string;
-    },
-    @Req() request: Request,
-    @Headers("idempotency-key") idempotencyKey?: string,
-  ) {
-    const identity = requireIdentity(request);
-    await this.authorisation.athlete(identity, body.athleteId);
-    return this.service.submitEvidence({
-      ...body,
-      actorId: identity.actorId,
-      idempotencyKey: requiredHeader(idempotencyKey, "Idempotency-Key"),
-    });
-  }
-
   @Get("coach/assessment-queue")
   async coachQueue(@Headers("x-actor-id") coachId?: string) {
     return {

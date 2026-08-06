@@ -7,6 +7,7 @@ export interface AuthorisedActor {
   actorId: string;
   userId: string;
   householdIds: string[];
+  householdRoles: Record<string, "OWNER" | "CAREGIVER">;
 }
 
 @Injectable()
@@ -21,7 +22,7 @@ export class AuthorisationService {
       include: {
         memberships: {
           where: { revokedAt: null },
-          select: { householdId: true },
+          select: { householdId: true, role: true },
         },
       },
     });
@@ -30,6 +31,9 @@ export class AuthorisationService {
       actorId: identity.actorId,
       userId: user.id,
       householdIds: user.memberships.map(({ householdId }) => householdId),
+      householdRoles: Object.fromEntries(
+        user.memberships.map(({ householdId, role }) => [householdId, role]),
+      ),
     };
   }
 

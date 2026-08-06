@@ -1,0 +1,11 @@
+{
+  "file": "bilateral-control-synthetic.mp4",
+  "purpose": "Checkpoint B1 private evidence pipeline tests",
+  "content": "FFmpeg testsrc2 abstract generated pattern; no person, voice or identifying metadata",
+  "container": "MP4",
+  "videoCodec": "H.264",
+  "audio": false,
+  "durationMs": 4000,
+  "sizeBytes": 382361,
+  "sha256": "6fca7014996dfd970e86591c0db07b596d8bf7743afb076bb9e2bbeb6863109c"
+}

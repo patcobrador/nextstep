@@ -18,13 +18,13 @@
     "prisma:migrate:deploy": "prisma migrate deploy --config prisma.config.ts",
     "test": "vitest run --passWithNoTests",
     "test:unit": "vitest run --passWithNoTests",
-    "test:integration": "vitest run --passWithNoTests",
+    "test:integration": "vitest run .integration.test.ts --passWithNoTests",
     "test:contract": "vitest run --passWithNoTests",
     "test:authz": "vitest run --passWithNoTests",
     "test:security": "vitest run --passWithNoTests",
     "test:a11y": "vitest run --passWithNoTests",
     "test:e2e:walking-skeleton": "vitest run --passWithNoTests",
-    "test:migrations": "prisma validate --config prisma.config.ts && prisma migrate deploy --config prisma.config.ts"
+    "test:migrations": "prisma validate --config prisma.config.ts && prisma migrate deploy --config prisma.config.ts && prisma migrate deploy --config prisma.config.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.9.1",

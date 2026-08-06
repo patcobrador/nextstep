@@ -18,14 +18,15 @@ Production-shaped walking skeleton for a private, parent-controlled youth basket
 - Idempotent worker-side passport projection.
 - Contract, authorisation, accessibility and end-to-end tests.
 - Checkpoint A relational read models and transactionally persisted guided-practice completion.
+- Checkpoint B1 purpose-specific evidence consent, direct private MinIO upload, deterministic media validation, short-lived parent playback, explicit assessment submission, and worker-driven deletion.
 
-The foundation is locally deployable with Docker Compose. Production startup still refuses to treat the local-header identity adapter as Cognito, and evidence upload URLs remain a local MinIO-compatible seam. Managed Cognito, production S3 processing and cloud infrastructure are intentionally later slices.
+The foundation is locally deployable with Docker Compose. Production startup still refuses to treat the local-header identity adapter as Cognito. Managed Cognito, production S3 processing, transcoding, production malware scanning, and cloud infrastructure are intentionally later slices.
 
 ## Local start
 
 Start Docker Desktop, then run:
 
-```powershell
+```bash
 corepack pnpm install --frozen-lockfile
 corepack pnpm dev:infra
 corepack pnpm prisma:migrate:deploy
@@ -34,7 +35,7 @@ corepack pnpm test:e2e:walking-skeleton
 
 To build and run the minimal containerized web and API applications:
 
-```powershell
+```bash
 corepack pnpm deploy:local
 corepack pnpm deploy:status
 ```
@@ -47,17 +48,17 @@ The Checkpoint A fixture is deterministic, development-only and safe to rerun. I
 
 Start PostgreSQL, deploy every committed migration, then reset and load the fixture:
 
-```powershell
+```bash
 docker compose up -d postgres
-$env:DATABASE_URL = "postgresql://nextstep:nextstep@localhost:5433/nextstep?schema=public"
+export DATABASE_URL="postgresql://nextstep:nextstep@localhost:5433/nextstep?schema=public"
 corepack pnpm prisma:migrate:deploy
-$env:NEXTSTEP_DEMO_MODE = "enabled"
+export NEXTSTEP_DEMO_MODE="enabled"
 corepack pnpm demo:checkpoint-a
 ```
 
 Run the containerized demonstration:
 
-```powershell
+```bash
 corepack pnpm deploy:local
 corepack pnpm deploy:status
 ```
@@ -71,20 +72,48 @@ Open `http://127.0.0.1:3100/local-auth`, keep the default **Pat Johnson** person
 5. Open **Passport** and confirm the persisted practice-started and practice-completed events.
 6. Use **Switch persona** to select Alex Reed for the unrelated-household demonstration.
 
-The local persona route is deliberately unavailable unless `NEXTSTEP_LOCAL_AUTH=enabled`; production API startup continues to require the Cognito adapter. Checkpoint A does not include evidence upload or coach assessment UI.
+The local persona route is deliberately unavailable unless `NEXTSTEP_LOCAL_AUTH=enabled`; production API startup continues to require the Cognito adapter. Checkpoint A remains unchanged by the B1 evidence slice.
 
 To run the real-stack browser journey and regenerate the ten stable review screenshots:
 
-```powershell
-$env:DATABASE_URL = "postgresql://nextstep:nextstep@localhost:5433/nextstep?schema=public"
+```bash
+export DATABASE_URL="postgresql://nextstep:nextstep@localhost:5433/nextstep?schema=public"
 corepack pnpm test:e2e:checkpoint-a
 ```
 
 Review artifacts are stored in `docs/review/checkpoint-a/`.
 
+## Checkpoint B1 private evidence demonstration
+
+B1 uses synthetic media only. Start the full private-media stack, deploy the migration, and reset the deterministic fixture:
+
+```bash
+corepack pnpm dev:infra
+export DATABASE_URL="postgresql://nextstep:nextstep@localhost:5433/nextstep?schema=public"
+corepack pnpm prisma:migrate:deploy
+export NEXTSTEP_DEMO_MODE="enabled"
+corepack pnpm demo:checkpoint-b1
+corepack pnpm deploy:local:b1
+corepack pnpm deploy:status
+```
+
+Open `http://127.0.0.1:3100/local-auth`, continue as **Pat Johnson**, and choose **Add private evidence**. The local pilot accepts only an MP4 container with H.264 video, no audio requirement, up to 150 MiB and 90 seconds. The checkpoint instructions request a shorter clip. Use only the committed synthetic fixture at `apps/web/e2e/fixtures/evidence/bilateral-control-synthetic.mp4`.
+
+The browser uploads directly to the private bucket with a 15-minute signed PUT. Capture/upload consent is required before that draft; assigned-coach review consent is collected only when a READY draft is submitted. Playback grants last at most five minutes. B1 creates an unassigned assessment request but intentionally has no coach queue, rubric decision, outcome, remediation, or progression-unlock UI.
+
+Run the real-stack B1 journey and regenerate its four review screenshots:
+
+```bash
+export DATABASE_URL="postgresql://nextstep:nextstep@localhost:5433/nextstep?schema=public"
+docker compose up -d minio minio-init
+corepack pnpm test:e2e:checkpoint-b1
+```
+
+See `docs/checkpoint-b1-private-evidence.md` for states, authorisation, retention, limitations, and configuration. Review artifacts are stored in `docs/review/checkpoint-b1/`.
+
 ## Commands
 
-```powershell
+```bash
 corepack pnpm install --frozen-lockfile
 corepack pnpm format:check
 corepack pnpm lint
@@ -99,7 +128,10 @@ corepack pnpm test:authz
 corepack pnpm test:a11y
 corepack pnpm test:e2e:walking-skeleton
 corepack pnpm test:e2e:checkpoint-a
+corepack pnpm test:e2e:checkpoint-b1
 corepack pnpm build
+docker compose config --quiet
+docker compose build api worker web
 ```
 
 Synthetic data only; never copy production child data into local environments.

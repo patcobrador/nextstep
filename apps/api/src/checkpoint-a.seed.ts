@@ -41,6 +41,21 @@ type SeedDrill = {
   primaryNodeKey: string;
   [key: string]: unknown;
 };
+type SeedRubric = {
+  key: string;
+  name: string;
+  version: number;
+  assessmentType: "ASYNC_VIDEO" | "IN_PERSON";
+  evidenceInstructions: object;
+  passRule: object;
+  criteria: Array<{
+    key: string;
+    name: string;
+    description?: string;
+    isCritical: boolean;
+    scaleAnchors: object;
+  }>;
+};
 type CurriculumSeed = {
   sport: { key: string; name: string; metadata?: object };
   curriculumVersion: {
@@ -58,6 +73,7 @@ type CurriculumSeed = {
   }>;
   nodes: SeedNode[];
   drills: SeedDrill[];
+  rubrics: SeedRubric[];
   campaigns: Array<{
     key: string;
     name: string;
@@ -216,6 +232,65 @@ await database.$transaction(async (tx) => {
         retentionRule: asJson(node.retentionRule),
       },
     });
+  }
+  for (const rubric of seed.rubrics) {
+    const node = seed.nodes.find(
+      ({ metadata }) =>
+        (metadata as { rubricKey?: string } | undefined)?.rubricKey ===
+        rubric.key,
+    );
+    if (!node) throw new Error(`Rubric ${rubric.key} has no owning node.`);
+    const rubricId = id("rubric", `${rubric.key}:${rubric.version}`);
+    await tx.assessmentRubric.upsert({
+      where: {
+        curriculumVersionId_key_version: {
+          curriculumVersionId: curriculumId,
+          key: rubric.key,
+          version: rubric.version,
+        },
+      },
+      update: {
+        name: rubric.name,
+        assessmentType: rubric.assessmentType,
+        evidenceInstructions: asJson(rubric.evidenceInstructions),
+        passRule: asJson(rubric.passRule),
+      },
+      create: {
+        id: rubricId,
+        curriculumVersionId: curriculumId,
+        nodeId: id("node", node.key),
+        key: rubric.key,
+        name: rubric.name,
+        version: rubric.version,
+        assessmentType: rubric.assessmentType,
+        evidenceInstructions: asJson(rubric.evidenceInstructions),
+        passRule: asJson(rubric.passRule),
+      },
+    });
+    for (const [index, criterion] of rubric.criteria.entries()) {
+      await tx.rubricCriterion.upsert({
+        where: {
+          rubricId_key: { rubricId, key: criterion.key },
+        },
+        update: {
+          name: criterion.name,
+          description: criterion.description ?? null,
+          isCritical: criterion.isCritical,
+          sortOrder: index + 1,
+          scaleAnchors: asJson(criterion.scaleAnchors),
+        },
+        create: {
+          id: id("rubric-criterion", `${rubric.key}:${criterion.key}`),
+          rubricId,
+          key: criterion.key,
+          name: criterion.name,
+          description: criterion.description ?? null,
+          isCritical: criterion.isCritical,
+          sortOrder: index + 1,
+          scaleAnchors: asJson(criterion.scaleAnchors),
+        },
+      });
+    }
   }
   for (const node of seed.nodes) {
     for (const prerequisiteKey of node.hardPrerequisiteKeys) {

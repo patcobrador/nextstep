@@ -20,6 +20,13 @@ export const localPersonas = [
     label: "Alex Reed",
     description: "Unrelated parent for access checks",
   },
+  {
+    key: "checkpoint-b1-caregiver",
+    actorId: "checkpoint-b1-caregiver",
+    householdId: "c9663e3a-ab64-4d8b-9cb8-68fbe5f6cda3",
+    label: "Sam Johnson",
+    description: "Mason's caregiver (non-destructive evidence access)",
+  },
 ] as const;
 
 const cookieName = "nextstep-local-persona";

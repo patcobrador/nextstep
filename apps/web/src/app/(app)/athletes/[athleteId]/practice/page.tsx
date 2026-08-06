@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { api } from "../../../../../lib/api";
@@ -20,6 +21,16 @@ export default async function PracticeEntryPage({
       <p className="eyebrow">Practice</p>
       <h1>{dashboard.primaryAction.title}</h1>
       <p>{dashboard.primaryAction.description}</p>
+      <Link
+        className={
+          dashboard.primaryAction.type === "REST"
+            ? "button button-secondary"
+            : "button button-primary"
+        }
+        href={dashboard.primaryAction.destination}
+      >
+        {dashboard.primaryAction.ctaLabel}
+      </Link>
     </section>
   );
 }
